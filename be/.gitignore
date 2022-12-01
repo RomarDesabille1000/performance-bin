@@ -1,0 +1,14 @@
+*.pyc
+*.sqlite3
+*.DS_Store
+*local_settings.py
+*.log
+venv/
+
+media/
+./static/
+.vscode/
+*__pycache__/
+
+
+/.idea/
