@@ -1,11 +1,12 @@
 from django.db import models
+from django_base64field.fields import Base64Field
 
 
 class Attendance(models.Model):
     user = models.ForeignKey('users.User', 
         on_delete=models.SET_NULL, blank=True, null=True, related_name='employee_attendance')
     customer_name = models.CharField(max_length=100)
-    signature = models.TextField(max_length=500)
+    signature = Base64Field(max_length=900000)
     location = models.CharField(max_length=255)
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -61,9 +62,11 @@ class CustomerRatingAnswers(models.Model):
     q3 = models.CharField(max_length=50, choices=Question3Answers, 
         help_text="How much time did it take us to address your questions and concerns?")
     q4 = models.IntegerField(help_text="How likely is it that you would recommend our company/product/services to a friend or colleagues? Rate us between 1 to 5, wherein 5 is the Highest and 1 is the Lowest: ")
-    q5 = models.TextField(max_length=500, help_text="Do you have any other comments, question or concerns")
-    q6 = models.CharField(max_length=255, help_text="Do you know the name of the person who assisted you")
-
+    q5 = models.TextField(max_length=500, blank=True, null=True,
+        help_text="Do you have any other comments, question or concerns")
+    q6 = models.CharField(max_length=255, blank=True, null=True,
+        help_text="Do you know the name of the person who assisted you")
+    date = models.DateTimeField(auto_now_add=True)
 
     class Meta: 
         verbose_name_plural = 'Customer answer ratings'

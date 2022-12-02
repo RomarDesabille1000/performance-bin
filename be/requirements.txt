@@ -2,3 +2,4 @@ Django==4.1
 djangorestframework==3.13.1
 python-dotenv==0.20.0
 django-cors-headers==3.13.0
+django-base64field==1.0

@@ -27,7 +27,7 @@ const AuthContextProvider = props => {
 
 
                 // window.location.href = '/hr'
-                router.push('/hr');
+                router.push('/e');
             }).catch((error) => {
                 console.log(error);
             })
