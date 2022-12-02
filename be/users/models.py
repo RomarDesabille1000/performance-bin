@@ -8,12 +8,19 @@ from rest_framework.authtoken.models import Token
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    HR = "HR"
+    EMPLOYEE = "EMPLOYEE"
+    USER_TYPES = (
+        (HR, "HR"),
+        (EMPLOYEE, "Employee"),
+    )
     email = models.EmailField(max_length=500, unique=True)
     name = models.CharField(max_length=255)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
+    type = models.CharField(max_length=10, choices=USER_TYPES, default=EMPLOYEE)
 
     objects = UserManager()
 
@@ -22,6 +29,22 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_token(self):
         return Token.objects.get(user=self)
+
+class Employee(models.Model):
+    SALESEXECUTIVE = "SALESEXECUTIVE"
+    TECHNICIAN = "TECHNICIAN"
+    USER_TYPES = (
+        (SALESEXECUTIVE, "Sales Executive"),
+        (TECHNICIAN, "Tecnician"),
+    )
+    user = models.ForeignKey('users.User', 
+        on_delete=models.SET_NULL, blank=True, null=True, related_name='user_employee')
+    firstname = models.CharField(max_length=100)
+    lastname = models.CharField(max_length=100)
+    mi = models.CharField(max_length=100)
+    position = models.CharField(max_length=20, choices=USER_TYPES, default=SALESEXECUTIVE)
+    date_hired = models.DateTimeField()
+
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):

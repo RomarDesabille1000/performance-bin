@@ -34,7 +34,10 @@ class LoginSerializer(Serializer):
 
     def to_representation(self, instance):
         resp = super().to_representation(instance)
-        resp.update({'token': self.user.get_token().key})
+        resp.update({
+            'type': self.user.type,
+            'token': self.user.get_token().key
+        })
 
         return resp
 

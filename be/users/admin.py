@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import Employee
 
 @admin.register(get_user_model())
 class UserAdmin(BaseUserAdmin):
@@ -16,7 +17,7 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('email', 'password',),
         }),
         ("Basic Information", {
-            'fields': ('name',)
+            'fields': ('name', 'type')
         }),
         ("Others", {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'date_joined',)
@@ -29,6 +30,11 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('email', 'password1', 'password2',),
         }),
     )
+
+@admin.register(Employee)
+class EmployeeAdmin(admin.ModelAdmin):
+    list_display = ('firstname', 'lastname', 'mi', 'position', 'date_hired')
+
 
 from django.contrib.auth.models import Group
 admin.site.unregister(Group)
