@@ -37,7 +37,7 @@ class Employee(models.Model):
         (SALESEXECUTIVE, "Sales Executive"),
         (TECHNICIAN, "Tecnician"),
     )
-    user = models.ForeignKey('users.User', 
+    user = models.OneToOneField('users.User', 
         on_delete=models.SET_NULL, blank=True, null=True, related_name='user_employee')
     firstname = models.CharField(max_length=100)
     lastname = models.CharField(max_length=100)
