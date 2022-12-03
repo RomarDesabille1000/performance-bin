@@ -13,8 +13,8 @@ class EvaluationRubricSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class CustomerRatingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomerRatingAnswers
-        fields = "__all__"
+#class CustomerRatingSerializer(serializers.ModelSerializer):
+    #class Meta:
+        #model = CustomerRatingAnswers
+        #fields = "__all__"
 
