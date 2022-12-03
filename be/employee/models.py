@@ -11,7 +11,7 @@ class Attendance(models.Model):
     customer_name = models.CharField(max_length=100)
     signature = Base64Field(max_length=900000)
     location = models.CharField(max_length=255)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(default=now)
 
     class Meta: 
         verbose_name_plural = 'Attendance'

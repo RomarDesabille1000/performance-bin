@@ -3,7 +3,7 @@ from .models import Attendance, CustomerRatingAnswers
 
 @admin.register(Attendance)
 class AttendanceAdmin(admin.ModelAdmin):
-    list_display = ('user', 'customer_name', 'location', 'timestamp')
+    list_display = ('user', 'customer_name', 'location', 'date')
 
 
 @admin.register(CustomerRatingAnswers)

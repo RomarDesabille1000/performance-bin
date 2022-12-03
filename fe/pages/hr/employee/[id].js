@@ -22,7 +22,7 @@ export default function Evaluate() {
     useEffect(() => {
         setE({
             ...data, 
-            rubric: data?.rubric.map((d) => ({...d, score: ''}))
+            rubric: data?.rubric.map((d) => ({...d, score: 0}))
         });
     }, [data])
 
@@ -33,6 +33,18 @@ export default function Evaluate() {
     }
 
     function handleSave(){
+        const data =  [...e.rubric]
+            .map((d) => {
+                if(attendanceTitle == d.name){
+                    return {...d, score: (e?.attendance.total_attendance / e?.attendance.days_count) * d?.percentage}
+                }else if(customerService == d.name){
+                    return {...d, score: (e?.customer_service_rating?.customer_rating.result /
+                                    e?.customer_service_rating?.total) * d.percentage}
+                }
+                return {...d}
+            })
+        console.log(data);
+        return 
         axiosInstance.post(`users/employees/${id}/`, {
             rubric: e.rubric,
         })
@@ -42,6 +54,7 @@ export default function Evaluate() {
             console.log('error')
         })
     }
+    console.log(e);
 
 	function renderCore () {
 		if(e?.rubric?.length == 0)
@@ -61,11 +74,17 @@ export default function Evaluate() {
                             {d.percentage}
                         </td>
                         <td>
-                            {attendanceTitle !== d.name && (
+                            {attendanceTitle !== d.name ? (
                                 <input 
                                     onChange={(event) => handleRubricScoreChange(event, i)}
                                     type="number" 
                                     className="input" />
+                            ): (
+                                <div>
+                                     {e?.attendance.total_attendance} / {e?.attendance?.days_count} * {d?.percentage}
+                                     <span> = </span>
+                                    {(e?.attendance.total_attendance / e?.attendance.days_count) * d?.percentage}%
+                                </div>
                             )}
                         </td>
 					</tr>
@@ -102,7 +121,7 @@ export default function Evaluate() {
                                     {e?.customer_service_rating?.total} * 0.{d.percentage}
                                     &nbsp;=&nbsp;
                                     {(e?.customer_service_rating?.customer_rating.result /
-                                    e?.customer_service_rating?.total) * d.percentage}
+                                    e?.customer_service_rating?.total) * d.percentage}%
                                 </div>
                             )}
                         </td>

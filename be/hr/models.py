@@ -25,15 +25,14 @@ class EmployeeEvaluation(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-            return self.employee.firstname
+            return self.employee.name
 
 class EmployeeEvaluationDetail(models.Model): 
     employee_evaluation = models.ForeignKey('hr.EmployeeEvaluation', 
         on_delete=models.CASCADE, blank=True, null=True, related_name='employee_evaluation')
-    rubric = models.ForeignKey('hr.EvaluationRubric', 
-        on_delete=models.CASCADE, blank=True, null=True, related_name='rubric')
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
     percentage = models.IntegerField()
+    score = models.IntegerField(default=0)
 
     
