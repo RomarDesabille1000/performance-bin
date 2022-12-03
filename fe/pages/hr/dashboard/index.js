@@ -8,15 +8,15 @@ import Sales from "../../../components/hr/dashboard/panels/sales";
 
 export default function HRDashboard() {
 	const router = useRouter()
-  const [panelShown, setPanelShown] = useState('');
+  const [panelShown, setPanelShown] = useState('Rubric');
   const [profileDropdownShown, setProfileDropdownShown] = useState(false);
   const [mobilleDropdownShown, setMobileDropdownShown] = useState(false);
-  const [panelTitle, setPanelTitle] = useState('Dashboard');
+  const [panelTitle, setPanelTitle] = useState('Manage Rubric');
 
   const [navigation, setNavigation] = useState([
-    { name: 'Manage Rubric', panel: 'Rubric', current: false },
+    { name: 'Manage Rubric', panel: 'Rubric', current: true },
     { name: 'Manage Employee', panel: 'Employee', current: false },
-    { name: 'Encode Sales', panel: 'Sales', current: true },
+    { name: 'Encode Sales', panel: 'Sales', current: false },
     { name: 'Encode Reported backjobs', panel: 'Backjobs', current: false },
     { name: 'Evaluate Employee', panel: 'Evaluate', current: false },
   ])

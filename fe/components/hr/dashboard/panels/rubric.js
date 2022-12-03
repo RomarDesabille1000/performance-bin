@@ -1,6 +1,74 @@
+import { useState } from "react";
+import Update from "../../../../public/admin/dashboard/update.png";
+import Delete from "../../../../public/admin/dashboard/delete.png";
 
 
 export default function Rubric() {
+  const [core, setCore] = useState(['1','2','3'])
+  const [kpi, setKpi] = useState(['1','2','3'])
+
+  function renderCoreComp () {
+    if(core.length == 0)
+      return (<></>)
+    else{
+      return core.map((item)=>(
+        <tr key ={item} className="bg-white border-b text-gray-800">
+            <th scope="row" className="py-4 px-6 font-medium">
+                <p className="text-left">
+                  TITLE
+                </p>
+            </th>
+            <td className="py-4">
+              <p p className="text-left">
+                Description
+              </p>
+            </td>
+            <td className="py-4">
+              <p p className="text-left">
+                Percentage
+              </p>
+            </td>
+            <td className="py-4">
+                <img className="h-6 w-6 rounded-full" src= {Update.src}/>
+            </td>
+            <td className="py-4">
+              <img className="h-6 w-6 rounded-full" src= {Delete.src}/>
+            </td>
+        </tr>
+      ))
+    }
+  }
+  function renderKPI () {
+    if(kpi.length == 0)
+      return (<></>)
+    else{
+      return kpi.map((item)=>(
+        <tr key ={item} className="bg-white border-b text-gray-800">
+            <th scope="row" className="py-4 px-6 font-medium">
+                <p className="text-left">
+                  TITLE
+                </p>
+            </th>
+            <td className="py-4">
+              <p p className="text-left">
+                Description
+              </p>
+            </td>
+            <td className="py-4">
+              <p p className="text-left">
+                Percentage
+              </p>
+            </td>
+            <td className="py-4">
+                <img className="h-6 w-6 rounded-full" src= {Update.src}/>
+            </td>
+            <td className="py-4">
+              <img className="h-6 w-6 rounded-full" src= {Delete.src}/>
+            </td>
+        </tr>
+      ))
+    }
+  }
 
 	return (
     <div className="flex flex-col items-center w-full  px-4">
@@ -33,7 +101,7 @@ export default function Rubric() {
                     </tr>
                   </thead>
                   <tbody>
-                    
+                    {renderCoreComp()}
                   </tbody>
                 </table>
                 <button className="btn w-full my-5">ADD</button>
@@ -69,6 +137,9 @@ export default function Rubric() {
                         </th>
                     </tr>
                   </thead>
+                  <tbody>
+                    {renderKPI()}
+                  </tbody>
                 </table>
                 <button className="btn w-full my-5">ADD</button>
               </div>
