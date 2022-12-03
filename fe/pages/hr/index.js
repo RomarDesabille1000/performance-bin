@@ -5,10 +5,12 @@ import Employee from "../../components/hr/dashboard/panels/employee";
 import Evaluate from "../../components/hr/dashboard/panels/evaluate";
 import Rubric from "../../components/hr/dashboard/panels/rubric";
 import Sales from "../../components/hr/dashboard/panels/sales";
+import { useSignatureStore } from "../../../store/signature";
 
 export default function HRDashboard() {
 	const router = useRouter()
-  const [panelShown, setPanelShown] = useState('Rubric');
+  const signatureStore = useSignatureStore();
+  const [panelShown, setPanelShown] = useState(signatureStore.activePanel);
   const [profileDropdownShown, setProfileDropdownShown] = useState(false);
   const [mobilleDropdownShown, setMobileDropdownShown] = useState(false);
   const [panelTitle, setPanelTitle] = useState('Manage Rubric');
@@ -22,6 +24,7 @@ export default function HRDashboard() {
   ])
 
   function switchPanel(panel, name){
+    console.log(`panel ${panel}`)
     const newNavigation = [
       { name: 'Manage Rubric', panel: 'Rubric', current: panel == "Rubric" ? true : false },
       { name: 'Manage Employee', panel: 'Employee', current: panel == "Employee" ? true : false },
@@ -29,6 +32,8 @@ export default function HRDashboard() {
       { name: 'Encode Reported backjobs', panel: 'Backjobs', current: panel == "Backjobs" ? true :false },
       { name: 'Evaluate Employee', panel: 'Evaluate', current: panel == "Evaluate" ? true : false },
     ];
+    signatureStore.setActivePanel(panel)
+    console.log(signatureStore.activePanel)
     setPanelTitle(name)
     setNavigation(newNavigation)
     setPanelShown(panel)
@@ -90,8 +95,8 @@ export default function HRDashboard() {
                       <img className="h-8 w-8 rounded-full" src="/admin/dashboard/admin.png" alt=""/>
                     </button>
                   </div>
-                  <div className={`${profileDropdownShown ? '' : 'hidden'} absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`} aria-orientation="vertical">
-                    <a href="#" className="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-2">Sign out</a>
+                  <div className={`${profileDropdownShown ? '' : 'hidden'} absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}>
+                    <a href="#" className="block px-4 py-2 text-sm text-gray-700" role="menuitem" id="user-menu-item-2">Sign out</a>
                   </div>
                 </div>
               </div>
@@ -99,11 +104,11 @@ export default function HRDashboard() {
             <div className="-mr-2 flex md:hidden">
               <button type="button" className="inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800" onClick = {()=> setMobileDropdownShown(!mobilleDropdownShown)}>
                 <span className="sr-only">Open main menu</span>
-                <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                 </svg>
-                <svg className="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                <svg className="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
