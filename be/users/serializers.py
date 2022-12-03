@@ -1,8 +1,12 @@
 from rest_framework import serializers
-from .models import User
 from django.contrib.auth import authenticate, get_user_model
 from utils.query import get_object_or_none
 from rest_framework.serializers import Serializer, ModelSerializer
+
+from .models import (
+    User,
+    Employee
+)
 
 
 class LoginSerializer(Serializer):
@@ -41,9 +45,14 @@ class LoginSerializer(Serializer):
 
         return resp
 
+class EmployeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
+    user_employee = EmployeeSerializer(many=False)
     class Meta:
         model = User
-        fields = ('id','email', 'name', 'type',)
+        fields = ('id','email', 'name', 'type', 'user_employee')
         

@@ -10,11 +10,14 @@ const AuthContext = createContext({})
 
 const AuthContextProvider = props => {
     const isAuth = Cookies.get('token')
+    const [statusCode, setStatusCode] = useState(0)
+    const [isLoading, setIsLoading] = useState(false)
     const router = useRouter();
 
     const { data: user } = useSWR(() => Cookies.get('token') ? '/users/profile/' : null)
 
     const login = async (email, password) => {
+        console.log('test');
         try {
             await axios.post(`${process.env.api}/users/login/`, {
                 email, 
@@ -26,12 +29,13 @@ const AuthContextProvider = props => {
                 axiosInstance.defaults.headers['Authorization'] = `Token ${token}`
 
 
-                // window.location.href = '/hr'
-                router.push('/e');
+                setStatusCode(200)
+                router.push('/hr');
             }).catch((error) => {
-                console.log(error);
+                setStatusCode(error?.response?.status)
             })
         } finally {
+            setIsLoading(false)
         }
 
     }
@@ -46,8 +50,11 @@ const AuthContextProvider = props => {
     const authContextValue = {
         login,
         logout,
+        isLoading,
+        statusCode,
         user,
         isAuth,
+        setStatusCode,
     }
 
     return <AuthContext.Provider value={authContextValue} {...props} />

@@ -1,14 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import 'mixins/base';
 @import 'components.scss';
+
+$poppinsFonts: (
+    (400, 'normal', 'Poppins-Regular'),
+    (500, 'normal', 'Poppins-Medium'),
+    (600, 'normal', 'Poppins-Semibold'),
+    (700, 'normal', 'Poppins-Bold'),
+);
+@include setFontFace($poppinsFonts, 'Poppins', '/fonts/Poppins');
+
+:root {
+    --poppins: "Poppins", sans-serif;
+}
 
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+	font-family: var(--poppins);
+}
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
@@ -16,9 +33,6 @@ a {
   text-decoration: none;
 }
 
-* {
-  box-sizing: border-box;
-}
 
 .canvas{
   border: 2px solid;
