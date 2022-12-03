@@ -25,18 +25,3 @@ class User(GenericViewSet):
     def info(self, request):
         serializer = self.serializer_class(request.user, many=False)
         return Response(serializer.data , status=status.HTTP_200_OK)
-
-
-#test only
-class HRViewOnly(GenericViewSet):   
-    permission_classes = (HROnly,)
-
-    def view(self, request):
-        return Response({'acc': 'hr'}, status=status.HTTP_200_OK)
-
-
-class EmployeeViewOnly(GenericViewSet):   
-    permission_classes = (EmployeeOnly,)
-
-    def view(self, request):
-        return Response({'acc': 'employee'}, status=status.HTTP_200_OK)

@@ -1,0 +1,17 @@
+
+@mixin setFontFace($fonts, $family, $src, $type: 'ttf') {
+    @each $f in $fonts {
+        $weight: nth($f, 1);
+        $style: nth($f, 2);
+        $font: nth($f, 3);
+        @font-face {
+            font-family: "#{$family}";
+            src: url("#{$src}/#{$font}.#{$type}");
+            font-display: swap;
+            font-weight: $weight;
+            font-style: $style;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    }
+}
