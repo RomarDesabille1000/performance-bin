@@ -5,10 +5,10 @@ import Employee from "../../components/hr/dashboard/panels/employee";
 import Evaluate from "../../components/hr/dashboard/panels/evaluate";
 import Rubric from "../../components/hr/dashboard/panels/rubric";
 import Sales from "../../components/hr/dashboard/panels/sales";
-import { useSignatureStore } from "../../../store/signature";
+import { useSignatureStore } from "../../store/signature";
 
 export default function HRDashboard() {
-	const router = useRouter()
+
   const signatureStore = useSignatureStore();
   const [panelShown, setPanelShown] = useState(signatureStore.activePanel);
   const [profileDropdownShown, setProfileDropdownShown] = useState(false);
