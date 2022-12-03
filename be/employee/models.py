@@ -1,5 +1,8 @@
 from django.db import models
 from django_base64field.fields import Base64Field
+from django.utils.timezone import now
+from datetime import datetime
+from django.db.models import Sum
 
 
 class Attendance(models.Model):
@@ -66,7 +69,16 @@ class CustomerRatingAnswers(models.Model):
         help_text="Do you have any other comments, question or concerns")
     q6 = models.CharField(max_length=255, blank=True, null=True,
         help_text="Do you know the name of the person who assisted you")
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(default=now)
 
+    def customer_rating_percentage(pk):
+        ratings = CustomerRatingAnswers.objects.filter(
+            date__year=datetime.now().year,
+            user_id=pk
+        )
+        data = dict()
+        data['customer_rating'] = ratings.aggregate(result=Sum('q4'))
+        data['total'] = ratings.count() * 5
+        return data
     class Meta: 
         verbose_name_plural = 'Customer answer ratings'

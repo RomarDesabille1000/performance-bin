@@ -8,7 +8,14 @@ urlpatterns = [
     path('profile/', UserView.as_view({
         'get': 'info',
     })),
-    path('employees/', EmployeesView.as_view({
-        'get': 'list',
-    })),
+    path('employees/', include([
+        path('', EmployeesView.as_view({
+            'get': 'list',
+        })),
+        path('<int:pk>/', EmployeesView.as_view({
+            'get': 'retrieve',
+            'post': 'evaluation'
+        })),
+    ])),
+
 ]

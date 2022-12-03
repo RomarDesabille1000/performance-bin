@@ -3,30 +3,29 @@ import { useState } from 'react';
 import useSWR from "swr";
 
 export default function Evaluate() {
-	const { data: employees } = useSWR('users/employees');
-	const [employeeList, setEmployeeList] = useState(['1','2','3'])
+	const { data: employees } = useSWR('users/employees/');
 
-	console.log(employees);
-
-  function renderEmployees () {
-    if(employeeList.length == 0)
-      return (<></>)
-    else{
-      return employeeList.map((item)=>(
-        <tr key={item} className='bg-white border-b text-gray-800'>
-					<th scope='row' className='py-4 px-6 font-medium'>
-						John Doe
-					</th>
-					<td className='py-4 px-6'>Nov 11, 2022</td>
-					<td className='py-4 px-6'>
-						<Link className='text-blue-600' href='/admin/customer/1'>
-							View
-						</Link>
-					</td>
-				</tr>
-      ))
-    }
-  }
+	function renderEmployees () {
+		if(employees?.length == 0)
+			return (<>No data</>)
+		else{
+		return employees?.map((d)=>(
+			<tr key={d.id} className='bg-white border-b text-gray-800'>
+						<td scope='row' className='py-4 px-6 font-medium'>
+							<span>{d?.user_employee?.firstname.toUpperCase()}, </span>
+							<span>{d?.user_employee?.lastname.toUpperCase()}</span>
+						</td>
+						<td>{d?.user_employee?.position}</td>
+						<td className='py-4 px-6'>
+							<Link className='text-blue-600' 
+									href={`/hr/employee/${d.id}`}>
+								View
+							</Link>
+						</td>
+					</tr>
+		))
+		}
+	}
 
 	return (
 		<div className='flex flex-col items-center w-full px-4'>
@@ -43,7 +42,7 @@ export default function Evaluate() {
 										Employee Name
 									</th>
 									<th scope='col' className='py-3 px-6'>
-										Date
+										Position
 									</th>
 									<th scope='col' className='py-3 px-6'>
 										Action
