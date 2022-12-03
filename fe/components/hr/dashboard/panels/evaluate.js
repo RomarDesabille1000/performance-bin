@@ -1,8 +1,12 @@
 import Link from 'next/link';
 import { useState } from 'react';
+import useSWR from "swr";
 
 export default function Evaluate() {
+	const { data: employees } = useSWR('users/employees');
 	const [employeeList, setEmployeeList] = useState(['1','2','3'])
+
+	console.log(employees);
 
   function renderEmployees () {
     if(employeeList.length == 0)

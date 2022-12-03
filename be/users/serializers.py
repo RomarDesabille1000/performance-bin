@@ -54,5 +54,5 @@ class UserSerializer(serializers.ModelSerializer):
     user_employee = EmployeeSerializer(many=False)
     class Meta:
         model = User
-        fields = ('id','email', 'name', 'type', 'user_employee')
+        fields = ('id','email', 'name', 'type', 'user_employee',)
         

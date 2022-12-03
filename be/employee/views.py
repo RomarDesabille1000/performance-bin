@@ -33,5 +33,6 @@ class CustomerRatingView(GenericViewSet):
         serializer.save(user=self.request.user)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
 
 

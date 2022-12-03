@@ -1,11 +1,14 @@
 from django.urls import path, include
-from .views import Login, User
+from .views import LoginView, UserView, EmployeesView
 
 urlpatterns = [
-    path('login/', Login.as_view({
+    path('login/', LoginView.as_view({
         'post': 'authenticate',
     })),
-    path('profile/', User.as_view({
+    path('profile/', UserView.as_view({
         'get': 'info',
+    })),
+    path('employees/', EmployeesView.as_view({
+        'get': 'list',
     })),
 ]
