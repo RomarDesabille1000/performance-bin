@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import USER_TYPES, SALESEXECUTIVE
+from django.utils.timezone import now
 
 
 class EvaluationRubric(models.Model):
@@ -22,7 +23,8 @@ class EvaluationRubric(models.Model):
 class EmployeeEvaluation(models.Model):
     employee = models.ForeignKey('users.User', 
         on_delete=models.CASCADE, blank=True, null=True, related_name='employee_evaluation')
-    date_created = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateTimeField(default=now)
+    review_period = models.CharField(max_length=255, null=True)
 
     def __str__(self):
             return self.employee.name
@@ -33,6 +35,6 @@ class EmployeeEvaluationDetail(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
     percentage = models.IntegerField()
-    score = models.IntegerField(default=0)
+    score = models.DecimalField(default=0, max_digits=20, decimal_places=2)
 
     

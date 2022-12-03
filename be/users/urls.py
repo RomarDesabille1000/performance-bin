@@ -11,6 +11,7 @@ urlpatterns = [
     path('employees/', include([
         path('', EmployeesView.as_view({
             'get': 'list',
+            'post': 'create',
         })),
         path('<int:pk>/', EmployeesView.as_view({
             'get': 'retrieve',

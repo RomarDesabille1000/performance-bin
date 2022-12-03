@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate, get_user_model
 from utils.query import get_object_or_none
 from rest_framework.serializers import Serializer, ModelSerializer
+from django.db import transaction
 
 from .models import (
     User,
@@ -49,10 +50,23 @@ class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = '__all__'
-
+    
 class UserSerializer(serializers.ModelSerializer):
     user_employee = EmployeeSerializer(many=False)
+    password = serializers.CharField(write_only=True)
     class Meta:
         model = User
-        fields = ('id','email', 'name', 'type', 'user_employee',)
+        fields = ('id','email', 'name', 'type', 'user_employee', 'password', 'is_active',)
+
+    @transaction.atomic
+    def create(self, validated_data):
+        employee_data = validated_data.pop('user_employee')
+
+        user = User.objects.create(**validated_data)
+        password = validated_data.get('password', None)
+        user.set_password(password)
+        user.save()
+
+        Employee.objects.create(**employee_data, user=user)
+        return user
         

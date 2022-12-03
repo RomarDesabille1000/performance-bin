@@ -15,6 +15,8 @@ class EmployeeEvaluationDetailInline(admin.TabularInline):
 
 @admin.register(EmployeeEvaluation)
 class EmployeeEvaluationAdmin(admin.ModelAdmin):
+    list_display = ('date_created',)
+
     inlines = [
         EmployeeEvaluationDetailInline
     ]

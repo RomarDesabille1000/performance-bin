@@ -7,6 +7,9 @@ import numpy as np
 from datetime import datetime
 from django.db.models.functions import TruncMonth, ExtractMonth
 from django.db.models import Count
+from rest_framework import filters
+from django.utils.dateparse import parse_date
+from utils.query import get_object_or_none
 
 from .serializers import (
     LoginSerializer, 
@@ -54,12 +57,25 @@ class EmployeesView(GenericViewSet):
     # permission_classes = (HROnly,)
     permission_classes = (AllowAny,)
     serializer_class = UserSerializer
-    queryset = User.objects.all()
+
+    def get_queryset(self):
+        queryset = User.objects.all()
+        lastname = self.request.query_params.get('lastname')
+        if lastname is not None:
+            queryset = queryset.filter(user_employee__lastname__contains=lastname)
+        return queryset
 
     def list(self, request):
         serializer = self.serializer_class(self.get_queryset().
             filter(user_employee__isnull=False), many=True)
         return Response(serializer.data , status=status.HTTP_200_OK)
+    
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, **kwargs):
         user = self.get_queryset().get(id=kwargs['pk'])
@@ -82,15 +98,22 @@ class EmployeesView(GenericViewSet):
                 .order_by('date__date')
         total_attendance = len(total_attendance)
         days_count = 0
+        review_period = ''
         if current_year == date_hired_y:
             #hired count
             days_count = np.busday_count('-'.join(date_hired), str(datetime.now().date()))
+            review_period = parse_date('-'.join(date_hired)).strftime('%B') + ' - ' + datetime.now().strftime('%B') + ' ' + current_year
         else:
             #all year count
-            days_count = np.busday_count(f"{current_year}-01-01", f"{current_year}-12-31")
+            days_count = np.busday_count(f"{current_year}-01-01", str(datetime.now().date()))
+            review_period = "January - " + datetime.now().strftime('%B') + ' ' + current_year
         if total_attendance > days_count:
             total_attendance = days_count
-        
+
+        is_evaluated = EmployeeEvaluation.objects.filter(
+            date_created__year=datetime.now().year,
+            employee=user
+        )
         return Response({
             'user': user_serializer.data,
             'rubric': rubric_serializer.data,
@@ -98,7 +121,9 @@ class EmployeesView(GenericViewSet):
             'attendance': {
                 'days_count': days_count,
                 'total_attendance': total_attendance,
-            }
+            },
+            'review_period': review_period,
+            'is_evaluated': is_evaluated.count()
         }, status=status.HTTP_200_OK)
 
     @transaction.atomic
@@ -107,7 +132,8 @@ class EmployeesView(GenericViewSet):
         user_id = kwargs['pk']
 
         employee_evaluation= EmployeeEvaluation.objects.create(
-            employee_id=user_id
+            employee_id=user_id,
+            review_period=data['review_period']
         )
         for d in data['rubric']:
             EmployeeEvaluationDetail.objects.create(

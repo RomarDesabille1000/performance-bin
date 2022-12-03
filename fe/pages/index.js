@@ -7,8 +7,8 @@ export default function Home() {
 	const { login, statusCode, isLoading, setStatusCode } = useAuth()
 	const { register, handleSubmit, formState: { errors }, } = useForm({
 		defaultValues: {
-			username: 'r@gmail.com',
-			password: '1'
+			username: 'hr@gmail.com',
+			password: 'fdsafdsafffffffffffff432432'
 		}
 	});
 
@@ -64,6 +64,7 @@ export default function Home() {
 								<input
 									{...register("password")}
 									autoComplete="off"
+									type="password"
 									className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
 								/>
 							</div>

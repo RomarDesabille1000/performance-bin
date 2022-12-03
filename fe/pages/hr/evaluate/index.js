@@ -2,65 +2,100 @@ import Link from 'next/link';
 import { useState } from 'react';
 import useSWR from "swr";
 import AdminLayout from '../../../components/AdminLayout';
+import SearchBar from '../../../components/SearchBar';
 
 export default function Evaluate() {
-	const { data: employees } = useSWR('users/employees/');
+    const [searchText, setSearchText] = useState('')
+    const { data: employees } = useSWR(`users/employees/?lastname=${searchText}`, {
+        revalidateOnFocus: false,
+    });
 
-	function renderEmployees () {
-		if(employees?.length == 0)
-			return (<>No data</>)
-		else{
-		return employees?.map((d)=>(
-			<tr key={d.id} className='bg-white border-b text-gray-800'>
-						<td scope='row' className='py-4 px-6 font-medium'>
-							<span>{d?.user_employee?.firstname.toUpperCase()}, </span>
-							<span>{d?.user_employee?.lastname.toUpperCase()}</span>
-						</td>
-						<td>{d?.user_employee?.position}</td>
-						<td className='py-4 px-6'>
-							<Link className='text-blue-600' 
-									href={`/hr/evaluate/${d.id}`}>
-								View
-							</Link>
-						</td>
-					</tr>
-		))
-		}
-	}
+    const onKeyUpSearch = (e) => {
+        if(e.code === 'Enter')
+            setSearchText(e.target.value)
+    }
+
+    const onChangeSearch = (e) => {
+        if(e.target.value === ''){
+            setSearchText('')
+        }
+    }
 
 	return (
 		<AdminLayout
 			title="Evaluate Employee"
 		>
-			<div className='flex flex-col items-center w-full px-4'>
-				<div className='flex flex-col justify-center h-full w-full mb-5'>
-					<div className='w-full min-w-full max-w-2xl mx-auto bg-white shadow-lg rounded-sm border border-gray-200'>
-						<header className='px-5 py-4 border-b border-gray-100'>
-							<h2 className='font-semibold text-gray-800'>Evaluate Employee</h2>
-						</header>
-						<div className='overflow-x-auto relative'>
-							<table className='w-full min-w-full text-sm text-left text-gray-500 dark:text-gray-400'>
-								<thead className='text-md text-gray-700 uppercase bg-gray-50'>
-									<tr>
-										<th scope='col' className='py-3 px-6'>
-											Employee Name
-										</th>
-										<th scope='col' className='py-3 px-6'>
-											Position
-										</th>
-										<th scope='col' className='py-3 px-6'>
+            <div className="flex flex-col max-w-[600px] m-auto">
+				<div className="mb-2">Select Employee to Evaluate</div>
+                <div className="overflow-x-auto">
+                    <SearchBar
+                        onChange={onChangeSearch}
+                        onKeyUp={onKeyUpSearch}
+                        text={searchText}
+                        setText={setSearchText}
+                        hasQuery={false}
+                        placeholder="Search employee lastname"
+                    />
+                    <div className="p-1.5 w-full inline-block align-middle">
+                        <div className="overflow-hidden border rounded-lg">
+                            <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                                        >
+                                            ID
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                                        >
+                                            Name
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                                        >
+                                            Position
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                                            style={{width: '150px'}}
+                                        >
 											Action
-										</th>
-									</tr>
-								</thead>
-								<tbody>
-									{renderEmployees()}
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
-			</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                    {employees?.map((d) => (
+                                        <tr key={d.id}>
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
+                                                {d.id}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                                                {d.user_employee?.firstname}&nbsp;
+                                                {d.user_employee?.mi}&nbsp;
+                                                {d.user_employee?.lastname}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                                                {d.user_employee?.position}
+                                            </td>
+											<td>
+												<Link className='text-blue-600 text-sm' 
+													href={`/hr/evaluate/${d.id}`}>
+													Select Employee
+												</Link>
+											</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
 		</AdminLayout>
 	)
 }
