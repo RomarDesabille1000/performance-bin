@@ -2,6 +2,7 @@ import { useRef } from "react"
 import { useRouter } from 'next/router'
 import handleRouteId from "../helper/HandleRouteId";
 import Link from "next/link";
+import { useAuth } from '../context/AuthContext'
 
 const NavItem = ({href, name ,activeLinks ,clss=''}) => {
     const router = useRouter();
@@ -20,6 +21,7 @@ const NavItem = ({href, name ,activeLinks ,clss=''}) => {
 export default function AdminLayout({children, title, hasBack=false}) {
     const router = useRouter()
     const mobileMenuRef = useRef(0);
+    const { logout } = useAuth()
 
     const toggleMobileButton = () => {
         mobileMenuRef.current.classList.toggle('hidden');
@@ -34,7 +36,27 @@ export default function AdminLayout({children, title, hasBack=false}) {
         {
             href: '/hr/rubrics', 
             activeLinks: ['/hr/rubrics'],
-            name: 'Rubric'
+            name: 'Rubrics'
+        },
+        {
+            href: '/hr/employees', 
+            activeLinks: ['/hr/employees'],
+            name: 'Employees'
+        },
+        {
+            href: '/hr/evaluate', 
+            activeLinks: ['/hr/evaluate'],
+            name: 'Evaluate'
+        },
+        {
+            href: '/hr/backjobs', 
+            activeLinks: ['/hr/backjobs'],
+            name: 'Back jobs'
+        },
+        {
+            href: '/hr/sales', 
+            activeLinks: ['/hr/sales'],
+            name: 'Sales'
         },
     ]
 
@@ -62,9 +84,11 @@ export default function AdminLayout({children, title, hasBack=false}) {
                         </div>
                         <div className="hidden md:block">
                             <div className="ml-4 flex items-center md:ml-6">
-                                <a href="#" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                                <button 
+                                    onClick={logout}
+                                    className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                                     Logout
-                                </a>
+                                </button>
                             </div>
                         </div>
                         <div className="-mr-2 flex md:hidden">

@@ -40,7 +40,7 @@ export default function Home() {
                             )}
 							{(statusCode !== 401 && statusCode !== 0 && statusCode !== 200) && (
 								<div className="text-sm text-red-500 my-1 text-center">
-									Something went wrong
+									Password/Username Incorrect
 								</div>
                             )}
 							<input type="hidden" name="remember" defaultValue="true" />
@@ -73,7 +73,7 @@ export default function Home() {
 							<div>
 								<LoadingButton
 									text={`${isLoading ? 'Logging in': 'Sign In'}`}
-									loading={false}
+									loading={isLoading}
 									disable={isLoading}
 									type="submit"
 								/>

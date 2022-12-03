@@ -3,6 +3,7 @@ import axios from 'axios'
 import Cookies from 'js-cookie'
 import useSWR from "swr";
 import { useRouter } from 'next/router'
+import { USERTYPE } from "../helper/constants";
 
 import axiosInstance from '../utils/axiosInstance'
 
@@ -17,7 +18,7 @@ const AuthContextProvider = props => {
     const { data: user } = useSWR(() => Cookies.get('token') ? '/users/profile/' : null)
 
     const login = async (email, password) => {
-        console.log('test');
+        setIsLoading(true)
         try {
             await axios.post(`${process.env.api}/users/login/`, {
                 email, 
@@ -28,9 +29,14 @@ const AuthContextProvider = props => {
 
                 axiosInstance.defaults.headers['Authorization'] = `Token ${token}`
 
-
                 setStatusCode(200)
-                router.push('/hr');
+
+                if(data.type == USERTYPE.EMPLOYEE){
+                    router.push('/e');
+                }else if(data.type == USERTYPE.HR){
+                    router.push('/hr')
+                }
+
             }).catch((error) => {
                 setStatusCode(error?.response?.status)
             })
@@ -43,7 +49,7 @@ const AuthContextProvider = props => {
 
     const logout = () => {
         Cookies.remove('token')
-        router.push('/')
+        window.location.href = '/'
     }
 
     //pass auth details

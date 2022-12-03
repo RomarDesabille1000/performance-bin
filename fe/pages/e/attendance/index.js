@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import axiosInstance from "../../../utils/axiosInstance";
+import { useRouter } from "next/router";
+import AlertMessages from "../../../components/AlertMessages";
 
 const AttendanceSchema = yup.object().shape({
 	customerName: yup.string().required('This field is required')
@@ -14,6 +16,7 @@ const AttendanceSchema = yup.object().shape({
 });
 
 export default function Employee() {
+	const router = useRouter()
 	const signatureStore = useSignatureStore();
 	const [isAddingSignature, setIsAddingSignature] = useState(false);
 	const [isImageEmpty, setIsImageEmpty] = useState(false);
@@ -21,7 +24,7 @@ export default function Employee() {
 		error: false,
 		loading: false,
 		success: false,
-		infoMessage: '',
+		infoMessage: 'Attendance Saved.',
 	})
 
 	const { register, handleSubmit, formState: { errors } } = useForm({
@@ -67,7 +70,6 @@ export default function Employee() {
 		}
 	}
 
-
 	return (
 		<div>
 			{isAddingSignature ? (
@@ -75,16 +77,16 @@ export default function Employee() {
 			): (
 				<form 
 					onSubmit={handleSubmit(onSubmit)}
-					className="max-w-lg w-[90%] py-5 m-auto">
-					{status.error || status.success && (
-						<div className={`
-								${status.error ? 'text-red-500': ''} 
-								${status.success ? 'text-green-500': ''}`
-						}>
-							{status.infoMessage}
-						</div>
-					)}
+					className="max-w-lg w-[90%] py-5 mt-5 m-auto">
+					<div className="mb-3 text-lg font-bold">Attendance</div>
 
+					<AlertMessages
+						error={status.error}
+						success={status.success}
+						loading={status.loading}
+						message={status.infoMessage}
+						className="pb-2"
+					/>
 					<label className="block text-md font-medium text-gray-700">Customer Name</label>
 					<input type="text" 
 							autoComplete="off"
@@ -121,7 +123,12 @@ export default function Employee() {
 
 					<button 
 						type="submit"
-						className="btn btn-primary mt-5 float-right">Save</button>
+						disabled={status.loading}
+						className="btn btn-primary mt-5 float-right">Submit</button>
+					<button 
+						type="button"
+						onClick={() => router.back()}
+						className="btn btn-secondary mt-5 mr-3 float-right">Back</button>
 				</form>
 			)}
 		</div>

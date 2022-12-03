@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import axiosInstance from "../../../utils/axiosInstance";
+import AlertMessages from "../../../components/AlertMessages";
+import { useRouter } from "next/router";
 
 const QuestionWithChoices = memo(function QuestionWithChoices(props) {
 
@@ -11,19 +13,22 @@ const QuestionWithChoices = memo(function QuestionWithChoices(props) {
     return (
         <div className="mt-5">
             {no}. {state.question}
-            {state.choices.map((q, i) => (
-                <div key={i} 
-                    className="flex items-center gap-3 px-3">
-                    <input
-                        onClick={() => onClickHandleChecks(i, setState)}
-                        value={q.value}
-                        checked={q.checked || ''}
-                        {...register(name)}
-                        type="checkbox"
-                    />
-                    <div>{q.text}</div>
-                </div>
-            ))}
+            <div className="mt-3">
+                {state.choices.map((q, i) => (
+                    <div key={i} 
+                        className="flex items-center gap-3 ml-5 px-3">
+                        <input
+                            style={{width: '15px', height: '15px'}}
+                            onClick={() => onClickHandleChecks(i, setState)}
+                            value={q.value}
+                            checked={q.checked || ''}
+                            {...register(name)}
+                            type="checkbox"
+                        />
+                        <div>{q.text}</div>
+                    </div>
+                ))}
+            </div>
         </div>
     )
 })
@@ -38,6 +43,7 @@ const CustomerSurveySchema = yup.object().shape({
 });
 
 export default function CustomerSurvey() {
+	const router = useRouter();
 	const { register, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
             q1: [],
@@ -48,6 +54,13 @@ export default function CustomerSurvey() {
         },
 		mode: 'onSubmit',
 		resolver: yupResolver(CustomerSurveySchema)
+	})
+
+	const [status, setStatus] = useState({
+		error: false,
+		loading: false,
+		success: false,
+		infoMessage: '',
 	})
 
     const [q1, setQ1] = useState({
@@ -96,11 +109,27 @@ export default function CustomerSurvey() {
             q2: data['q2'][0],
             q3: data['q3'][0],
         }
+		setStatus({ 
+			error: false, 
+			success: false, 
+			loading:true, 
+			infoMessage: 'Saving Feedback.' 
+		})
         axiosInstance.post('employee/customer-rating/', data)
         .then((_e) => {
-            console.log('success');
+            setStatus({ 
+                error: false, 
+                success: true, 
+                loading: false, 
+                infoMessage: 'Feedback Saved.' 
+            })
         }).catch((_e) => {
-            console.log('err')
+            setStatus({ 
+                error: true, 
+                success: false, 
+                loading: false, 
+                infoMessage: 'Something went wrong.' 
+            })
         })
     }
 
@@ -112,17 +141,24 @@ export default function CustomerSurvey() {
             )
         }))
     }, [])
+    console.log(errors);
 
     return(
         <div className="bg-gray-200 min-h-screen">
-            <div className="max-w-[900px] m-auto pt-10">
+            <div className="max-w-[900px] m-auto pt-10 px-5">
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="overflow-hidden shadow sm:rounded-md">
                         <div className="space-y-6 bg-white px-4 py-5 sm:p-6">
-                            <div className="text-base font-medium text-gray-900" aria-hidden="true">
+                            <div className="text-lg font-medium text-gray-900" aria-hidden="true">
                                 Customer FeedbackForm
                             </div>
-                            <div className="text-[14px]">
+                            <AlertMessages
+                                error={status.error}
+                                success={status.success}
+                                loading={status.loading}
+                                message={status.infoMessage}
+                            />
+                            <div className="text-[16px]">
                                 At First Philippines Scales, we makesure customers come first. Let us know how we are
                                 doing and how we can serve you better. Please rate us on the degree of which
                                 you agree or disagree based on your experience with them.
@@ -156,38 +192,48 @@ export default function CustomerSurvey() {
                             <div className="text-red-500">{errors?.q3 && errors?.q3?.message}</div>
                             <div className="mt-5">
                                 <div>4. {q.q4.main}</div>
-                                <div className="flex gap-2 items-center">
+                                <div className="px-5">
                                     <div className="ml-4">{q.q4.sub}</div>
                                     <input type="text" 
+                                        autoComplete="off"
                                         {...register('q4')} 
-                                        className="input max-w-[100px]" />
+                                        className="input max-w-[100px] ml-10" />
                                 </div>
                             </div>
                             <div className="text-red-500">{errors?.q4 && errors?.q4?.message}</div>
                             <div className="mt-5">
                                 <div>5. {q.q5} (Optional)</div>
-                                <textarea 
-                                    name="" 
-                                    id="" 
-                                    {...register('q5')} 
-                                    className="text-area" 
-                                    rows="2"
-                                ></textarea>
+                                <div className="px-5">
+                                    <textarea 
+                                        name="" 
+                                        id="" 
+                                        {...register('q5')} 
+                                        className="text-area" 
+                                        rows="2"
+                                    ></textarea>
+                                </div>
                             </div>
                             <div className="mt-5">
                                 <div>6. {q.q6} (Optional)</div>
-                                <input 
-                                    type="text" 
-                                    {...register('q6')}
-                                    className="input" />
+                                <div className="px-5">
+                                    <input 
+                                        type="text" 
+                                        {...register('q6')}
+                                        className="input" />
+                                </div>
                             </div>
                         </div>
-                        <div className="bg-gray-50 px-4 py-3 text-right sm:px-6">
+                        <div className="bg-gray-50 px-4 py-3 text-right flex justify-end items-center gap-3">
+                            <button 
+                                type="button"
+                                onClick={() => router.back()}
+                                className="btn btn-secondary">Back</button>
                             <button
+                                onClick={() => {window.location.href = '#'}}
                                 type="submit"
-                                className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                className="btn btn-primary"
                             >
-                                Save
+                                Submit
                             </button>
                         </div>
                     </div>
