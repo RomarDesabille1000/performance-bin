@@ -6,10 +6,10 @@ export default function Employee() {
 	const [openAddModal, setOpenAddModal] = useState(false);
 	return (
 		<div className='flex flex-col items-center w-full px-4'>
-			<div class='flex flex-col justify-center h-full w-full mb-5'>
-				<div class='w-full min-w-full max-w-2xl mx-auto bg-white shadow-lg rounded-sm border border-gray-200'>
-					<header class='px-5 py-4 border-b border-gray-100'>
-						<h2 class='font-semibold text-gray-800'>Employee List</h2>
+			<div className='flex flex-col justify-center h-full w-full mb-5'>
+				<div className='w-full min-w-full max-w-2xl mx-auto bg-white shadow-lg rounded-sm border border-gray-200'>
+					<header className='px-5 py-4 border-b border-gray-100'>
+						<h2 className='font-semibold text-gray-800'>Employee List</h2>
 					</header>
 					<div className='overflow-x-auto relative'>
 						<table className='w-full min-w-full text-sm text-left text-gray-500 dark:text-gray-400'>
@@ -41,9 +41,6 @@ export default function Employee() {
 							</tbody>
 						</table>
 						<button className="btn w-full my-5" onClick = {()=>setOpenAddModal(!openAddModal)}>ADD</button>
-					</div>
-					<div className={"modal fade fixed top-0 left-0 w-full h-full outline-none overflow-x-hidden overflow-y-auto"} id="exampleModalCenter" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-modal="true" role="dialog">
-						<AddEmployee/>
 					</div>
 				</div>
 			</div>
