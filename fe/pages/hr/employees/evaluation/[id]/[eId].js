@@ -1,6 +1,17 @@
-import AdminLayout from "../../../../components/AdminLayout";
+import AdminLayout from "../../../../../components/AdminLayout";
+import { useRouter } from "next/router";
+import useSWR from "swr";
 
 export default function Evaluation(){
+    const router = useRouter();
+    const { id, eId } = router.query
+	const { data: user } = useSWR(id ? `hr/evaluation/${id}/${eId}/` : '', {
+        revalidateOnFocus: false,    
+    });
+
+    console.log(user);
+
+
     return(
         <AdminLayout
             title="Employee Evaluation"
@@ -8,8 +19,7 @@ export default function Evaluation(){
         >
             <div className="overflow-hidden bg-white shadow sm:rounded-lg border border-indigo-600">
                 <div className="px-4 py-5 sm:px-6">
-                    <h3 className="text-lg font-medium leading-6 text-gray-900">Customer Evaluation</h3>
-                    <p className="mt-1 max-w-2xl text-sm text-gray-500">Personal details and information.</p>
+                    <h3 className="text-lg font-medium leading-6 text-gray-900">Employee Evaluation</h3>
                 </div>
                 <div className="border-t border-gray-200">
                     <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">

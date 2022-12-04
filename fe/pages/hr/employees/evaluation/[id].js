@@ -1,68 +1,82 @@
+import { useRouter } from "next/router";
+import useSWR from "swr";
 import AdminLayout from "../../../../components/AdminLayout";
-
+import dayjs from "dayjs";
+import Link from 'next/link';
 
 export default function Evaluation(){
+    const router = useRouter();
+    const { id } = router.query
+	const { data: user } = useSWR(id ? `hr/evaluation/${id}/` : '', {
+        revalidateOnFocus: false,    
+    });
+
+
     return(
         <AdminLayout
             title="Employee Evaluation"
             hasBack={true}
         >
-            <div className="overflow-hidden bg-white shadow sm:rounded-lg border border-indigo-600">
-                <div className="px-4 py-5 sm:px-6">
-                    <h3 className="text-lg font-medium leading-6 text-gray-900">Customer Evaluation</h3>
-                    <p className="mt-1 max-w-2xl text-sm text-gray-500">Personal details and information.</p>
+            <div className="flex gap-[50px]">
+                <div> 
+                    <span className="text-gray-500">Name: </span>
+                    <span>{user?.user?.user_employee?.firstname} {user?.user?.user_employee?.mi}. {user?.user?.user_employee?.lastname}</span>
                 </div>
-                <div className="border-t border-gray-200">
-                    <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt className="text-sm font-medium text-gray-500">Full name</dt>
-                        <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">Margot Foster</dd>
-                    </div>
-                    <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt className="text-sm font-medium text-gray-500">Application for</dt>
-                        <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">Backend Developer</dd>
-                    </div>
-                    <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt className="text-sm font-medium text-gray-500">Email address</dt>
-                        <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">margotfoster@example.com</dd>
-                    </div>
-                    <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt className="text-sm font-medium text-gray-500">Salary expectation</dt>
-                        <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">$120,000</dd>
-                    </div>
-                    <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt className="text-sm font-medium text-gray-500">About</dt>
-                        <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                        Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur
-                        qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud
-                        pariatur mollit ad adipisicing reprehenderit deserunt qui eu.
-                        </dd>
-                    </div>
-                    <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt className="text-sm font-medium text-gray-500">Attachments</dt>
-                        <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                        <ul role="list" className="divide-y divide-gray-200 rounded-md border border-gray-200">
-                            <li className="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
-                            <div className="flex w-0 flex-1 items-center">
-                                <span className="ml-2 w-0 flex-1 truncate">resume_back_end_developer.pdf</span>
-                            </div>
-                            <div className="ml-4 flex-shrink-0">
-                                <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                Download
-                                </a>
-                            </div>
-                            </li>
-                            <li className="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
-                            <div className="flex w-0 flex-1 items-center">
-                                <span className="ml-2 w-0 flex-1 truncate">coverletter_back_end_developer.pdf</span>
-                            </div>
-                            <div className="ml-4 flex-shrink-0">
-                                <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                Download
-                                </a>
-                            </div>
-                            </li>
-                        </ul>
-                        </dd>
+                <div> 
+                    <span className="text-gray-500">Position: </span>
+                    <span> {user?.user?.user_employee?.position}</span>
+                </div>
+            </div>
+            <div className="mt-1">
+                <span className="text-gray-500">Date Hired: </span>
+                <span> {dayjs(user?.user?.user_employee?.date_hired).format('MMMM DD, YYYY')} </span>
+            </div>
+            <div className="flex flex-col mt-10">
+                <div className="overflow-x-auto">
+                    <div className="w-full inline-block align-middle">
+                        <div className="overflow-hidden border rounded-lg">
+                            <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
+                                            Date Created
+                                        </th>
+                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
+                                            Review Period
+                                        </th>
+                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                    {!user?.evaluation_list?.length && (
+                                        <tr>
+                                            <td colSpan={3} className="text-center py-4">
+                                                No data
+                                            </td>
+                                        </tr>
+                                    )}
+                                    {user?.evaluation_list?.map((d) => (
+                                        <tr key={d.id}>
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
+                                                {dayjs(d.date_created).format('MMMM DD, YYYY')}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                                                {d.review_period}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                                                <Link href={`/hr/employees/evaluation/${user?.user?.id}/${d.id}`}
+                                                    className="text-indigo-500 hover:text-indigo-700"
+                                                >
+                                                    View Evaluation
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

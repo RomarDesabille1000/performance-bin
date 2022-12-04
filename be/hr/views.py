@@ -8,6 +8,12 @@ from .serializers import (
     EvaluationRubricSerializer,
     EmployeeEvaluationSerializer,
     EvaluationRubric,
+    EmployeeEvaluation,
+    EmployeeEvaluationDetail,
+)
+from users.serializers import (
+    UserSerializer,
+    User,
 )
 
 
@@ -72,7 +78,26 @@ class EvalutationRubricView(GenericViewSet):
         
 
 
-class EmployeeEvaluation(GenericViewSet):
+class EmployeeEvaluationView(GenericViewSet):
     serializer_class = EmployeeEvaluationSerializer
+    queryset = EmployeeEvaluation.objects.all()
 
-    pass
+    def list(self, request, *args, **kwargs):
+        user = User.objects.get(id=kwargs['pk'])
+        evaluation_serializer = ''
+        
+        user_serializer = UserSerializer(user, many=False)
+
+        rubrics = ''
+        if 'id' in kwargs.keys():
+            evaluation_serializer = self.serializer_class(
+            self.get_queryset().get(id=kwargs['id']), many=False)
+        else:
+            evaluation_serializer = self.serializer_class(
+            self.get_queryset().filter(employee=user).order_by('-date_created'), many=True)
+
+
+        return Response({
+            'evaluation_list': evaluation_serializer.data,
+            'user': user_serializer.data
+        },status=status.HTTP_200_OK)

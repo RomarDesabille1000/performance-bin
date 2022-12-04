@@ -2,6 +2,7 @@
 from django.urls import path, include
 from .views import (
     EvalutationRubricView,
+    EmployeeEvaluationView,
 )
 
 urlpatterns = [
@@ -20,6 +21,14 @@ urlpatterns = [
         })),
         path('<int:pk>/delete/', EvalutationRubricView.as_view({
             'delete': 'destroy',
+        })),
+    ])),
+    path('evaluation/', include([
+        path('<int:pk>/', EmployeeEvaluationView.as_view({
+            'get': 'list',
+        })),
+        path('<int:pk>/<int:id>/', EmployeeEvaluationView.as_view({
+            'get': 'list',
         })),
     ])),
 ]

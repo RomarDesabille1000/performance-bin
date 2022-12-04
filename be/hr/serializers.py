@@ -18,3 +18,8 @@ class EmployeeEvaluationSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployeeEvaluation
         fields = "__all__"
+
+class EmployeeEvaluationDetailSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = EmployeeEvaluationDetail
+        fields = "__all__"

@@ -23,6 +23,8 @@ export default function Attendance(){
         setViewImage('');
     }
 
+    alert('tst')
+
 
 
     return(
@@ -69,13 +71,13 @@ export default function Attendance(){
                                             scope="col"
                                             className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                                         >
-                                            Customer Name
+                                            Date
                                         </th>
                                         <th
                                             scope="col"
                                             className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                                         >
-                                            Date
+                                            Customer Name
                                         </th>
                                         <th
                                             scope="col"
@@ -95,11 +97,11 @@ export default function Attendance(){
                                 <tbody className="divide-y divide-gray-200">
                                     {user?.attendance_list.map((d) => (
                                         <tr key={d.id}>
-                                            <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                                                {d.customer_name}
-                                            </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {dayjs(d.date).format('MMMM DD, YYYY')}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
+                                                {d.customer_name}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {d.location}
