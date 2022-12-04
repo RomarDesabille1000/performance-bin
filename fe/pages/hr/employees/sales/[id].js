@@ -76,8 +76,12 @@ export default function CreateSales(){
 
     //filter
     useEffect(() => {
-        setFromDate(new Date().toISOString().slice(0, 10))
-        setToDate(new Date().toISOString().slice(0, 10))
+        //jan 1
+        setFromDate(`${dayjs().year()}-01-01`)
+        //current year
+        const d = new Date()
+        d.setDate(d.getDate() + 1);
+        setToDate(d.toISOString().slice(0, 10))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

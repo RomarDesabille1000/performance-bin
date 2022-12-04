@@ -116,21 +116,21 @@ class SalesView(GenericViewSet, generics.ListAPIView):
 
     def get_queryset(self):
         sales = Sales.objects.all()
-        # try:
-        date_from = self.request.query_params.get('from')
-        date_to = self.request.query_params.get('to')
-        if date_from is not None and date_to is not None:
-            date_from = convert_datetz(date_from)
-            date_to = convert_datetz(date_to)
-            sales = sales.filter(date__range=[date_from, date_to])
+        try:
+            date_from = self.request.query_params.get('from')
+            date_to = self.request.query_params.get('to')
+            if date_from is not None and date_to is not None:
+                date_from = convert_datetz(date_from)
+                date_to = convert_datetz(date_to)
+                sales = sales.filter(date__range=[date_from, date_to])
 
-        search = self.request.query_params.get('search')
-        if search is not None:
-            sales = sales.filter(item_deal__contains=search)
+            search = self.request.query_params.get('search')
+            if search is not None:
+                sales = sales.filter(item_deal__contains=search)
 
-        return sales
-        # except (Exception,):
-        return sales
+            return sales
+        except (Exception,):
+            return sales
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset().filter(user_id=kwargs['id']).order_by('-date')
