@@ -6,6 +6,7 @@ from rest_framework.viewsets import GenericViewSet
 from users.permissions import HROnly
 from .serializers import (
     EvaluationRubricSerializer,
+    EmployeeEvaluationSerializer,
     EvaluationRubric,
 )
 
