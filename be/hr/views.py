@@ -5,7 +5,8 @@ from rest_framework.viewsets import GenericViewSet
 
 from users.permissions import HROnly
 from .serializers import (
-    EvaluationRubricSerializer
+    EvaluationRubricSerializer,
+    EmployeeEvaluationSerializer
 )
 
 
@@ -20,3 +21,7 @@ class EvalutationRubricView(GenericViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+class EmployeeEvaluation(GenericViewSet):
+    serializer_class = EmployeeEvaluationSerializer
+
+    pass

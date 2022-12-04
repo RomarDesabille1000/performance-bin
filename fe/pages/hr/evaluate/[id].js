@@ -23,6 +23,7 @@ export default function Evaluate() {
     const [e, setE] = useState([]);
     const [coreTotal, setCoreTotal] = useState(0);
     const [kpiTotal, setKpiTotal] = useState(0);
+    const [overall, setOverall] = useState(0);
 
     const TYPE = {
         CORE: 'CORE',
@@ -33,16 +34,19 @@ export default function Evaluate() {
 
     useEffect(() => {
         if(data){
+            let overall = 0;
             const newRubric =  [...data?.rubric]
                 .map((d) => {
                     if(attendanceTitle == d.name){
                         const score = DoubleType((data?.attendance?.total_attendance / data?.attendance?.days_count) * d?.percentage);
                         setCoreTotal(score)
+                        overall += score;
                         return {...d, score: score}
                     }else if(customerService == d.name){
                         const score = DoubleType((data?.customer_service_rating?.customer_rating?.result /
                                         data?.customer_service_rating?.total) * d.percentage)
                         setKpiTotal(score)
+                        overall += score;
                         return {...d, score: score}
                     }
                     return {...d, score: 0}
@@ -51,6 +55,7 @@ export default function Evaluate() {
                 ...data, 
                 rubric: newRubric
             });
+            setOverall(overall);
         }
     }, [data])
 
@@ -63,20 +68,17 @@ export default function Evaluate() {
 
         setE(rubric);
 
-        let sum = 0
-        if(rubric.rubric[i].type === TYPE.CORE){
-            for(let j = 0; j < rubric?.rubric?.length; j++){
-                if(rubric.rubric[j].type === TYPE.CORE)
-                    sum += DoubleType(+rubric.rubric[j].score);
-            }
-            setCoreTotal(sum)
-        }else{
-            for(let j = 0; j < rubric?.rubric?.length; j++){
-                if(rubric.rubric[j].type === TYPE.KPI)
-                    sum += DoubleType(+rubric.rubric[j].score);
-            }
-            setKpiTotal(sum)
+        let core = 0;
+        let kpi = 0;
+        for(let j = 0; j < rubric?.rubric?.length; j++){
+            if(rubric.rubric[j].type === TYPE.CORE)
+                core += DoubleType(+rubric.rubric[j].score);
+            else
+                kpi += DoubleType(+rubric.rubric[j].score);
         }
+        setCoreTotal(core)
+        setKpiTotal(kpi)
+        setOverall(DoubleType((core*0.40) + (kpi*0.60)));
     }
 
     function handleSave(){
@@ -322,6 +324,8 @@ export default function Evaluate() {
                                     </table>
                                 </div>
                             </div>
+
+                            <div className="text-right pr-10 py-3">Overall Total: {overall}%</div>
 
                             <div className="flex justify-end mt-10">
                                 <button 
