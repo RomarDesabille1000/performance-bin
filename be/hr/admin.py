@@ -15,7 +15,7 @@ class BackJobsAdmin(admin.ModelAdmin):
 
 @admin.register(Sales)
 class SalesAdmin(admin.ModelAdmin):
-    list_display = ('date', 'item_deal', 'amount',)
+    list_display = ('date', 'item_deal', 'date',)
 
 
 @admin.register(EvaluationRubric)

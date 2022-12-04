@@ -1,7 +1,9 @@
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.viewsets import GenericViewSet
 from django.db import transaction
+import pytz
+from datetime import timedelta, datetime
 
 
 from users.permissions import HROnly
@@ -17,6 +19,9 @@ from .serializers import (
 from users.serializers import (
     UserSerializer,
     User,
+)
+from utils.query import (
+    convert_datetz
 )
 
 
@@ -99,7 +104,6 @@ class EmployeeEvaluationView(GenericViewSet):
             evaluation_serializer = self.serializer_class(
             self.get_queryset().filter(employee=user).order_by('-date_created'), many=True)
 
-
         return Response({
             'evaluation_list': evaluation_serializer.data,
             'user': user_serializer.data
@@ -107,21 +111,62 @@ class EmployeeEvaluationView(GenericViewSet):
 
 
 
-class SalesView(GenericViewSet):
+class SalesView(GenericViewSet, generics.ListAPIView):
     serializer_class = SalesSerializer
-    queryset = Sales.objects.all()
+
+    def get_queryset(self):
+        sales = Sales.objects.all()
+        # try:
+        date_from = self.request.query_params.get('from')
+        date_to = self.request.query_params.get('to')
+        if date_from is not None and date_to is not None:
+            date_from = convert_datetz(date_from)
+            date_to = convert_datetz(date_to)
+            sales = sales.filter(date__range=[date_from, date_to])
+
+        search = self.request.query_params.get('search')
+        if search is not None:
+            sales = sales.filter(item_deal__contains=search)
+
+        return sales
+        # except (Exception,):
+        return sales
 
     def list(self, request, *args, **kwargs):
-
-        return Response(status=status.HTTP_200_OK)
+        queryset = self.get_queryset().filter(user_id=kwargs['id']).order_by('-date')
+        page = self.paginate_queryset(queryset)
+        serializer = self.serializer_class(page, many=True)
+        return self.get_paginated_response(serializer.data)
     
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
-        user = User.objects.get(id=kwargs['userId'])
+        user = User.objects.get(id=kwargs['id'])
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=user)
 
+        return Response(status=status.HTTP_200_OK)
+    
+    def retrieve(self, request, *args, **kwargs):
+        sale = self.get_queryset().get(id=kwargs['id'])
+        serializer = self.serializer_class(sale, many=False)
+        
+        user = User.objects.get(id=sale.user.id)
+        user_serializer = UserSerializer(user, many=False)
+        return Response({
+            'user': user_serializer.data,
+            'sales': serializer.data,
+        } ,status=status.HTTP_200_OK)
+
+    def update(self, request, *args, **kwargs):
+        s = Sales.objects.get(pk=kwargs['id'])
+        serializer = self.serializer_class(s, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+        return Response(status=status.HTTP_200_OK)
+
+    def delete(self, request, *args, **kwargs):
+        Sales.objects.get(id=kwargs['id']).delete()
         return Response(status=status.HTTP_200_OK)

@@ -33,9 +33,14 @@ urlpatterns = [
         })),
     ])),
     path('sales/', include([
-        path('<int:userId>/', SalesView.as_view({
+        path('<int:id>/', SalesView.as_view({
             'get': 'list',
             'post': 'create',
+            'delete': 'delete',
+            'put': 'update',
+        })),
+        path('retrieve/<int:id>/', SalesView.as_view({
+            'get': 'retrieve',
         })),
     ])),
 ]

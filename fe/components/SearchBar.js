@@ -1,10 +1,10 @@
 
 const SearchBar = (props) => {
 
-    const { onChange, onKeyUp, text, setText, placeholder = 'Search and press Enter', hasQuery, push } = props
+    const { onChange, onKeyUp, text, setText, placeholder = 'Search and press Enter', hasQuery, push, className="py-3 pl-2" } = props
 
     return (
-        <div className="py-3 pl-2">
+        <div className={className}>
             <div className="relative max-w-xs">
                 <label htmlFor="hs-table-search" className="sr-only">
                     Search
@@ -32,9 +32,9 @@ const SearchBar = (props) => {
                     </svg>
                 </div>
             </div>
-            <div className="mt-3">
+            <div>
                 {text !== '' ? (
-                    <>
+                    <div className="mt-3">
                         Results for : {text}
                         {hasQuery && (
                             <button className="btn btn-secondary"
@@ -46,7 +46,7 @@ const SearchBar = (props) => {
                                 Close
                             </button>
                         )}
-                    </>
+                    </div>
                 ) : ''}
             </div>
         </div>

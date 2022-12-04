@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import useSWR from "swr";
 import AdminLayout from "../../../../../components/AdminLayout";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import axiosInstance from "../../../../../utils/axiosInstance";
 import AlertMessages from "../../../../../components/AlertMessages";
@@ -9,25 +9,30 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 
-
 const SalesSchema = yup.object().shape({
 	item_deal: yup.string().required("This field is required."),
 	amount: yup.number().typeError('This field is required and must be a number').min(0, "Must be greater than 0"),
 	date: yup.date().typeError('Must be a date').required("This field is required."),
 });
 
-export default function CreateSales(){
+export default function EditSales(){
     const router = useRouter();
     //user id
     const { id } = router.query
-	const { data: e } = useSWR(id ? `users/details/${id}/` : '', {
+	const { data: e } = useSWR(id ? `hr/sales/retrieve/${id}/` : '', {
         revalidateOnFocus: false,       
     });
 
-	const { register, handleSubmit, formState: { errors }, reset } = useForm({
+	const { register, handleSubmit, formState: { errors }, setValue } = useForm({
 		mode: 'onSubmit',
 		resolver: yupResolver(SalesSchema),
 	})
+
+    useEffect(() => {
+        setValue('item_deal', e?.sales?.item_deal)
+        setValue('amount', e?.sales?.amount)
+        setValue('date', dayjs(e?.sales?.date).format('YYYY-MM-DD'))
+    }, [e])
 
 	const [status, setStatus] = useState({
 		error: false,
@@ -41,17 +46,16 @@ export default function CreateSales(){
 			error: false, 
 			success: false, 
 			loading:true, 
-			infoMessage: 'Saving data.' 
+			infoMessage: 'Updating data.' 
 		})
-        axiosInstance.post(`hr/sales/${id}/`, data)
+        axiosInstance.put(`hr/sales/${id}/`, data)
         .then((_e) => {
             setStatus({ 
                 error: false, 
                 success: true, 
                 loading: false, 
-                infoMessage: 'Sale successfully created.' 
+                infoMessage: 'Sale successfully updated.' 
             })
-            reset()
         }).catch((_e) => {
             setStatus({ 
                 error: true, 
@@ -64,7 +68,7 @@ export default function CreateSales(){
 
     return (
         <AdminLayout
-            title="Create sales"
+            title="Update sale"
             hasBack={true}
         >
             <div className="mt-10 sm:mt-0">
@@ -74,17 +78,17 @@ export default function CreateSales(){
                     <h3 className="text-lg font-medium leading-6 text-gray-900">Employee Information</h3>
                         <div className="mt-4">
                             Name:&nbsp;
-                            {e?.user_employee?.firstname}&nbsp;
-                            {e?.user_employee?.mi}.&nbsp;
-                            {e?.user_employee?.lastname}
+                            {e?.user?.user_employee?.firstname}&nbsp;
+                            {e?.user?.user_employee?.mi}.&nbsp;
+                            {e?.user?.user_employee?.lastname}
                         </div>
                         <div>
                             Position:&nbsp;
-                            {e?.user_employee?.position}&nbsp;
+                            {e?.user?.user_employee?.position}&nbsp;
                         </div>
                         <div>
                             Date Hired:&nbsp;
-                            {dayjs(e?.user_employee?.date_hired).format('MMMM DD, YYYY')}&nbsp;
+                            {dayjs(e?.user?.user_employee?.date_hired).format('MMMM DD, YYYY')}&nbsp;
                         </div>
                     </div>
                 </div>
@@ -132,7 +136,6 @@ export default function CreateSales(){
                                     </label>
                                     <input 
                                         {...register('date')} 
-                                        defaultValue={dayjs(new Date()).format('YYYY-MM-DD')}
                                         type="date" 
                                         className="input !w-[200px]" />
                                     <div className="text-red-500 text-sm pt-1">{errors?.date && errors?.date?.message}</div>
@@ -144,7 +147,7 @@ export default function CreateSales(){
                                 type="submit"
                                 className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
-                                Save
+                                Update
                             </button>
                             </div>
                         </div>
