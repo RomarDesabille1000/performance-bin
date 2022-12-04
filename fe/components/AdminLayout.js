@@ -48,16 +48,6 @@ export default function AdminLayout({children, title, hasBack=false}) {
             activeLinks: ['/hr/evaluate'],
             name: 'Evaluate'
         },
-        {
-            href: '/hr/backjobs', 
-            activeLinks: ['/hr/backjobs'],
-            name: 'Back jobs'
-        },
-        {
-            href: '/hr/sales', 
-            activeLinks: ['/hr/sales'],
-            name: 'Sales'
-        },
     ]
 
 
