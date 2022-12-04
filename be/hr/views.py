@@ -43,3 +43,9 @@ class EvalutationRubricView(GenericViewSet):
         data = self.get_queryset().filter(type = 'KPI')
         serializer = EvaluationRubricSerializer(data, many=True)
         return Response(serializer.data , status=status.HTTP_200_OK)
+
+    # def patch(self, request, *args, **kwargs):
+    #     rubric = EvaluationRubric.objects.get()
+    #     data = request.data
+
+        
