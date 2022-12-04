@@ -23,10 +23,6 @@ export default function Attendance(){
         setViewImage('');
     }
 
-    alert('tst')
-
-
-
     return(
         <AdminLayout
             title="Attendance"
