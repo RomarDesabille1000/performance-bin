@@ -7,7 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import axiosInstance from '../../../utils/axiosInstance';
 import AdminLayout from '../../../components/AdminLayout';
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 
 export default function Rubric() {
 	const [addCoreRubric, setAddCoreRubric] = useState(false);
@@ -18,7 +18,10 @@ export default function Rubric() {
 		name: '',
 		description: '',
 		percentage: '',
+		editable: true,
 	});
+	const [selectedID, setSelectedID] = useState();
+	const { mutate } = useSWRConfig()
 	const { data: core } = useSWR(
 		`hr/rubric/core/?emptype=${rubricValues.employee_type}`,
 		{
@@ -53,6 +56,14 @@ export default function Rubric() {
 		} else {
 			setAddCoreRubric(false);
 			setAddKPIRubric(false);
+			setSelectedID(undefined)
+			setRubricsValues({
+				...rubricValues,
+				type: '',
+				name: '',
+				description: '',
+				percentage: '',
+			});
 		}
 	};
 
@@ -88,11 +99,77 @@ export default function Rubric() {
 				percentage: rubric.percentage,
 			})
 			.then((_e) => {
+				mutate(`hr/rubric/core/?emptype=${rubricValues.employee_type}`)
+				mutate(`hr/rubric/kpi/?emptype=${rubricValues.employee_type}`)
 				setStatus({
 					error: false,
 					success: true,
 					loading: false,
 					infoMessage: 'Rubric Saved.',
+				});
+				clearAllValues();
+			})
+			.catch((_e) => {
+				setStatus({
+					error: true,
+					success: false,
+					loading: false,
+					infoMessage: 'Something went wrong.',
+				});
+			});
+	};
+	const updateOnSubmit = async (id,rubric) => {
+		setStatus({
+			error: false,
+			success: false,
+			loading: true,
+			infoMessage: 'Saving Rubric.',
+		});
+		axiosInstance
+			.patch(`hr/rubric/${id}/update/`, {
+				type: rubric.type,
+				employee_type: rubric.employee_type,
+				name: rubric.name,
+				description: rubric.description,
+				percentage: rubric.percentage,
+			})
+			.then((_e) => {
+				mutate(`hr/rubric/core/?emptype=${rubricValues.employee_type}`)
+				mutate(`hr/rubric/kpi/?emptype=${rubricValues.employee_type}`)
+				setStatus({
+					error: false,
+					success: true,
+					loading: false,
+					infoMessage: 'Rubric Updated.',
+				});
+				clearAllValues();
+			})
+			.catch((_e) => {
+				setStatus({
+					error: true,
+					success: false,
+					loading: false,
+					infoMessage: 'Something went wrong.',
+				});
+			});
+	};
+	const deleteOnSubmit = async (id) => {
+		setStatus({
+			error: false,
+			success: false,
+			loading: true,
+			infoMessage: 'Saving Rubric.',
+		});
+		axiosInstance
+			.delete(`hr/rubric/${id}/delete/`, {})
+			.then((_e) => {
+				mutate(`hr/rubric/core/?emptype=${rubricValues.employee_type}`)
+				mutate(`hr/rubric/kpi/?emptype=${rubricValues.employee_type}`)
+				setStatus({
+					error: false,
+					success: true,
+					loading: false,
+					infoMessage: 'Rubric Removed.',
 				});
 				clearAllValues();
 			})
@@ -118,6 +195,27 @@ export default function Rubric() {
 		setAddKPIRubric(false);
 	};
 
+	const selectForUpdate = (item) => {
+		console.log(item)
+		setSelectedID(item.id)
+		setRubricsValues({
+			type: item.type,
+			employee_type: item.employee_type,
+			name: item.name,
+			description: item.description,
+			percentage: item.percentage,
+			editable: true,
+		})
+		if(item.type =='CORE'){
+			setAddKPIRubric(false);
+			setAddCoreRubric(true);
+		}else if(item.type == 'KPI'){
+			setAddKPIRubric(true);
+			setAddCoreRubric(false);
+		}
+
+	}
+
 	function renderCoreComp() {
 		if (core == undefined || core.length == 0) return <></>;
 		else {
@@ -141,10 +239,12 @@ export default function Rubric() {
 						/>
 					</td>
 					<td className='py-4'>
-						<img className='h-6 w-6 rounded-full ml-4' src={Update.src} />
+					{item?.editable ?  
+						<img className='h-6 w-6 rounded-full ml-4 cursor-pointer' src={Update.src} onClick={()=>selectForUpdate(item)}/> : <></>}
 					</td>
 					<td className='py-4'>
-						<img className='h-6 w-6 rounded-full ml-4' src={Delete.src} />
+					{item?.editable ?  
+						<img className='h-6 w-6 rounded-full ml-4 cursor-pointer' src={Delete.src} onClick={()=>deleteOnSubmit(item.id)}/>: <></>}
 					</td>
 				</tr>
 			));
@@ -172,11 +272,13 @@ export default function Rubric() {
 							onChange={() => {}}
 						/>
 					</td>
-					<td className='py-4'>
-						<img className='h-6 w-6 rounded-full ml-4' src={Update.src} />
+					<td className='py-4'> 
+					{item?.editable ?  
+						<img className='h-6 w-6 rounded-full ml-4 cursor-pointer' src={Update.src} onClick={()=>selectForUpdate(item)}/> : <></>}
 					</td>
 					<td className='py-4'>
-						<img className='h-6 w-6 rounded-full ml-4' src={Delete.src} />
+					{item?.editable ?  
+						<img className='h-6 w-6 rounded-full ml-4 cursor-pointer' src={Delete.src} onClick={()=>deleteOnSubmit(item.id)}/>: <></>}
 					</td>
 				</tr>
 			));
@@ -286,12 +388,18 @@ export default function Rubric() {
 												</td>
 												<td className='py-4'></td>
 												<td className='py-4 pr-5'>
-													<button
+													{selectedID == undefined ? <button
 														className='btn w-full bg-emerald-500 border border-emerald-500'
 														onClick={() => onSubmit(rubricValues)}
 													>
 														Save
-													</button>
+													</button> : 
+													<button
+														className='btn w-full bg-emerald-500 border border-emerald-500'
+														onClick={() => updateOnSubmit(selectedID, rubricValues)}
+													>
+														Update
+													</button>}
 												</td>
 											</tr>
 										) : (

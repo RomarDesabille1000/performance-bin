@@ -15,5 +15,11 @@ urlpatterns = [
         path('kpi/', EvalutationRubricView.as_view({
             'get': 'listKpi'
         })),
+        path('<int:pk>/update/', EvalutationRubricView.as_view({
+            'patch': 'update',
+        })),
+        path('<int:pk>/delete/', EvalutationRubricView.as_view({
+            'delete': 'destroy',
+        })),
     ])),
 ]

@@ -45,9 +45,31 @@ class EvalutationRubricView(GenericViewSet):
         serializer = EvaluationRubricSerializer(data, many=True)
         return Response(serializer.data , status=status.HTTP_200_OK)
 
-    # def patch(self, request, *args, **kwargs):
-    #     rubric = EvaluationRubric.objects.get()
-    #     data = request.data
+    def update(self, request, *args, **kwargs):
+        rubric = EvaluationRubric.objects.get(id=kwargs['pk'])
+        data = request.data
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        rubric.name = data.get("name", rubric.name)
+        rubric.description = data.get("description", rubric.description)
+        rubric.type = data.get("type", rubric.type)
+        rubric.employee_type = data.get("employee_type", rubric.employee_type)
+        rubric.percentage = data.get("percentage", rubric.percentage)
+
+        
+        rubric.save()
+        
+        return Response(serializer.data,  status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        rubric = EvaluationRubric.objects.get(id=kwargs['pk'])
+        if rubric.editable is True:
+            rubric.delete()
+            return Response('Rubric Deleted',  status=status.HTTP_200_OK)
+        else:
+            return Response('You are not allowed to delete this Rubric',  status=status.HTTP_200_OK)
+        
 
 
 class EmployeeEvaluation(GenericViewSet):
