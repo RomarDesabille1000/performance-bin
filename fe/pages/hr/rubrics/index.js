@@ -244,7 +244,14 @@ export default function Rubric() {
 					</td>
 					<td className='py-4'>
 					{item?.editable ?  
-						<img className='h-6 w-6 rounded-full ml-4 cursor-pointer' src={Delete.src} onClick={()=>deleteOnSubmit(item.id)}/>: <></>}
+						<img className='h-6 w-6 rounded-full ml-4 cursor-pointer' src={Delete.src} onClick={()=>
+								{if (confirm('Are you sure you want to Delete this Rubric?')) {
+									// Save it!
+									deleteOnSubmit(item.id)
+								} else {
+									// Do nothing!
+								}}
+						}/>: <></>}
 					</td>
 				</tr>
 			));
@@ -278,7 +285,14 @@ export default function Rubric() {
 					</td>
 					<td className='py-4'>
 					{item?.editable ?  
-						<img className='h-6 w-6 rounded-full ml-4 cursor-pointer' src={Delete.src} onClick={()=>deleteOnSubmit(item.id)}/>: <></>}
+						<img className='h-6 w-6 rounded-full ml-4 cursor-pointer' src={Delete.src} onClick={()=>
+							{if (confirm('Are you sure you want to Delete this Rubric?')) {
+								// Save it!
+								deleteOnSubmit(item.id)
+							} else {
+								// Do nothing!
+							}}
+						}/>: <></>}
 					</td>
 				</tr>
 			));
