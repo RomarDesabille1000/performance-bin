@@ -51,4 +51,4 @@ class Sales(models.Model):
         on_delete=models.CASCADE, blank=True, null=True, related_name='employee_sales')
     date = models.DateTimeField(default=now)
     item_deal = models.CharField(max_length=255)
-    amount = models.DateTimeField(default=now)
+    amount = models.DecimalField(default=0, max_digits=20, decimal_places=2)

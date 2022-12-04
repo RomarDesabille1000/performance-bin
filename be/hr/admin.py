@@ -2,8 +2,20 @@ from django.contrib import admin
 from .models import (
     EvaluationRubric,
     EmployeeEvaluation, 
-    EmployeeEvaluationDetail
+    EmployeeEvaluationDetail,
+    Sales,
+    BackJobs,
 )
+
+
+@admin.register(BackJobs)
+class BackJobsAdmin(admin.ModelAdmin):
+    list_display = ('customer_name', 'description', 'date',)
+
+
+@admin.register(Sales)
+class SalesAdmin(admin.ModelAdmin):
+    list_display = ('date', 'item_deal', 'amount',)
 
 
 @admin.register(EvaluationRubric)

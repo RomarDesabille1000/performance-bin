@@ -3,6 +3,18 @@ import useSWR from "swr";
 import AdminLayout from "../../../../../components/AdminLayout";
 import { useState } from "react";
 import dayjs from "dayjs";
+import axiosInstance from "../../../../../utils/axiosInstance";
+import AlertMessages from "../../../../../components/AlertMessages";
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+
+
+const SalesSchema = yup.object().shape({
+	item_deal: yup.string().required("This field is required."),
+	amount: yup.number().typeError('This field is required and must be a number').min(0, "Must be greater than 0"),
+	date: yup.date().typeError('Must be a date').required("This field is required."),
+});
 
 export default function CreateSales(){
     const router = useRouter();
@@ -12,7 +24,42 @@ export default function CreateSales(){
         revalidateOnFocus: false,       
     });
 
-    console.log();
+	const { register, handleSubmit, formState: { errors } } = useForm({
+		mode: 'onSubmit',
+		resolver: yupResolver(SalesSchema)
+	})
+
+	const [status, setStatus] = useState({
+		error: false,
+		loading: false,
+		success: false,
+		infoMessage: '',
+	})
+
+    function onClickSubmit(data){
+		setStatus({ 
+			error: false, 
+			success: false, 
+			loading:true, 
+			infoMessage: 'Saving data.' 
+		})
+        axiosInstance.post(`hr/sales/${id}/`, data)
+        .then((_e) => {
+            setStatus({ 
+                error: false, 
+                success: true, 
+                loading: false, 
+                infoMessage: 'Sale successfully created.' 
+            })
+        }).catch((_e) => {
+            setStatus({ 
+                error: true, 
+                success: false, 
+                loading: false, 
+                infoMessage: 'Something went wrong.' 
+            })
+        })
+    }
 
     return (
         <AdminLayout
@@ -41,50 +88,63 @@ export default function CreateSales(){
                     </div>
                 </div>
                 <div className="mt-5 md:col-span-2 md:mt-0">
-                    <form action="#" method="POST">
-                    <div className="overflow-hidden shadow sm:rounded-md">
-                        <div className="bg-white px-4 py-5 sm:p-6">
-                            <div className="grid grid-cols-6 gap-6">
-                                <div className="col-span-6 sm:col-span-6">
-                                    <label className="block text-sm font-medium text-gray-700">
-                                        Item Deal
-                                    </label>
-                                    <input
-                                        type="text"
-                                        autoComplete="off"
-                                        className="input"
-                                    />
-                                </div>
+                    <form onSubmit={handleSubmit(onClickSubmit)}>
+                        <div className="overflow-hidden shadow sm:rounded-md">
+                            <div className="bg-white px-4 py-5 sm:p-6">
+                                <AlertMessages
+                                    className="mb-3"
+                                    error={status.error}
+                                    success={status.success}
+                                    loading={status.loading}
+                                    message={status.infoMessage}
+                                />
+                                <div className="grid grid-cols-6 gap-6">
+                                    <div className="col-span-6 sm:col-span-6">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Item Deal
+                                        </label>
+                                        <input
+                                            {...register('item_deal')} 
+                                            type="text"
+                                            autoComplete="off"
+                                            className="input"
+                                        />
+                                        <div className="text-red-500 text-sm pt-1">{errors?.item_deal && errors?.item_deal?.message}</div>
+                                    </div>
 
-                                <div className="col-span-3 sm:col-span-2">
+                                    <div className="col-span-6 sm:col-span-6">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Amount
+                                        </label>
+                                        <input
+                                            {...register('amount')} 
+                                            type="number"
+                                            autoComplete="off"
+                                            className="input !w-[200px]"
+                                        />
+                                        <div className="text-red-500 text-sm pt-1">{errors?.amount && errors?.amount?.message}</div>
+                                    </div>
+                                </div>
+                                <div className="mt-5">
                                     <label className="block text-sm font-medium text-gray-700">
-                                        Amount
+                                        Date
                                     </label>
-                                    <input
-                                        type="text"
-                                        autoComplete="off"
-                                        className="input !w-[200px]"
-                                    />
+                                    <input 
+                                        {...register('date')} 
+                                        type="date" 
+                                        className="input !w-[200px]" />
+                                    <div className="text-red-500 text-sm pt-1">{errors?.date && errors?.date?.message}</div>
                                 </div>
                             </div>
-                            <div className="mt-5">
-                                <label className="block text-sm font-medium text-gray-700">
-                                    Date
-                                </label>
-                                <input 
-                                    type="date" 
-                                    className="input !w-[200px]" />
+                            <div className="bg-gray-50 px-4 py-3 text-right sm:px-6">
+                            <button
+                                type="submit"
+                                className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            >
+                                Save
+                            </button>
                             </div>
                         </div>
-                        <div className="bg-gray-50 px-4 py-3 text-right sm:px-6">
-                        <button
-                            type="submit"
-                            className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                        >
-                            Save
-                        </button>
-                        </div>
-                    </div>
                     </form>
                 </div>
                 </div>

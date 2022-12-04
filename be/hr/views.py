@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.viewsets import GenericViewSet
+from django.db import transaction
 
 
 from users.permissions import HROnly
@@ -114,11 +115,13 @@ class SalesView(GenericViewSet):
 
         return Response(status=status.HTTP_200_OK)
     
+
+    @transaction.atomic
     def create(self, request, *args, **kwargs):
-        user = User.objects.get(kwargs['userId'])
+        user = User.objects.get(id=kwargs['userId'])
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(user)
+        serializer.save(user=user)
 
         return Response(status=status.HTTP_200_OK)
