@@ -8,6 +8,7 @@ import * as yup from 'yup';
 import axiosInstance from '../../../utils/axiosInstance';
 import AdminLayout from '../../../components/AdminLayout';
 import useSWR, { useSWRConfig } from 'swr';
+import { interpolateAs } from 'next/dist/shared/lib/router/router';
 
 export default function Rubric() {
 	const [addCoreRubric, setAddCoreRubric] = useState(false);
@@ -20,6 +21,9 @@ export default function Rubric() {
 		percentage: '',
 		editable: true,
 	});
+	console.log(rubricValues)
+	const [totalCC, setTotalCC] = useState(0);
+	const [totalKPI, setTotalKPI] = useState(0);
 	const [selectedID, setSelectedID] = useState();
 	const { mutate } = useSWRConfig()
 	const { data: core } = useSWR(
@@ -34,7 +38,25 @@ export default function Rubric() {
 			revalidateOnFocus: false,
 		}
 	);
-	console.log(core);
+	
+	useEffect(()=>{
+		if(core != undefined && core.length != 0){
+			let total = 0;
+			core.map((item)=>{
+				total+=parseInt(item.percentage);
+			})
+			setTotalCC(total)
+		}
+	},[core])
+	useEffect(()=>{
+		if(kpi != undefined && kpi.length != 0){
+			let total = 0;
+			kpi.map((item)=>{
+				total+=parseInt(item.percentage);
+			})
+			setTotalKPI(total)
+		}
+	},[kpi])
 
 	const [error, setError] = useState('');
 	const [status, setStatus] = useState({
@@ -66,6 +88,32 @@ export default function Rubric() {
 			});
 		}
 	};
+	const valuesIsValid = (rubric) => {
+		if(rubric.name == ''){
+			setError('Name cannot be empty!')
+			return false
+		}
+		else if(rubric.description == ''){
+			setError('Description cannot be empty!')
+			return false
+		}
+		else if(rubric.percentage == ''){
+			setError('Percentage must be a number!')
+			return false
+		}
+		else if(rubric.percentage == 0){
+			setError('Percentage cannot be 0!')
+			return false
+		}
+		else if(rubric.percentage % 1 != 0){
+			setError('Percentage must be a whole Number!')
+			return false
+		}
+		else{
+			return true
+		}
+		
+	}
 
 	useEffect(() => {
 		//console.log(rubricValues)
@@ -76,14 +124,13 @@ export default function Rubric() {
 			rubricValues.description.length > 255
 		)
 			setError('description cannot exceed 255 characters!');
-		else if (rubricValues.percentage != '' && isNaN(rubricValues.percentage))
-			setError('Percentage must be a number');
-		if (rubricValues.percentage % 1 != 0)
-			setError('Percentage must be a whole number');
+
 		else setError('');
 	}, [rubricValues]);
 
 	const onSubmit = async (rubric) => {
+		if(!valuesIsValid(rubric))
+			return
 		setStatus({
 			error: false,
 			success: false,
@@ -119,6 +166,8 @@ export default function Rubric() {
 			});
 	};
 	const updateOnSubmit = async (id,rubric) => {
+		if(!valuesIsValid(rubric))
+			return
 		setStatus({
 			error: false,
 			success: false,
@@ -134,6 +183,7 @@ export default function Rubric() {
 				percentage: rubric.percentage,
 			})
 			.then((_e) => {
+				setSelectedID(undefined)
 				mutate(`hr/rubric/core/?emptype=${rubricValues.employee_type}`)
 				mutate(`hr/rubric/kpi/?emptype=${rubricValues.employee_type}`)
 				setStatus({
@@ -216,6 +266,34 @@ export default function Rubric() {
 
 	}
 
+	const checkPercentage = (value) => {
+		if(rubricValues.type =='CORE'){
+			let ccTotal = 0
+			core.map((item)=> {
+				if(selectedID == undefined || selectedID != item.id)
+					ccTotal+=parseInt(item.percentage)
+			})
+			const maxValue = 100 - ccTotal;
+			if(value>=maxValue)
+				return maxValue;
+			else
+				return value;
+		}else if(rubricValues.type =='KPI'){
+			let kpiTotal = 0
+			kpi.map((item)=> {
+				if(selectedID == undefined || selectedID != item.id)
+					kpiTotal+=parseInt(item.percentage)
+			})
+			const maxValue = 100 - kpiTotal;
+			if(value>=maxValue)
+				return maxValue;
+			else
+				return value;
+		}
+		return 0;
+	}
+
+
 	function renderCoreComp() {
 		if (core == undefined || core.length == 0) return <></>;
 		else {
@@ -230,13 +308,7 @@ export default function Rubric() {
 						</p>
 					</td>
 					<td className='py-4'>
-						<input
-							className='w-[100px] border rounded-[12px] pl-2 text-center'
-							type='number'
-							placeholder='%'
-							value={item?.percentage ?? ''}
-							onChange={() => {}}
-						/>
+						<p className='w-[100px] text-center'>{item?.percentage ?? ''}%</p>
 					</td>
 					<td className='py-4'>
 					{item?.editable ?  
@@ -271,13 +343,7 @@ export default function Rubric() {
 						</p>
 					</td>
 					<td className='py-4'>
-						<input
-							className='w-[100px] border rounded-[12px] pl-2 text-center'
-							type='number'
-							placeholder='%'
-							value={item?.percentage ?? ''}
-							onChange={() => {}}
-						/>
+						<p className='w-[100px] text-center'>{item?.percentage ?? ''}%</p>
 					</td>
 					<td className='py-4'> 
 					{item?.editable ?  
@@ -313,7 +379,7 @@ export default function Rubric() {
 							})
 						}
 					>
-						<option value='SALESEXECUTIVE' selected>
+						<option value='SALESEXECUTIVE'>
 							Sales Executive
 						</option>
 						<option value='TECHNICIAN'>Technician</option>
@@ -323,7 +389,10 @@ export default function Rubric() {
 				<div className='flex flex-col justify-center h-full w-full mb-5'>
 					<div className='w-full min-w-full max-w-2xl mx-auto bg-white shadow-lg rounded-sm border border-gray-200'>
 						<header className='px-5 py-4 border-b border-gray-100'>
-							<h2 className='font-semibold text-gray-800'>Core Competency</h2>
+							<h2 className='font-semibold text-gray-800'>
+							Core Competency&nbsp; 
+									<span className={totalCC == 100 ? 'text-green-500' : 'text-red-500' }>&#40;{totalCC}%&#41;</span>
+							</h2>
 						</header>
 						<div className='p-3'>
 							<div className='overflow-x-auto'>
@@ -389,13 +458,13 @@ export default function Rubric() {
 												<td className='py-4 w-[120px]  pl-2'>
 													<input
 														className='w-[100px] rounded-[12px] pl-2'
-														type='text'
+														type='number'
 														placeholder='%'
 														value={rubricValues.percentage}
 														onChange={(event) =>
 															setRubricsValues({
 																...rubricValues,
-																percentage: event.target.value,
+																percentage: checkPercentage(event.target.value),
 															})
 														}
 													/>
@@ -446,7 +515,8 @@ export default function Rubric() {
 					<div className='w-full min-w-full max-w-2xl mx-auto bg-white shadow-lg rounded-sm border border-gray-200'>
 						<header className='px-5 py-4 border-b border-gray-100'>
 							<h2 className='font-semibold text-gray-800'>
-								KEY PERFORMACE INNDICATOR
+								Key Performance Indicator&nbsp; 
+									<span className={totalKPI == 100 ? 'text-green-500' : 'text-red-500' }>&#40;{totalKPI}%&#41;</span>
 							</h2>
 						</header>
 						<div className='p-3'>
@@ -513,25 +583,31 @@ export default function Rubric() {
 												<td className='py-4 w-[120px]  pl-2'>
 													<input
 														className='w-[100px] rounded-[12px] pl-2'
-														type='text'
+														type='number'
 														placeholder='%'
 														value={rubricValues.percentage}
 														onChange={(event) =>
 															setRubricsValues({
 																...rubricValues,
-																percentage: event.target.value,
+																percentage: checkPercentage(event.target.value),
 															})
 														}
 													/>
 												</td>
 												<td className='py-4'></td>
 												<td className='py-4 pr-5'>
-													<button
+													{selectedID == undefined ? <button
 														className='btn w-full bg-emerald-500 border border-emerald-500'
 														onClick={() => onSubmit(rubricValues)}
 													>
 														Save
-													</button>
+													</button> : 
+													<button
+														className='btn w-full bg-emerald-500 border border-emerald-500'
+														onClick={() => updateOnSubmit(selectedID, rubricValues)}
+													>
+														Update
+													</button>}
 												</td>
 											</tr>
 										) : (
