@@ -1,8 +1,9 @@
 import { useRouter } from "next/router";
 import useSWR from "swr";
 import AdminLayout from "../../../../components/AdminLayout";
+import Link from "next/link";
 
-export default function BackJobs(){
+export default function Sales(){
     const router = useRouter();
     //user id
     const { id } = router.query
@@ -12,7 +13,11 @@ export default function BackJobs(){
             title="Sales"
             hasBack={true}
         >
-            Test
+            <Link 
+                className="btn btn-primary"
+                href="/hr/employees/sales/create/1">
+                Create Sales
+            </Link>
         </AdminLayout>
     )
 }

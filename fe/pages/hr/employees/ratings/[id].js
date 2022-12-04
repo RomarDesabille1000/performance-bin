@@ -13,7 +13,6 @@ export default function Attendance(){
         revalidateOnFocus: false,       
     });
 
-    console.log(user?.customer_rating);
     const q1 = {
         'VERYPOSITIVE': 'Very Positive',
         'SOMEWHATPOSITIVE': 'Somewhat Positive',

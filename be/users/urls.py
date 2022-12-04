@@ -8,6 +8,11 @@ urlpatterns = [
     path('profile/', UserView.as_view({
         'get': 'info',
     })),
+    path('details/<int:userId>/', UserView.as_view({
+        'get': 'get_user_details',
+    })),
+    path('profile/', include([
+    ])),
     path('employees/', include([
         path('', EmployeesView.as_view({
             'get': 'list',
@@ -18,5 +23,4 @@ urlpatterns = [
             'post': 'evaluation'
         })),
     ])),
-
 ]

@@ -10,6 +10,8 @@ from .serializers import (
     EvaluationRubric,
     EmployeeEvaluation,
     EmployeeEvaluationDetail,
+    Sales,
+    SalesSerializer,
 )
 from users.serializers import (
     UserSerializer,
@@ -101,3 +103,22 @@ class EmployeeEvaluationView(GenericViewSet):
             'evaluation_list': evaluation_serializer.data,
             'user': user_serializer.data
         },status=status.HTTP_200_OK)
+
+
+
+class SalesView(GenericViewSet):
+    serializer_class = SalesSerializer
+    queryset = Sales.objects.all()
+
+    def list(self, request, *args, **kwargs):
+
+        return Response(status=status.HTTP_200_OK)
+    
+    def create(self, request, *args, **kwargs):
+        user = User.objects.get(kwargs['userId'])
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user)
+
+        return Response(status=status.HTTP_200_OK)

@@ -3,6 +3,7 @@ from django.urls import path, include
 from .views import (
     EvalutationRubricView,
     EmployeeEvaluationView,
+    SalesView,
 )
 
 urlpatterns = [
@@ -29,6 +30,12 @@ urlpatterns = [
         })),
         path('<int:pk>/<int:id>/', EmployeeEvaluationView.as_view({
             'get': 'list',
+        })),
+    ])),
+    path('sales/', include([
+        path('<int:userId>/', SalesView.as_view({
+            'get': 'list',
+            'post': 'create',
         })),
     ])),
 ]

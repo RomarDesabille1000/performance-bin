@@ -46,10 +46,17 @@ class LoginView(GenericViewSet):
 
 class UserView(GenericViewSet):
     serializer_class = UserSerializer
+    queryset = User.objects.all()
 
     def info(self, request):
         serializer = self.serializer_class(request.user, many=False)
         return Response(serializer.data , status=status.HTTP_200_OK)
+    
+    def get_user_details(self, request, *args, **kwargs):
+        user_serializer = self.serializer_class(
+        self.get_queryset().get(id=kwargs['userId']), many=False)
+
+        return Response(user_serializer.data, status=status.HTTP_200_OK)
     
 
 
