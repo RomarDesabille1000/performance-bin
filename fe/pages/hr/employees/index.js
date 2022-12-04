@@ -68,6 +68,12 @@ export default function Employee() {
                                         <th
                                             scope="col"
                                             className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                                        >
+                                            View Details
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                                             style={{width: '50px'}}
                                         >
                                             Action
@@ -82,7 +88,7 @@ export default function Employee() {
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {d.user_employee?.firstname}&nbsp;
-                                                {d.user_employee?.mi}&nbsp;
+                                                {d.user_employee?.mi}.&nbsp;
                                                 {d.user_employee?.lastname}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
@@ -90,6 +96,25 @@ export default function Employee() {
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {dayjs(d.user_employee?.date_hired).format('MMMM DD, YYYY')}
+                                            </td>
+                                            <td>
+                                                <div className="flex gap-5 text-sm font-medium">
+                                                    <Link href={`/hr/employees/evaluation/${d.id}`}
+                                                        className="text-indigo-500 hover:text-indigo-700"
+                                                    >
+                                                        Evaluations
+                                                    </Link>
+                                                    <Link href={`/hr/employees/ratings/${d.id}`}
+                                                        className="text-indigo-500 hover:text-indigo-700"
+                                                    >
+                                                        Ratings
+                                                    </Link>
+                                                    <Link href={`/hr/employees/attendance/${d.id}`}
+                                                        className="text-indigo-500 hover:text-indigo-700"
+                                                    >
+                                                        Attendance
+                                                    </Link>
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                                                 <div className="flex gap-5">

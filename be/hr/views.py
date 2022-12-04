@@ -48,4 +48,8 @@ class EvalutationRubricView(GenericViewSet):
     #     rubric = EvaluationRubric.objects.get()
     #     data = request.data
 
-        
+
+class EmployeeEvaluation(GenericViewSet):
+    serializer_class = EmployeeEvaluationSerializer
+
+    pass

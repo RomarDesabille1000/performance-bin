@@ -5,10 +5,20 @@ from .views import (
 )
 
 urlpatterns = [
-    path('attendance/', AttendanceView.as_view({
-        'post': 'create',
-    })),
-    path('customer-rating/', CustomerRatingView.as_view({
-        'post': 'create',
-    })),
+    path('attendance/', include([
+        path('', AttendanceView.as_view({
+            'post': 'create',
+        })),
+        path('<int:pk>/', AttendanceView.as_view({
+            'get': 'list',
+        })),
+    ])),
+    path('customer-rating/', include([
+        path('', CustomerRatingView.as_view({
+            'post': 'create',
+        })),
+        path('<int:pk>/', CustomerRatingView.as_view({
+            'get': 'list',
+        })),
+    ])),
 ]
