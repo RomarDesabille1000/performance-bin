@@ -4,6 +4,7 @@ from .views import (
     EvalutationRubricView,
     EmployeeEvaluationView,
     SalesView,
+    BackJobsView
 )
 
 urlpatterns = [
@@ -40,6 +41,17 @@ urlpatterns = [
             'put': 'update',
         })),
         path('retrieve/<int:id>/', SalesView.as_view({
+            'get': 'retrieve',
+        })),
+    ])),
+    path('backjobs/', include([
+        path('<int:id>/', BackJobsView.as_view({
+            'get': 'list',
+            'post': 'create',
+            'delete': 'delete',
+            'put': 'update',
+        })),
+        path('retrieve/<int:id>/', BackJobsView.as_view({
             'get': 'retrieve',
         })),
     ])),

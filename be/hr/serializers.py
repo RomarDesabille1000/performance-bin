@@ -5,6 +5,7 @@ from .models import (
     EmployeeEvaluation,
     EmployeeEvaluationDetail,
     Sales,
+    BackJobs
 )
 
 
@@ -30,4 +31,9 @@ class EmployeeEvaluationDetailSerializer(serializers.ModelSerializer):
 class SalesSerializer(serializers.ModelSerializer): 
     class Meta:
         model = Sales
+        fields = "__all__"
+
+class BackJobsSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = BackJobs
         fields = "__all__"

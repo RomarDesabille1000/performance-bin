@@ -46,6 +46,8 @@ export default function Rubric() {
 				total+=parseInt(item.percentage);
 			})
 			setTotalCC(total)
+		}else{
+			setTotalCC(0)
 		}
 	},[core])
 	useEffect(()=>{
@@ -55,6 +57,8 @@ export default function Rubric() {
 				total+=parseInt(item.percentage);
 			})
 			setTotalKPI(total)
+		}else{
+			setTotalKPI(0)
 		}
 	},[kpi])
 
@@ -490,12 +494,18 @@ export default function Rubric() {
 										)}
 									</tbody>
 								</table>
-								<div
-									className={status.error ? 'text-red-500' : 'text-green-500'}
-								>
-									{status.infoMessage}
+								<div className={
+										addCoreRubric
+											? 'block'
+											: 'hidden'
+									}>
+									<div
+										className={status.error ? 'text-red-500' : 'text-green-500'}
+									>
+										{status.infoMessage}
+									</div>
+									<div className='text-red-500'>{error}</div>
 								</div>
-								<div className='text-red-500'>{error}</div>
 								<button
 									className={
 										addCoreRubric
@@ -615,12 +625,19 @@ export default function Rubric() {
 										)}
 									</tbody>
 								</table>
-								<div
-									className={status.error ? 'text-red-500' : 'text-green-500'}
-								>
-									{status.infoMessage}
+								<div className={
+										addKPIRubric
+											? 'block'
+											: 'hidden'
+									}>
+									<div
+										className={status.error ? 'text-red-500' : 'text-green-500'}
+									>
+										{status.infoMessage}
+									</div>
+									<div className='text-red-500'>{error}</div>
 								</div>
-								<div className='text-red-500'>{error}</div>
+								
 								<button
 									className={
 										addKPIRubric

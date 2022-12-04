@@ -15,6 +15,8 @@ from .serializers import (
     EmployeeEvaluationDetail,
     Sales,
     SalesSerializer,
+    BackJobsSerializer,
+    BackJobs
 )
 from users.serializers import (
     UserSerializer,
@@ -169,4 +171,61 @@ class SalesView(GenericViewSet, generics.ListAPIView):
 
     def delete(self, request, *args, **kwargs):
         Sales.objects.get(id=kwargs['id']).delete()
+        return Response(status=status.HTTP_200_OK)
+
+class BackJobsView(GenericViewSet, generics.ListAPIView):
+    serializer_class = BackJobsSerializer
+
+    def get_queryset(self):
+        backjobs = BackJobs.objects.all()
+        try:
+            date_from = self.request.query_params.get('from')
+            date_to = self.request.query_params.get('to')
+            if date_from is not None and date_to is not None:
+                date_from = convert_datetz(date_from)
+                date_to = convert_datetz(date_to)
+                backjobs = backjobs.filter(date__range=[date_from, date_to])
+
+            search = self.request.query_params.get('search')
+            if search is not None:
+                backjobs = backjobs.filter(customer_name__contains=search)
+
+            return backjobs
+        except (Exception,):
+            return backjobs
+
+    @transaction.atomic
+    def create(self, request, *args, **kwargs):
+        user = User.objects.get(id=kwargs['id'])
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=user)
+
+        return Response(status=status.HTTP_200_OK)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset().filter(user_id=kwargs['id']).order_by('-date')
+        page = self.paginate_queryset(queryset)
+        serializer = self.serializer_class(page, many=True)
+        return self.get_paginated_response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        backjob = self.get_queryset().get(id=kwargs['id'])
+        serializer = self.serializer_class(backjob, many=False)
+        
+        user = User.objects.get(id=backjob.user.id)
+        user_serializer = UserSerializer(user, many=False)
+        return Response({
+            'user': user_serializer.data,
+            'backjob': serializer.data,
+        } ,status=status.HTTP_200_OK)
+    def update(self, request, *args, **kwargs):
+        backjob = BackJobs.objects.get(pk=kwargs['id'])
+        serializer = self.serializer_class(backjob, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+        return Response(status=status.HTTP_200_OK)
+
+    def delete(self, request, *args, **kwargs):
+        BackJobs.objects.get(id=kwargs['id']).delete()
         return Response(status=status.HTTP_200_OK)
