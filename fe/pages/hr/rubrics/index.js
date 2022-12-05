@@ -21,11 +21,12 @@ export default function Rubric() {
 		percentage: '',
 		editable: true,
 	});
-	console.log(rubricValues)
+	console.log(rubricValues);
 	const [totalCC, setTotalCC] = useState(0);
 	const [totalKPI, setTotalKPI] = useState(0);
 	const [selectedID, setSelectedID] = useState();
-	const { mutate } = useSWRConfig()
+	const [isEditable, setIsEditable] = useState(true);
+	const { mutate } = useSWRConfig();
 	const { data: core } = useSWR(
 		`hr/rubric/core/?emptype=${rubricValues.employee_type}`,
 		{
@@ -38,29 +39,28 @@ export default function Rubric() {
 			revalidateOnFocus: false,
 		}
 	);
-	
-	useEffect(()=>{
-		if(core != undefined && core.length != 0){
+	useEffect(() => {
+		if (core != undefined && core.length != 0) {
 			let total = 0;
-			core.map((item)=>{
-				total+=parseInt(item.percentage);
-			})
-			setTotalCC(total)
-		}else{
-			setTotalCC(0)
+			core.map((item) => {
+				total += parseInt(item.percentage);
+			});
+			setTotalCC(total);
+		} else {
+			setTotalCC(0);
 		}
-	},[core])
-	useEffect(()=>{
-		if(kpi != undefined && kpi.length != 0){
+	}, [core]);
+	useEffect(() => {
+		if (kpi != undefined && kpi.length != 0) {
 			let total = 0;
-			kpi.map((item)=>{
-				total+=parseInt(item.percentage);
-			})
-			setTotalKPI(total)
-		}else{
-			setTotalKPI(0)
+			kpi.map((item) => {
+				total += parseInt(item.percentage);
+			});
+			setTotalKPI(total);
+		} else {
+			setTotalKPI(0);
 		}
-	},[kpi])
+	}, [kpi]);
 
 	const [error, setError] = useState('');
 	const [status, setStatus] = useState({
@@ -82,42 +82,52 @@ export default function Rubric() {
 		} else {
 			setAddCoreRubric(false);
 			setAddKPIRubric(false);
-			setSelectedID(undefined)
-			setRubricsValues({
-				...rubricValues,
-				type: '',
-				name: '',
-				description: '',
-				percentage: '',
-			});
+			setSelectedID(undefined);
+            setRubricsValues({
+                ...rubricValues,
+                type: '',
+                name: '',
+                description: '',
+                percentage: '',
+            });
+            setIsEditable(true)
 		}
+        
+	};
+    const changeEmployeeType = (type) => {
+        setRubricsValues({
+            type: '',
+            name: '',
+            employee_type: type ,
+            description: '',
+            percentage: '',
+        });
+        setAddCoreRubric(false);
+		setAddKPIRubric(false);
+        setSelectedID(undefined);
+        setIsEditable(true)
+		
 	};
 	const valuesIsValid = (rubric) => {
-		if(rubric.name == ''){
-			setError('Name cannot be empty!')
-			return false
+		if (rubric.name == '') {
+			setError('Name cannot be empty!');
+			return false;
+		} else if (rubric.description == '') {
+			setError('Description cannot be empty!');
+			return false;
+		} else if (rubric.percentage == '') {
+			setError('Percentage must be a number!');
+			return false;
+		} else if (rubric.percentage == 0) {
+			setError('Percentage cannot be 0!');
+			return false;
+		} else if (rubric.percentage % 1 != 0) {
+			setError('Percentage must be a whole Number!');
+			return false;
+		} else {
+			return true;
 		}
-		else if(rubric.description == ''){
-			setError('Description cannot be empty!')
-			return false
-		}
-		else if(rubric.percentage == ''){
-			setError('Percentage must be a number!')
-			return false
-		}
-		else if(rubric.percentage == 0){
-			setError('Percentage cannot be 0!')
-			return false
-		}
-		else if(rubric.percentage % 1 != 0){
-			setError('Percentage must be a whole Number!')
-			return false
-		}
-		else{
-			return true
-		}
-		
-	}
+	};
 
 	useEffect(() => {
 		//console.log(rubricValues)
@@ -128,13 +138,11 @@ export default function Rubric() {
 			rubricValues.description.length > 255
 		)
 			setError('description cannot exceed 255 characters!');
-
 		else setError('');
 	}, [rubricValues]);
 
 	const onSubmit = async (rubric) => {
-		if(!valuesIsValid(rubric))
-			return
+		if (!valuesIsValid(rubric)) return;
 		setStatus({
 			error: false,
 			success: false,
@@ -150,8 +158,8 @@ export default function Rubric() {
 				percentage: rubric.percentage,
 			})
 			.then((_e) => {
-				mutate(`hr/rubric/core/?emptype=${rubricValues.employee_type}`)
-				mutate(`hr/rubric/kpi/?emptype=${rubricValues.employee_type}`)
+				mutate(`hr/rubric/core/?emptype=${rubricValues.employee_type}`);
+				mutate(`hr/rubric/kpi/?emptype=${rubricValues.employee_type}`);
 				setStatus({
 					error: false,
 					success: true,
@@ -169,9 +177,8 @@ export default function Rubric() {
 				});
 			});
 	};
-	const updateOnSubmit = async (id,rubric) => {
-		if(!valuesIsValid(rubric))
-			return
+	const updateOnSubmit = async (id, rubric) => {
+		if (!valuesIsValid(rubric)) return;
 		setStatus({
 			error: false,
 			success: false,
@@ -187,9 +194,9 @@ export default function Rubric() {
 				percentage: rubric.percentage,
 			})
 			.then((_e) => {
-				setSelectedID(undefined)
-				mutate(`hr/rubric/core/?emptype=${rubricValues.employee_type}`)
-				mutate(`hr/rubric/kpi/?emptype=${rubricValues.employee_type}`)
+				setSelectedID(undefined);
+				mutate(`hr/rubric/core/?emptype=${rubricValues.employee_type}`);
+				mutate(`hr/rubric/kpi/?emptype=${rubricValues.employee_type}`);
 				setStatus({
 					error: false,
 					success: true,
@@ -217,8 +224,8 @@ export default function Rubric() {
 		axiosInstance
 			.delete(`hr/rubric/${id}/delete/`, {})
 			.then((_e) => {
-				mutate(`hr/rubric/core/?emptype=${rubricValues.employee_type}`)
-				mutate(`hr/rubric/kpi/?emptype=${rubricValues.employee_type}`)
+				mutate(`hr/rubric/core/?emptype=${rubricValues.employee_type}`);
+				mutate(`hr/rubric/kpi/?emptype=${rubricValues.employee_type}`);
 				setStatus({
 					error: false,
 					success: true,
@@ -250,8 +257,11 @@ export default function Rubric() {
 	};
 
 	const selectForUpdate = (item) => {
-		console.log(item)
-		setSelectedID(item.id)
+		if (item?.editable !== undefined) {
+			setIsEditable(item?.editable);
+		}
+		console.log(item);
+		setSelectedID(item.id);
 		setRubricsValues({
 			type: item.type,
 			employee_type: item.employee_type,
@@ -259,44 +269,38 @@ export default function Rubric() {
 			description: item.description,
 			percentage: item.percentage,
 			editable: true,
-		})
-		if(item.type =='CORE'){
+		});
+		if (item.type == 'CORE') {
 			setAddKPIRubric(false);
 			setAddCoreRubric(true);
-		}else if(item.type == 'KPI'){
+		} else if (item.type == 'KPI') {
 			setAddKPIRubric(true);
 			setAddCoreRubric(false);
 		}
-
-	}
+	};
 
 	const checkPercentage = (value) => {
-		if(rubricValues.type =='CORE'){
-			let ccTotal = 0
-			core.map((item)=> {
-				if(selectedID == undefined || selectedID != item.id)
-					ccTotal+=parseInt(item.percentage)
-			})
+		if (rubricValues.type == 'CORE') {
+			let ccTotal = 0;
+			core.map((item) => {
+				if (selectedID == undefined || selectedID != item.id)
+					ccTotal += parseInt(item.percentage);
+			});
 			const maxValue = 100 - ccTotal;
-			if(value>=maxValue)
-				return maxValue;
-			else
-				return value;
-		}else if(rubricValues.type =='KPI'){
-			let kpiTotal = 0
-			kpi.map((item)=> {
-				if(selectedID == undefined || selectedID != item.id)
-					kpiTotal+=parseInt(item.percentage)
-			})
+			if (value >= maxValue) return maxValue;
+			else return value;
+		} else if (rubricValues.type == 'KPI') {
+			let kpiTotal = 0;
+			kpi.map((item) => {
+				if (selectedID == undefined || selectedID != item.id)
+					kpiTotal += parseInt(item.percentage);
+			});
 			const maxValue = 100 - kpiTotal;
-			if(value>=maxValue)
-				return maxValue;
-			else
-				return value;
+			if (value >= maxValue) return maxValue;
+			else return value;
 		}
 		return 0;
-	}
-
+	};
 
 	function renderCoreComp() {
 		if (core == undefined || core.length == 0) return <></>;
@@ -314,20 +318,34 @@ export default function Rubric() {
 					<td className='py-4'>
 						<p className='w-[100px] text-center'>{item?.percentage ?? ''}%</p>
 					</td>
-					<td className='py-4'>
-					{item?.editable ?  
-						<img className='h-6 w-6 rounded-full ml-4 cursor-pointer' src={Update.src} onClick={()=>selectForUpdate(item)}/> : <></>}
-					</td>
-					<td className='py-4'>
-					{item?.editable ?  
-						<img className='h-6 w-6 rounded-full ml-4 cursor-pointer' src={Delete.src} onClick={()=>
-								{if (confirm('Are you sure you want to Delete this Rubric?')) {
-									// Save it!
-									deleteOnSubmit(item.id)
-								} else {
-									// Do nothing!
-								}}
-						}/>: <></>}
+					<td className='py-4 flex justify-center'>
+						<div className='flex gap-5'>
+							<button
+								onClick={() => selectForUpdate(item)}
+								className='text-indigo-500 hover:text-indigo-700'
+							>
+								Edit
+							</button>
+							{item?.editable ? (
+								<button
+									onClick={() => {
+										if (
+											confirm('Are you sure you want to Delete this Rubric?')
+										) {
+											// Save it!
+											deleteOnSubmit(item.id);
+										} else {
+											// Do nothing!
+										}
+									}}
+									className='text-red-500 hover:text-red-700'
+								>
+									Delete
+								</button>
+							) : (
+								<></>
+							)}
+						</div>
 					</td>
 				</tr>
 			));
@@ -349,20 +367,34 @@ export default function Rubric() {
 					<td className='py-4'>
 						<p className='w-[100px] text-center'>{item?.percentage ?? ''}%</p>
 					</td>
-					<td className='py-4'> 
-					{item?.editable ?  
-						<img className='h-6 w-6 rounded-full ml-4 cursor-pointer' src={Update.src} onClick={()=>selectForUpdate(item)}/> : <></>}
-					</td>
-					<td className='py-4'>
-					{item?.editable ?  
-						<img className='h-6 w-6 rounded-full ml-4 cursor-pointer' src={Delete.src} onClick={()=>
-							{if (confirm('Are you sure you want to Delete this Rubric?')) {
-								// Save it!
-								deleteOnSubmit(item.id)
-							} else {
-								// Do nothing!
-							}}
-						}/>: <></>}
+					<td className='py-4 flex justify-center'>
+						<div className='flex gap-5'>
+							<button
+								onClick={() => selectForUpdate(item)}
+								className='text-indigo-500 hover:text-indigo-700'
+							>
+								Edit
+							</button>
+							{item?.editable ? (
+								<button
+									onClick={() => {
+										if (
+											confirm('Are you sure you want to Delete this Rubric?')
+										) {
+											// Save it!
+											deleteOnSubmit(item.id);
+										} else {
+											// Do nothing!
+										}
+									}}
+									className='text-red-500 hover:text-red-700'
+								>
+									Delete
+								</button>
+							) : (
+								<></>
+							)}
+						</div>
 					</td>
 				</tr>
 			));
@@ -376,16 +408,9 @@ export default function Rubric() {
 					<select
 						id='employee type'
 						className='w-[200px] border rounded-[12px] pl-2 bg-gray-100'
-						onChange={(event) =>
-							setRubricsValues({
-								...rubricValues,
-								employee_type: event.target.value,
-							})
-						}
+						onChange={(event) =>changeEmployeeType(event.target.value)}
 					>
-						<option value='SALESEXECUTIVE'>
-							Sales Executive
-						</option>
+						<option value='SALESEXECUTIVE'>Sales Executive</option>
 						<option value='TECHNICIAN'>Technician</option>
 					</select>
 				</div>
@@ -394,8 +419,12 @@ export default function Rubric() {
 					<div className='w-full min-w-full max-w-2xl mx-auto bg-white shadow-lg rounded-sm border border-gray-200'>
 						<header className='px-5 py-4 border-b border-gray-100'>
 							<h2 className='font-semibold text-gray-800'>
-							Core Competency&nbsp; 
-									<span className={totalCC == 100 ? 'text-green-500' : 'text-red-500' }>&#40;{totalCC}%&#41;</span>
+								Core Competency&nbsp;
+								<span
+									className={totalCC == 100 ? 'text-green-500' : 'text-red-500'}
+								>
+									&#40;{totalCC}%&#41;
+								</span>
 							</h2>
 						</header>
 						<div className='p-3'>
@@ -416,11 +445,8 @@ export default function Rubric() {
 													Percentage
 												</div>
 											</th>
-											<th className='p-2 whitespace-nowrap w-[80px]'>
-												<div className='font-semibold text-left'>Update</div>
-											</th>
-											<th className='p-2 whitespace-nowrap w-[80px]'>
-												<div className='font-semibold text-left'>Delete</div>
+											<th className='p-2 whitespace-nowrap w-[200px]'>
+												<div className='font-semibold text-center'>Action</div>
 											</th>
 										</tr>
 									</thead>
@@ -437,6 +463,7 @@ export default function Rubric() {
 														type='text'
 														placeholder='Title'
 														value={rubricValues.name}
+														readOnly={!isEditable}
 														onChange={(event) =>
 															setRubricsValues({
 																...rubricValues,
@@ -449,6 +476,7 @@ export default function Rubric() {
 													<input
 														className='min-w-full rounded-[12px] pl-2 '
 														type='text'
+														readOnly={!isEditable}
 														placeholder='Description'
 														value={rubricValues.description}
 														onChange={(event) =>
@@ -473,20 +501,24 @@ export default function Rubric() {
 														}
 													/>
 												</td>
-												<td className='py-4'></td>
 												<td className='py-4 pr-5'>
-													{selectedID == undefined ? <button
-														className='btn w-full bg-emerald-500 border border-emerald-500'
-														onClick={() => onSubmit(rubricValues)}
-													>
-														Save
-													</button> : 
-													<button
-														className='btn w-full bg-emerald-500 border border-emerald-500'
-														onClick={() => updateOnSubmit(selectedID, rubricValues)}
-													>
-														Update
-													</button>}
+													{selectedID == undefined ? (
+														<button
+															className='btn w-full bg-emerald-500 border border-emerald-500'
+															onClick={() => onSubmit(rubricValues)}
+														>
+															Save
+														</button>
+													) : (
+														<button
+															className='btn w-full bg-emerald-500 border border-emerald-500'
+															onClick={() =>
+																updateOnSubmit(selectedID, rubricValues)
+															}
+														>
+															Update
+														</button>
+													)}
 												</td>
 											</tr>
 										) : (
@@ -494,11 +526,7 @@ export default function Rubric() {
 										)}
 									</tbody>
 								</table>
-								<div className={
-										addCoreRubric
-											? 'block'
-											: 'hidden'
-									}>
+								<div className={addCoreRubric ? 'block' : 'hidden'}>
 									<div
 										className={status.error ? 'text-red-500' : 'text-green-500'}
 									>
@@ -525,8 +553,14 @@ export default function Rubric() {
 					<div className='w-full min-w-full max-w-2xl mx-auto bg-white shadow-lg rounded-sm border border-gray-200'>
 						<header className='px-5 py-4 border-b border-gray-100'>
 							<h2 className='font-semibold text-gray-800'>
-								Key Performance Indicator&nbsp; 
-									<span className={totalKPI == 100 ? 'text-green-500' : 'text-red-500' }>&#40;{totalKPI}%&#41;</span>
+								Key Performance Indicator&nbsp;
+								<span
+									className={
+										totalKPI == 100 ? 'text-green-500' : 'text-red-500'
+									}
+								>
+									&#40;{totalKPI}%&#41;
+								</span>
 							</h2>
 						</header>
 						<div className='p-3'>
@@ -547,11 +581,8 @@ export default function Rubric() {
 													Percentage
 												</div>
 											</th>
-											<th className='p-2 whitespace-nowrap w-[80px]'>
-												<div className='font-semibold text-left'>Update</div>
-											</th>
-											<th className='p-2 whitespace-nowrap w-[80px]'>
-												<div className='font-semibold text-left'>Delete</div>
+											<th className='p-2 whitespace-nowrap w-[200px]'>
+												<div className='font-semibold text-center'>Action</div>
 											</th>
 										</tr>
 									</thead>
@@ -566,6 +597,7 @@ export default function Rubric() {
 													<input
 														className='w-[150px] rounded-[12px] pl-2'
 														type='text'
+														readOnly={!isEditable}
 														placeholder='Title'
 														value={rubricValues.name}
 														onChange={(event) =>
@@ -580,6 +612,7 @@ export default function Rubric() {
 													<input
 														className='min-w-full rounded-[12px] pl-2 '
 														type='text'
+														readOnly={!isEditable}
 														placeholder='Description'
 														value={rubricValues.description}
 														onChange={(event) =>
@@ -604,20 +637,24 @@ export default function Rubric() {
 														}
 													/>
 												</td>
-												<td className='py-4'></td>
 												<td className='py-4 pr-5'>
-													{selectedID == undefined ? <button
-														className='btn w-full bg-emerald-500 border border-emerald-500'
-														onClick={() => onSubmit(rubricValues)}
-													>
-														Save
-													</button> : 
-													<button
-														className='btn w-full bg-emerald-500 border border-emerald-500'
-														onClick={() => updateOnSubmit(selectedID, rubricValues)}
-													>
-														Update
-													</button>}
+													{selectedID == undefined ? (
+														<button
+															className='btn w-full bg-emerald-500 border border-emerald-500'
+															onClick={() => onSubmit(rubricValues)}
+														>
+															Save
+														</button>
+													) : (
+														<button
+															className='btn w-full bg-emerald-500 border border-emerald-500'
+															onClick={() =>
+																updateOnSubmit(selectedID, rubricValues)
+															}
+														>
+															Update
+														</button>
+													)}
 												</td>
 											</tr>
 										) : (
@@ -625,11 +662,7 @@ export default function Rubric() {
 										)}
 									</tbody>
 								</table>
-								<div className={
-										addKPIRubric
-											? 'block'
-											: 'hidden'
-									}>
+								<div className={addKPIRubric ? 'block' : 'hidden'}>
 									<div
 										className={status.error ? 'text-red-500' : 'text-green-500'}
 									>
@@ -637,7 +670,7 @@ export default function Rubric() {
 									</div>
 									<div className='text-red-500'>{error}</div>
 								</div>
-								
+
 								<button
 									className={
 										addKPIRubric
