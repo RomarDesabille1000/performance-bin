@@ -146,6 +146,7 @@ class EmployeesView(GenericViewSet):
             EmployeeEvaluationDetail.objects.create(
                 employee_evaluation=employee_evaluation,
                 name=d['name'],
+                type=d['type'],
                 description=d['description'],
                 percentage=d['percentage'],
                 score=d['score'],

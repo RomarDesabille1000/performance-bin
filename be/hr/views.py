@@ -16,7 +16,8 @@ from .serializers import (
     Sales,
     SalesSerializer,
     BackJobsSerializer,
-    BackJobs
+    BackJobs,
+    EmployeeEvaluationDetailSerializer,
 )
 from users.serializers import (
     UserSerializer,
@@ -98,17 +99,23 @@ class EmployeeEvaluationView(GenericViewSet):
         
         user_serializer = UserSerializer(user, many=False)
 
-        rubrics = ''
+        evaluation_detail = ''
         if 'id' in kwargs.keys():
-            evaluation_serializer = self.serializer_class(
-            self.get_queryset().get(id=kwargs['id']), many=False)
+            evaluation = self.get_queryset().get(id=kwargs['id'])
+            evaluation_serializer = self.serializer_class(evaluation, many=False)
+            evaluation_detail = EmployeeEvaluationDetailSerializer(
+                EmployeeEvaluationDetail.objects.filter(employee_evaluation=evaluation),
+                many=True
+            ).data
         else:
             evaluation_serializer = self.serializer_class(
             self.get_queryset().filter(employee=user).order_by('-date_created'), many=True)
 
+        print(evaluation_detail)
         return Response({
-            'evaluation_list': evaluation_serializer.data,
-            'user': user_serializer.data
+            'evaluation': evaluation_serializer.data,
+            'user': user_serializer.data,
+            'evaluation_detail': evaluation_detail
         },status=status.HTTP_200_OK)
 
 
