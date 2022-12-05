@@ -4,6 +4,7 @@ from rest_framework.viewsets import GenericViewSet
 from django.db import transaction
 import pytz
 from datetime import timedelta, datetime
+from django.db.models import Sum
 
 
 from users.permissions import HROnly
@@ -24,7 +25,9 @@ from users.serializers import (
     User,
 )
 from utils.query import (
-    convert_datetz
+    convert_datetz,
+    search_and_filter,
+    paginated_data,
 )
 
 
@@ -124,29 +127,19 @@ class SalesView(GenericViewSet, generics.ListAPIView):
     serializer_class = SalesSerializer
 
     def get_queryset(self):
-        sales = Sales.objects.all()
-        try:
-            date_from = self.request.query_params.get('from')
-            date_to = self.request.query_params.get('to')
-            if date_from is not None and date_to is not None:
-                date_from = convert_datetz(date_from)
-                date_to = convert_datetz(date_to)
-                sales = sales.filter(date__range=[date_from, date_to])
-
-            search = self.request.query_params.get('search')
-            if search is not None:
-                sales = sales.filter(item_deal__contains=search)
-
-            return sales
-        except (Exception,):
-            return sales
+        return search_and_filter(
+            self, 
+            Sales, 
+            item_deal__contains=self.request.query_params.get('search')
+        )
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset().filter(user_id=kwargs['id']).order_by('-date')
-        page = self.paginate_queryset(queryset)
-        serializer = self.serializer_class(page, many=True)
-        return self.get_paginated_response(serializer.data)
-    
+
+        data = paginated_data(self, queryset)
+        data['employee'] = queryset.aggregate(total_sales=Sum('amount'))
+
+        return Response(data ,status=status.HTTP_200_OK)
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
@@ -184,22 +177,11 @@ class BackJobsView(GenericViewSet, generics.ListAPIView):
     serializer_class = BackJobsSerializer
 
     def get_queryset(self):
-        backjobs = BackJobs.objects.all()
-        try:
-            date_from = self.request.query_params.get('from')
-            date_to = self.request.query_params.get('to')
-            if date_from is not None and date_to is not None:
-                date_from = convert_datetz(date_from)
-                date_to = convert_datetz(date_to)
-                backjobs = backjobs.filter(date__range=[date_from, date_to])
-
-            search = self.request.query_params.get('search')
-            if search is not None:
-                backjobs = backjobs.filter(customer_name__contains=search)
-
-            return backjobs
-        except (Exception,):
-            return backjobs
+        return search_and_filter(
+            self, 
+            BackJobs, 
+            customer_name__contains=self.request.query_params.get('search')
+        )
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
@@ -212,9 +194,11 @@ class BackJobsView(GenericViewSet, generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset().filter(user_id=kwargs['id']).order_by('-date')
-        page = self.paginate_queryset(queryset)
-        serializer = self.serializer_class(page, many=True)
-        return self.get_paginated_response(serializer.data)
+
+        data = paginated_data(self, queryset)
+        data['backjob_count'] = queryset.count()
+
+        return Response(data ,status=status.HTTP_200_OK)
 
     def retrieve(self, request, *args, **kwargs):
         backjob = self.get_queryset().get(id=kwargs['id'])

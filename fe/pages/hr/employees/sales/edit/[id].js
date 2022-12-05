@@ -8,6 +8,7 @@ import AlertMessages from "../../../../../components/AlertMessages";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
+import { DoubleType } from "../../../../../helper/numbers";
 
 const SalesSchema = yup.object().shape({
 	item_deal: yup.string().required("This field is required."),
@@ -42,6 +43,7 @@ export default function EditSales(){
 	})
 
     function onClickSubmit(data){
+        data['amount'] = DoubleType(data['amount'])
 		setStatus({ 
 			error: false, 
 			success: false, 

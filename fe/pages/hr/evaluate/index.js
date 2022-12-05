@@ -6,7 +6,7 @@ import SearchBar from '../../../components/SearchBar';
 
 export default function Evaluate() {
     const [searchText, setSearchText] = useState('')
-    const { data: employees } = useSWR(`users/employees/?lastname=${searchText}`, {
+    const { data: employees } = useSWR(`users/employees/selection/?lastname=${searchText}`, {
         revalidateOnFocus: false,
     });
 

@@ -9,6 +9,7 @@ import Link from "next/link";
 import {Pagination} from '@mui/material';
 import {paginationRecordCount, PAGINATION_COUNT} from '../../../../helper/paginationRecordCount'
 import SearchBar from "../../../../components/SearchBar";
+import { DoubleType } from "../../../../helper/numbers";
 
 export default function CreateSales(){
     const router = useRouter();
@@ -25,7 +26,6 @@ export default function CreateSales(){
 	const { data: sales, mutate } = useSWR(id ? `hr/sales/${id}/?search=${searchText}&page=${pageIndex}&from=${fromDate}&to=${toDate}` : '', {
         revalidateOnFocus: false,       
     });
-
 
 	const [status, setStatus] = useState({
 		error: false,
@@ -114,12 +114,17 @@ export default function CreateSales(){
                 <span className="text-gray-500">Date Hired: </span>
                 <span> {dayjs(emp?.user_employee?.date_hired).format('MMMM DD, YYYY')} </span>
             </div>
+            <div className="mt-1">
+                <span className="text-gray-500">Total Sales: </span>
+                ₱&nbsp;
+                {sales?.employee?.total_sales ? DoubleType(sales?.employee?.total_sales): 0}
+            </div>
             <div className="flex justify-end py-2">
                 <Link 
                     className="ml-3 text-blue-500"
                     href={`/hr/employees/sales/create/${id}`}
                 >
-                    Create Sales
+                    Add Sales
                 </Link>
             </div>
             <div className="flex justify-between items-center">
@@ -131,19 +136,22 @@ export default function CreateSales(){
                     placeholder="Search and Enter | Item Deal"
                     className="!w-[320px]"
                 />
-                <div className="flex items-center gap-3">
-                    <div>From: &nbsp;</div>
-                    <input 
-                        value={fromDate}
-                        onChange={setFromDateValue}
-                        type="date" 
-                        className="input !mt-0 !w-[200px]" />
-                    To: &nbsp;
-                    <input 
-                        value={toDate}
-                        onChange={setToDateValue}
-                        type="date" 
-                        className="input !mt-0 !w-[200px]" />
+                <div>
+                    <div className="flex items-center gap-3">
+                        <div>From: &nbsp;</div>
+                        <input 
+                            value={fromDate}
+                            onChange={setFromDateValue}
+                            type="date" 
+                            className="input !mt-0 !w-[200px]" />
+                        To: &nbsp;
+                        <input 
+                            value={toDate}
+                            onChange={setToDateValue}
+                            type="date" 
+                            className="input !mt-0 !w-[200px]" />
+                    </div>
+                    <div className="text-xs mt-1 text-right">Month\Date\Year</div>
                 </div>
             </div>
             <AlertMessages
@@ -201,7 +209,7 @@ export default function CreateSales(){
                                                 {d.item_deal}
                                             </td>
                                             <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                                                {d.amount}
+                                                ₱ {d.amount}
                                             </td>
                                             <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
                                                 <div className="flex gap-5">
