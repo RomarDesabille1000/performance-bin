@@ -114,6 +114,11 @@ export default function Employee() {
                                                 colSpan="5"
                                                 className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
                                                     <div className="flex gap-5 text-sm font-medium justify-end">
+                                                        <Link href={`/hr/employees/absences/${d.id}`}
+                                                            className="text-indigo-500 hover:text-indigo-700"
+                                                        >
+                                                            Absences
+                                                        </Link>
                                                         <Link href={`/hr/employees/attendance/${d.id}`}
                                                             className="text-indigo-500 hover:text-indigo-700"
                                                         >

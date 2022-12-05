@@ -82,3 +82,12 @@ class CustomerRatingAnswers(models.Model):
         return data
     class Meta: 
         verbose_name_plural = 'Customer answer ratings'
+
+class Absences(models.Model):
+    user = models.ForeignKey('users.User', 
+        on_delete=models.SET_NULL, blank=True, null=True, related_name='employee_absences')
+    reason = models.CharField(max_length=255)
+    date = models.DateTimeField(default=now)
+
+    class Meta: 
+        verbose_name_plural = 'Absences'

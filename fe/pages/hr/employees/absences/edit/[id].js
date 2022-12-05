@@ -9,29 +9,27 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 
-const BackJobsSchema = yup.object().shape({
-  customer_name: yup.string().required("This field is required.").max(255, "Only 255 characters is allowed."),
-	description: yup.string().required("This field is required.").max(255, "Only 255 characters is allowed."),
+const AbsencesSchema = yup.object().shape({
+	reason: yup.string().required("This field is required.").max(255, "Only 255 characters is allowed."),
 	date: yup.date().typeError('Must be a date').required("This field is required."),
 });
 
-export default function EditBackJob(){
+export default function EditAbsence(){
     const router = useRouter();
     //user id
     const { id } = router.query
-	const { data: e } = useSWR(id ? `hr/backjobs/retrieve/${id}/` : '', {
+	const { data: e } = useSWR(id ? `employee/absences/retrieve/${id}` : '', {
         revalidateOnFocus: false,       
     });
 
 	const { register, handleSubmit, formState: { errors }, setValue } = useForm({
 		mode: 'onSubmit',
-		resolver: yupResolver(BackJobsSchema),
+		resolver: yupResolver(AbsencesSchema),
 	})
 
     useEffect(() => {
-        setValue('customer_name', e?.backjob?.customer_name)
-        setValue('description', e?.backjob?.description)
-        setValue('date', dayjs(e?.backjob?.date).format('YYYY-MM-DD'))
+        setValue('reason', e?.absence?.reason)
+        setValue('date', dayjs(e?.absence?.date).format('YYYY-MM-DD'))
     }, [e])
 
 	const [status, setStatus] = useState({
@@ -48,13 +46,13 @@ export default function EditBackJob(){
 			loading:true, 
 			infoMessage: 'Updating data.' 
 		})
-        axiosInstance.put(`hr/backjobs/${id}/`, data)
+        axiosInstance.put(`employee/absences/${id}/`, data)
         .then((_e) => {
             setStatus({ 
                 error: false, 
                 success: true, 
                 loading: false, 
-                infoMessage: 'Back Job successfully updated.' 
+                infoMessage: 'Record Successfully Updated.' 
             })
         }).catch((_e) => {
             setStatus({ 
@@ -68,7 +66,7 @@ export default function EditBackJob(){
 
     return (
         <AdminLayout
-            title="Update Back Job"
+            title="Update Absence"
             hasBack={true}
         >
             <div className="mt-10 sm:mt-0">
@@ -103,31 +101,17 @@ export default function EditBackJob(){
                                     loading={status.loading}
                                     message={status.infoMessage}
                                 />
-                                <div className="grid grid-cols-6 gap-6">
-                                    <div className="col-span-6 sm:col-span-6">
-                                        <label className="block text-sm font-medium text-gray-700">
-                                            Customer Name
-                                        </label>
-                                        <input
-                                            {...register('customer_name')} 
-                                            type="text"
-                                            autoComplete="off"
-                                            className="input !w-[200px]"
-                                        />
-                                        <div className="text-red-500 text-sm pt-1">{errors?.customer_name && errors?.customer_name?.message}</div>
-                                    </div>
-                                </div>
                                 <div className="col-span-6 sm:col-span-6">
                                         <label className="block text-sm font-medium text-gray-700">
-                                            Description
+                                            Reason
                                         </label>
                                         <input
-                                            {...register('description')} 
+                                            {...register('reason')} 
                                             type="text"
                                             autoComplete="off"
                                             className="input"
                                         />
-                                        <div className="text-red-500 text-sm pt-1">{errors?.description && errors?.description?.message}</div>
+                                        <div className="text-red-500 text-sm pt-1">{errors?.reason && errors?.reason?.message}</div>
                                     </div>
                                 <div className="mt-5">
                                     <label className="block text-sm font-medium text-gray-700">
