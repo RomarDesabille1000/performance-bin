@@ -136,16 +136,16 @@ export default function Evaluate() {
             if(d.type === TYPE.CORE){
                 return (
                     <tr key={d.id}>
-						<td className="pl-3 py-4">
+                        <td className="px-6 py-2">
                             {d.name}
 						</td>
-						<td>
+                        <td className="px-6 py-2">
                             {d.description}
                         </td>
-                        <td className="text-center">
+                        <td className="px-6 py-2 text-center">
                             {d.percentage}
                         </td>
-                        <td className="pr-3">
+                        <td className="px-6 py-2 text-center">
                             {attendanceTitle !== d.name ? (
                                 <input 
                                     value={d.score}
@@ -176,16 +176,16 @@ export default function Evaluate() {
             if(d.type === TYPE.KPI){
                 return (
                     <tr key={d.id} className='bg-white border-b text-gray-800'>
-						<td className="pl-3 py-4">
+                        <td className="px-6 py-2">
                             {d.name}
 						</td>
-                        <td>
+                        <td className="px-6 py-2">
                             {d.description}
                         </td>
-                        <td className="text-center">
+                        <td className="px-6 py-2 text-center">
                             {d.percentage}
                         </td>
-                        <td className="pr-3">
+                        <td className="px-6 py-2 text-center">
                             {customerService !== d.name ? (
                                 <input 
                                     value={d.score}

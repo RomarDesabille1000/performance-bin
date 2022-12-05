@@ -118,7 +118,7 @@ export default function Evaluation(){
                                                 </th>
                                                 <th
                                                     scope="col"
-                                                    className="px-6 py-3 text-xs font-bold text-gray-500 uppercase text-center"
+                                                    className="px-6 py-3 text-xs font-bold text-center text-gray-500 uppercase "
                                                 >
                                                     Percentage %
                                                 </th>
@@ -163,7 +163,7 @@ export default function Evaluation(){
                                                 </th>
                                                 <th
                                                     scope="col"
-                                                    className="px-6 py-3 text-xs font-bold text-gray-500 uppercase text-center"
+                                                    className="px-6 py-3 text-xs font-bold text-center text-gray-500 uppercase"
                                                 >
                                                     Percentage %
                                                 </th>
