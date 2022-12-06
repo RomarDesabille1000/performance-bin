@@ -4,7 +4,9 @@ from rest_framework.viewsets import GenericViewSet
 from django.db import transaction
 import pytz
 from datetime import timedelta, datetime
-from django.db.models import Sum
+from django.db.models import Sum, Count
+from django.db.models.functions import ExtractMonth, TruncMonth
+import numpy as np
 
 
 from users.permissions import HROnly
@@ -23,6 +25,10 @@ from .serializers import (
 from users.serializers import (
     UserSerializer,
     User,
+)
+from employee.serializers import (
+    Attendance,
+    CustomerRatingAnswers
 )
 from utils.query import (
     convert_datetz,
@@ -220,3 +226,88 @@ class BackJobsView(GenericViewSet, generics.ListAPIView):
     def delete(self, request, *args, **kwargs):
         BackJobs.objects.get(id=kwargs['id']).delete()
         return Response(status=status.HTTP_200_OK)
+    
+
+
+class Dashboard(GenericViewSet):
+    def list(self, request, *args, **kwargs):
+        year = self.request.query_params.get('year')
+
+        today = datetime.now()
+        id = kwargs['id']
+        attendance = Attendance.objects.filter(user_id=id, date__year=year)\
+            .annotate(month=ExtractMonth('date')) \
+            .values('month').annotate(c=Count('id'))\
+                .annotate(c=Count('id'))\
+                .order_by('date__date')
+        
+
+        #key represents month
+        months_count = {
+            '1': 0,
+            '2': 0,
+            '3': 0,
+            '4': 0,
+            '5': 0,
+            '6': 0,
+            '7': 0,
+            '8': 0,
+            '9': 0,
+            '10': 0,
+            '11': 0,
+            '12': 0,
+        }
+        for a in attendance:
+            months_count[str(a['month'])] += 1  
+
+        now = datetime.now()
+        current = datetime(int(year)+1, 1, 1)
+
+        start = current.replace(day=1)
+
+        workdays = {
+            '01': 0,
+            '02': 0,
+            '03': 0,
+            '04': 0,
+            '05': 0,
+            '06': 0,
+            '07': 0,
+            '08': 0,
+            '09': 0,
+            '10': 0,
+            '11': 0,
+            '12': 0,
+        }
+
+        for x in range(1, 13):
+            end   = start - timedelta(days=1)
+            start = end.replace(day=1)
+            key = str(start.date()).split('-')[1]
+            workdays[key] = np.busday_count(str(start.date()), str(end.date()), weekmask='1111110') + 1
+
+        workdays_ = []
+        months_count_ = []
+        for key, value in workdays.items():
+            workdays_.append(value)
+        for key, value in months_count.items():
+            months_count_.append(value)
+
+        #sales
+        total_sales = Sales.objects.filter(user_id=id, date__year=year).\
+            aggregate(total_sales=Sum('amount'))
+        #backjobs
+        total_backjobs = BackJobs.objects.filter(user_id=id, date__year=year).count()
+        #ratings
+        ratings = CustomerRatingAnswers.objects.filter(user_id=id, date__year=year)
+        customer_rating = ratings.aggregate(result=Sum('q4'))
+        total_rating = ratings.count() * 5
+
+        return Response({
+            'attendance': months_count_,
+            'workdays': workdays_,
+            'sales': total_sales,
+            'backjobs': total_backjobs,
+            'ratings': customer_rating,
+            'total_ratings': total_rating,
+        },status=status.HTTP_200_OK)

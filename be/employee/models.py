@@ -16,6 +16,9 @@ class Attendance(models.Model):
     class Meta: 
         verbose_name_plural = 'Attendance'
 
+    def __str__(self):
+            return self.user.user_employee.firstname + ' ' + self.user.user_employee.mi + ' ' + self.user.user_employee.lastname
+
 
 class CustomerRatingAnswers(models.Model):
     user = models.ForeignKey('users.User', 
@@ -81,7 +84,10 @@ class CustomerRatingAnswers(models.Model):
         data['total'] = ratings.count() * 5
         return data
     class Meta: 
-        verbose_name_plural = 'Customer answer ratings'
+        verbose_name_plural = 'Customer Satisfaction Ratings'
+
+    def __str__(self):
+            return self.user.user_employee.firstname + ' ' + self.user.user_employee.mi + ' ' + self.user.user_employee.lastname
 
 class Absences(models.Model):
     user = models.ForeignKey('users.User', 
@@ -91,3 +97,6 @@ class Absences(models.Model):
 
     class Meta: 
         verbose_name_plural = 'Absences'
+
+    def __str__(self):
+            return self.user.user_employee.firstname + ' ' + self.user.user_employee.mi + ' ' + self.user.user_employee.lastname

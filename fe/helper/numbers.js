@@ -13,7 +13,12 @@ const handleNoValue = (value, return_value) => {
     return value ? value : return_value;
 }
 
+function currencyDisplay(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
 export{
     DoubleType,
     handleNoValue,
+    currencyDisplay,
 }

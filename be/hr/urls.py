@@ -4,7 +4,8 @@ from .views import (
     EvalutationRubricView,
     EmployeeEvaluationView,
     SalesView,
-    BackJobsView
+    BackJobsView,
+    Dashboard,
 )
 
 urlpatterns = [
@@ -55,4 +56,5 @@ urlpatterns = [
             'get': 'retrieve',
         })),
     ])),
+    path('dashboard/<int:id>/', Dashboard.as_view({'get': 'list'})),
 ]

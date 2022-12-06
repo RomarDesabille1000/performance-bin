@@ -19,6 +19,8 @@ class EvaluationRubric(models.Model):
 
     def __str__(self):
             return self.name
+    class Meta: 
+        verbose_name_plural = 'Rubrics'
 
 
 class EmployeeEvaluation(models.Model):
@@ -28,7 +30,10 @@ class EmployeeEvaluation(models.Model):
     review_period = models.CharField(max_length=255, null=True)
 
     def __str__(self):
-            return self.employee.name
+            return self.employee.user_employee.firstname + ' ' + self.employee.user_employee.mi + ' ' + self.employee.user_employee.lastname
+
+    class Meta: 
+        verbose_name_plural = 'Evaluation'
 
 class EmployeeEvaluationDetail(models.Model): 
     type = models.CharField(max_length=20, choices=TYPES, default=CORE)
@@ -47,9 +52,21 @@ class BackJobs(models.Model):
     description = models.CharField(max_length=255)
     date = models.DateTimeField(default=now)
 
+    class Meta: 
+        verbose_name_plural = 'Backjobs'
+
+    def __str__(self):
+            return self.user.user_employee.firstname + ' ' + self.user.user_employee.mi + ' ' + self.user.user_employee.lastname
+
 class Sales(models.Model):
     user = models.ForeignKey('users.User', 
         on_delete=models.CASCADE, blank=True, null=True, related_name='employee_sales')
     date = models.DateTimeField(default=now)
     item_deal = models.CharField(max_length=255)
     amount = models.DecimalField(default=0, max_digits=20, decimal_places=2)
+
+    class Meta: 
+        verbose_name_plural = 'Sales'
+
+    def __str__(self):
+            return self.user.user_employee.firstname + ' ' + self.user.user_employee.mi + ' ' + self.user.user_employee.lastname

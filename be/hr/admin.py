@@ -10,12 +10,12 @@ from .models import (
 
 @admin.register(BackJobs)
 class BackJobsAdmin(admin.ModelAdmin):
-    list_display = ('customer_name', 'description', 'date',)
+    list_display = ('__str__', 'customer_name', 'description', 'date',)
 
 
 @admin.register(Sales)
 class SalesAdmin(admin.ModelAdmin):
-    list_display = ('date', 'item_deal', 'date',)
+    list_display = ('__str__', 'date', 'item_deal', 'date',)
 
 
 @admin.register(EvaluationRubric)
@@ -27,7 +27,7 @@ class EmployeeEvaluationDetailInline(admin.TabularInline):
 
 @admin.register(EmployeeEvaluation)
 class EmployeeEvaluationAdmin(admin.ModelAdmin):
-    list_display = ('date_created',)
+    list_display = ('__str__', 'date_created', 'review_period',)
 
     inlines = [
         EmployeeEvaluationDetailInline

@@ -1,7 +1,7 @@
 
 const SearchBar = (props) => {
 
-    const { onChange, onKeyUp, text, setText, placeholder = 'Search and press Enter', hasQuery, push, className="py-3 pl-2" } = props
+    const { onChange, onKeyUp, text, setText, type ='text', placeholder = 'Search and press Enter', hasQuery, push, className="py-3 pl-2" } = props
 
     return (
         <div className={className}>
@@ -14,7 +14,7 @@ const SearchBar = (props) => {
                     autoComplete="off"
                     onChange={onChange}
                     onKeyUp={onKeyUp}
-                    type="text"
+                    type={type}
                     name="hs-table-search"
                     id="hs-table-search"
                     className="block w-full p-3 pl-10 text-sm border border-indigo-500 rounded-md focus:border-indigo-800 outline-none"

@@ -17,7 +17,7 @@ ChartJS.register(
     Legend
 );
 
-export default function CustomerSatisfactionGraph(){
+export default function CustomerSatisfactionGraph({ workdays, attendance }){
 	const data = {
 		datasets: [
 		{
@@ -26,18 +26,18 @@ export default function CustomerSatisfactionGraph(){
 			barThickness: 12,
 			borderRadius: 4,
 			categoryPercentage: 0.5,
-			data: [10, 10],
-			label: 'This year',
+			data: workdays,
+			label: 'Total Workdays',
 			maxBarThickness: 10
 		},
 		{
-			backgroundColor: '#EEEEEE',
+			backgroundColor: '#9D174D',
 			barPercentage: 0.5,
 			barThickness: 12,
 			borderRadius: 4,
 			categoryPercentage: 0.5,
-			data: [4321432143, 321412],
-			label: 'Last year',
+			data: attendance,
+			label: 'Employee attendance',
 			maxBarThickness: 10
 		}
 		],
@@ -99,7 +99,7 @@ export default function CustomerSatisfactionGraph(){
 
     return(
         <div>
-			<div className="h-[200px]">
+			<div className="h-[300px]">
 				<Bar
 					data={data}
 					options={options}

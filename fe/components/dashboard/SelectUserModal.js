@@ -2,8 +2,10 @@ import { Fragment } from "react"
 import SearchBar from "../SearchBar"
 import dayjs from "dayjs"
 
-
-export default function SelectUserModal({setIsModalOpen, employees, searchText, setSearchText, setEmployeeTarget, employeeTarget}){
+export default function SelectUserModal(
+    {setIsModalOpen, employees, searchText, setSearchText, setEmployeeTarget, 
+        employeeTarget, setConfirmSelection, confirmSelection, setEmployeeSelected, employeeSelected
+    }){
     const onKeyUpSearch = (e) => {
         if(e.code === 'Enter')
             setSearchText(e.target.value)
@@ -16,10 +18,23 @@ export default function SelectUserModal({setIsModalOpen, employees, searchText, 
     }
     function close(){
         setIsModalOpen(false)
-        setEmployeeTarget({
-            id: -1,
-            name: '',
+        // setEmployeeTarget({
+        //     id: -1,
+        //     name: '',
+        // })
+    }
+    function setEmployeeSelection(d){
+        setEmployeeSelected({
+            id: d?.id,
+            name: `${d?.user_employee?.firstname} ${d?.user_employee?.mi} ${d?.user_employee?.lastname}`,
+            position: d?.user_employee?.position,
+            dateHired: dayjs(d?.user_employee?.date_hired).format('MMMM DD, YYYY'),
         })
+    }
+
+    function confirm(){
+        setIsModalOpen(false)
+        setConfirmSelection(!confirmSelection)
     }
     return (
         <div className="bg-gray-900 bg-opacity-30 fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
@@ -45,11 +60,11 @@ export default function SelectUserModal({setIsModalOpen, employees, searchText, 
                             placeholder="Search employee lastname"
                             className="pb-0"
                         />
-                        {employeeTarget.name && (
+                        {employeeSelected.id > 0 && (
                             <div className="px-2 text-sm space-x-4">
                                 <span>Selected</span>
-                                <span>id: {employeeTarget.id} </span>
-                                <span>name: {employeeTarget.name}</span>
+                                <span>id: {employeeSelected.id} </span>
+                                <span>name: {employeeSelected.name}</span>
                             </div>
                         )}
                         
@@ -88,10 +103,7 @@ export default function SelectUserModal({setIsModalOpen, employees, searchText, 
                                         {employees?.map((d) => (
                                             <Fragment key={d.id}>
                                                 <tr 
-                                                    onClick={() => setEmployeeTarget({
-                                                        id: d.id,
-                                                        name: `${d.user_employee?.firstname} ${d.user_employee?.mi} ${d.user_employee?.lastname}`
-                                                    })}
+                                                    onClick={() => setEmployeeSelection(d)}
                                                     className="cursor-pointer hover:bg-gray-100">
                                                     <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
                                                         {d.id}
@@ -122,6 +134,7 @@ export default function SelectUserModal({setIsModalOpen, employees, searchText, 
                             Cancel
                             </button>
                         <button 
+                        onClick={confirm}
                             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">
                                 Confirm
                             </button>

@@ -117,11 +117,11 @@ class EmployeesView(GenericViewSet):
         review_period = ''
         if current_year == date_hired_y:
             #hired count
-            days_count = np.busday_count('-'.join(date_hired), str(datetime.now().date()), weekmask=[1,1,1,1,1,1,0])
+            days_count = np.busday_count('-'.join(date_hired), str(datetime.now().date()), weekmask=[1,1,1,1,1,1,0]) + 1
             review_period = parse_date('-'.join(date_hired)).strftime('%B') + ' - ' + datetime.now().strftime('%B') + ' ' + current_year
         else:
             #all year count
-            days_count = np.busday_count(f"{current_year}-01-01", str(datetime.now().date()), weekmask=[1,1,1,1,1,1,0])
+            days_count = np.busday_count(f"{current_year}-01-01", str(datetime.now().date()), weekmask=[1,1,1,1,1,1,0]) + 1
             review_period = "January - " + datetime.now().strftime('%B') + ' ' + current_year
         if total_attendance > days_count:
             total_attendance = days_count
