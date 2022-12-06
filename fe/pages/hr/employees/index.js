@@ -36,6 +36,14 @@ export default function Employee() {
                         hasQuery={false}
                         placeholder="Search employee lastname"
                     />
+                    <div className="flex justify-end py-2">
+                        <Link 
+                            className="mr-3 text-blue-500"
+                            href={`/hr/employees/create/`}
+                        >
+                            Add Employee
+                        </Link>
+                    </div>
                     <div className="p-1.5 w-full inline-block align-middle">
                         <div className="overflow-hidden border rounded-lg">
                             <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
@@ -96,7 +104,7 @@ export default function Employee() {
                                                     <div className="flex gap-5">
                                                         <a
                                                             className="text-indigo-500 hover:text-indigo-700"
-                                                            href="#"
+                                                            href={`/hr/employees/edit/${d.id}`}
                                                         >
                                                             Edit
                                                         </a>
