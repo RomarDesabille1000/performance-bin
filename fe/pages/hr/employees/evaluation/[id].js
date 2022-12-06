@@ -50,14 +50,14 @@ export default function Evaluation(){
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {!user?.evaluation_list?.length && (
+                                    {!user?.evaluation?.length && (
                                         <tr>
                                             <td colSpan={3} className="text-center py-4">
                                                 No data
                                             </td>
                                         </tr>
                                     )}
-                                    {user?.evaluation_list?.map((d) => (
+                                    {user?.evaluation?.map((d) => (
                                         <tr key={d.id}>
                                             <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
                                                 {dayjs(d.date_created).format('MMMM DD, YYYY')}

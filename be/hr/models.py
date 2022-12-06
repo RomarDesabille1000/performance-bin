@@ -3,13 +3,13 @@ from users.models import USER_TYPES, SALESEXECUTIVE
 from django.utils.timezone import now
 
 
+CORE = "CORE"
+KPI = "KPI"
+TYPES = (
+    (CORE, "Core"),
+    (KPI, "KPI"),
+)
 class EvaluationRubric(models.Model):
-    CORE = "CORE"
-    KPI = "KPI"
-    TYPES = (
-        (CORE, "Core"),
-        (KPI, "KPI"),
-    )
     type = models.CharField(max_length=20, choices=TYPES, default=CORE)
     employee_type = models.CharField(max_length=20, choices=USER_TYPES, default=SALESEXECUTIVE)
     name = models.CharField(max_length=255)
@@ -31,6 +31,7 @@ class EmployeeEvaluation(models.Model):
             return self.employee.name
 
 class EmployeeEvaluationDetail(models.Model): 
+    type = models.CharField(max_length=20, choices=TYPES, default=CORE)
     employee_evaluation = models.ForeignKey('hr.EmployeeEvaluation', 
         on_delete=models.CASCADE, blank=True, null=True, related_name='employee_evaluation')
     name = models.CharField(max_length=255)

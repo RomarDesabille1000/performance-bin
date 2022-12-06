@@ -22,10 +22,9 @@ export default function CreateBackjobs(){
     const [fromDate, setFromDate] = useState('');
     const [toDate, setToDate] = useState('');
     const [searchText, setSearchText] = useState('')
-	const { data: sales, mutate } = useSWR(id ? `hr/backjobs/${id}/?search=${searchText}&page=${pageIndex}&from=${fromDate}&to=${toDate}` : '', {
+	const { data: backjob, mutate } = useSWR(id ? `hr/backjobs/${id}/?search=${searchText}&page=${pageIndex}&from=${fromDate}&to=${toDate}` : '', {
         revalidateOnFocus: false,       
     });
-
 
 	const [status, setStatus] = useState({
 		error: false,
@@ -114,12 +113,16 @@ export default function CreateBackjobs(){
                 <span className="text-gray-500">Date Hired: </span>
                 <span> {dayjs(emp?.user_employee?.date_hired).format('MMMM DD, YYYY')} </span>
             </div>
+            <div className="mt-1">
+                <span className="text-gray-500">Backjobs: </span>
+                {backjob?.backjob_count ? backjob?.backjob_count: 0}
+            </div>
             <div className="flex justify-end py-2">
                 <Link 
                     className="ml-3 text-blue-500"
                     href={`/hr/employees/backjobs/create/${id}`}
                 >
-                    Create BackJob
+                    Add BackJob
                 </Link>
             </div>
             <div className="flex justify-between items-center">
@@ -131,19 +134,22 @@ export default function CreateBackjobs(){
                     placeholder="Search and Enter | Customer Name"
                     className="!w-[320px]"
                 />
-                <div className="flex items-center gap-3">
-                    <div>From: &nbsp;</div>
-                    <input 
-                        value={fromDate}
-                        onChange={setFromDateValue}
-                        type="date" 
-                        className="input !mt-0 !w-[200px]" />
-                    To: &nbsp;
-                    <input 
-                        value={toDate}
-                        onChange={setToDateValue}
-                        type="date" 
-                        className="input !mt-0 !w-[200px]" />
+                <div>
+                    <div className="flex items-center gap-3">
+                        <div>From: &nbsp;</div>
+                        <input 
+                            value={fromDate}
+                            onChange={setFromDateValue}
+                            type="date" 
+                            className="input !mt-0 !w-[200px]" />
+                        To: &nbsp;
+                        <input 
+                            value={toDate}
+                            onChange={setToDateValue}
+                            type="date" 
+                            className="input !mt-0 !w-[200px]" />
+                    </div>
+                    <div className="text-xs mt-1 text-right">Month\Date\Year</div>
                 </div>
             </div>
             <AlertMessages
@@ -180,7 +186,7 @@ export default function CreateBackjobs(){
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {!sales?.results?.length && (
+                                    {!backjob?.results?.length && (
                                         <tr>
                                             <td 
                                                 colSpan="5"
@@ -189,7 +195,7 @@ export default function CreateBackjobs(){
                                             </td>
                                         </tr>
                                     )}
-                                    {sales?.results?.map((d) => (
+                                    {backjob?.results?.map((d) => (
                                         <tr key={d.id}>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {d.id}
@@ -226,7 +232,7 @@ export default function CreateBackjobs(){
                         </div>
                         <div className="flex justify-end mt-3">
                             <Pagination 
-                                    count={sales?.count ? Math.ceil(sales?.count/PAGINATION_COUNT) : 0}
+                                    count={backjob?.count ? Math.ceil(backjob?.count/PAGINATION_COUNT) : 0}
                                     page={pageIndex}
                                     color="primary"
                                     onChange={(_e, n) => setPageIndex(n)}

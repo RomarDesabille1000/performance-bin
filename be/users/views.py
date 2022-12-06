@@ -76,6 +76,15 @@ class EmployeesView(GenericViewSet):
         serializer = self.serializer_class(self.get_queryset().
             filter(user_employee__isnull=False), many=True)
         return Response(serializer.data , status=status.HTTP_200_OK)
+
+    def evaluation_user_selection(self, request):
+        serializer = self.serializer_class(self.get_queryset().
+            filter(
+                user_employee__isnull=False,
+            ).exclude(employee_evaluation__date_created__year=datetime.now().year), 
+        many=True)
+        return Response(serializer.data , status=status.HTTP_200_OK)
+
     
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -146,6 +155,7 @@ class EmployeesView(GenericViewSet):
             EmployeeEvaluationDetail.objects.create(
                 employee_evaluation=employee_evaluation,
                 name=d['name'],
+                type=d['type'],
                 description=d['description'],
                 percentage=d['percentage'],
                 score=d['score'],

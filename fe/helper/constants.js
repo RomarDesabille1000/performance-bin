@@ -5,6 +5,13 @@ const USERTYPE = {
 }
 
 
+const EVALUATIONTYPE = {
+    CORE: 'CORE',
+    KPI: 'KPI',
+}
+
+
 export {
-    USERTYPE
+    USERTYPE,
+    EVALUATIONTYPE,
 }
