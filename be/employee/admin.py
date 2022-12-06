@@ -8,5 +8,4 @@ class AttendanceAdmin(admin.ModelAdmin):
 
 @admin.register(CustomerRatingAnswers)
 class CustomerRatingAnswersAdmin(admin.ModelAdmin):
-    readonly_fields = ('date',)
     list_display = ('__str__', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'date')

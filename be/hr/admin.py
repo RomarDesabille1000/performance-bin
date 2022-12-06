@@ -20,7 +20,7 @@ class SalesAdmin(admin.ModelAdmin):
 
 @admin.register(EvaluationRubric)
 class EvaluationRubricAdmin(admin.ModelAdmin):
-    list_display = ('type', 'employee_type', 'name', 'description', 'percentage',)
+    list_display = ('type', 'employee_type', 'name', 'description', 'percentage', 'editable',)
 
 class EmployeeEvaluationDetailInline(admin.TabularInline):
     model = EmployeeEvaluationDetail

@@ -67,7 +67,8 @@ class CustomerRatingAnswers(models.Model):
     )
     q3 = models.CharField(max_length=50, choices=Question3Answers, 
         help_text="How much time did it take us to address your questions and concerns?")
-    q4 = models.IntegerField(help_text="How likely is it that you would recommend our company/product/services to a friend or colleagues? Rate us between 1 to 5, wherein 5 is the Highest and 1 is the Lowest: ")
+    q4 = models.IntegerField(
+        help_text="How likely is it that you would recommend our company/product/services to a friend or colleagues? Rate us between 1 to 5, wherein 5 is the Highest and 1 is the Lowest: ")
     q5 = models.TextField(max_length=500, blank=True, null=True,
         help_text="Do you have any other comments, question or concerns")
     q6 = models.CharField(max_length=255, blank=True, null=True,
