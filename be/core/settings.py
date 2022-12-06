@@ -27,6 +27,8 @@ SITE_DOMAIN = os.environ.get('SITE_DOMAIN')
 
 SITE_HOST = os.environ.get('SITE_HOST')
 
+CSRF_TRUSTED_ORIGINS = ['https://project-production-a18e.up.railway.app']
+
 # ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(",")
 
 # CORS_ORIGIN_WHITELIST = os.environ.get('ALLOWED_ORIGINS').split(",")
