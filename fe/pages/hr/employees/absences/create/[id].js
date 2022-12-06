@@ -19,7 +19,7 @@ export default function CreateAbsences(){
     const router = useRouter();
     //user id
     const { id } = router.query
-	const { data: e } = useSWR(id ? `employee/absences/${id}/` : '', {
+	const { data: e } = useSWR(id ? `users/details/${id}/` : '', {
         revalidateOnFocus: false,       
     });
 
@@ -73,17 +73,17 @@ export default function CreateAbsences(){
                     <h3 className="text-lg font-medium leading-6 text-gray-900">Employee Information</h3>
                         <div className="mt-4">
                             Name:&nbsp;
-                            {e?.user?.user_employee?.firstname}&nbsp;
-                            {e?.user?.user_employee?.mi}.&nbsp;
-                            {e?.user?.user_employee?.lastname}
+                            {e?.user_employee?.firstname}&nbsp;
+                            {e?.user_employee?.mi}.&nbsp;
+                            {e?.user_employee?.lastname}
                         </div>
                         <div>
                             Position:&nbsp;
-                            {e?.user?.user_employee?.position}&nbsp;
+                            {e?.user_employee?.position}&nbsp;
                         </div>
                         <div>
                             Date Hired:&nbsp;
-                            {dayjs(e?.user?.user_employee?.date_hired).format('MMMM DD, YYYY')}&nbsp;
+                            {dayjs(e?.user_employee?.date_hired).format('MMMM DD, YYYY')}&nbsp;
                         </div>
                     </div>
                 </div>

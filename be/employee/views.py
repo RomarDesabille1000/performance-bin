@@ -107,16 +107,15 @@ class AbsencesView(GenericViewSet, generics.ListAPIView):
     
     def list(self, request, *args, **kwargs):
         data = self.get_queryset().filter(user_id=kwargs['pk']).order_by('-date')
-        absences_serializer = AbsencesSerializer(data, many=True)
+        page = self.paginate_queryset(data)
+        absences_serializer = AbsencesSerializer(page, many=True)
+        return self.get_paginated_response(absences_serializer.data)
         
-        user_serializer = UserSerializer(
-            User.objects.get(id=kwargs['pk'])
-            ,many=False)
 
-        return Response({
-            'absences_list': absences_serializer.data,
-            'user': user_serializer.data
-        },status=status.HTTP_200_OK)
+        # return Response({
+        #     'absences_list': self.get_paginated_response(absences_serializer.data),
+        #     'user': user_serializer.data
+        # },status=status.HTTP_200_OK)
 
     def delete(self, request, *args, **kwargs):
         Absences.objects.get(user_id=kwargs['pk'],id=kwargs['id']).delete()

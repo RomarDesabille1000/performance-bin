@@ -5,6 +5,8 @@ import SearchBar from "../../../../components/SearchBar";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import {Pagination} from '@mui/material';
+import {paginationRecordCount, PAGINATION_COUNT} from '../../../../helper/paginationRecordCount'
 import AlertMessages from "../../../../components/AlertMessages";
 import axiosInstance from "../../../../utils/axiosInstance";
 
@@ -12,10 +14,14 @@ import axiosInstance from "../../../../utils/axiosInstance";
 export default function Absences(){
     const router = useRouter();
     const { id } = router.query
+    const [pageIndex, setPageIndex] = useState(1);
     const [filterText, setFilterText] = useState('')
     const [fromDate, setFromDate] = useState('');
     const [toDate, setToDate] = useState('');
-    const { data: user,mutate } = useSWR(id ? `employee/absences/${id}/?filter=${filterText}&from=${fromDate}&to=${toDate}` : '', {
+    const { data: emp } = useSWR(id ? `users/details/${id}/` : '', {
+        revalidateOnFocus: false,       
+    });
+    const { data: absences, mutate } = useSWR(id ? `employee/absences/${id}/?filter=${filterText}&page=${pageIndex}&from=${fromDate}&to=${toDate}` : '', {
           revalidateOnFocus: false,       
       });
 
@@ -94,16 +100,16 @@ export default function Absences(){
             <div className="flex gap-[50px]">
                 <div> 
                     <span className="text-gray-500">Name: </span>
-                    <span>{user?.user?.user_employee?.firstname} {user?.user?.user_employee?.mi}. {user?.user?.user_employee?.lastname}</span>
+                    <span>{emp?.user_employee?.firstname} {emp?.user_employee?.mi}. {emp?.user_employee?.lastname}</span>
                 </div>
                 <div> 
                     <span className="text-gray-500">Position: </span>
-                    <span> {user?.user?.user_employee?.position}</span>
+                    <span> {emp?.user_employee?.position}</span>
                 </div>
             </div>
             <div className="mt-1">
                 <span className="text-gray-500">Date Hired: </span>
-                <span> {dayjs(user?.user?.user_employee?.date_hired).format('MMMM DD, YYYY')} </span>
+                <span> {dayjs(emp?.user_employee?.date_hired).format('MMMM DD, YYYY')} </span>
             </div>
             <div className="flex justify-end py-2">
                 <Link 
@@ -171,7 +177,7 @@ export default function Absences(){
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {user?.absences_list.map((d) => (
+                                    {Array.isArray(absences?.results) ? absences?.results.map((d) => (
                                         <tr key={d.id}>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {dayjs(d.date).format('MMMM DD, YYYY')}
@@ -196,9 +202,17 @@ export default function Absences(){
                                                 </div>
                                             </td>
                                         </tr>
-                                    ))}
+                                    )) : <></>}
                                 </tbody>
                             </table>
+                        </div>
+                        <div className="flex justify-end mt-3">
+                            <Pagination 
+                                    count={absences?.count ? Math.ceil(absences?.count/PAGINATION_COUNT) : 0}
+                                    page={pageIndex}
+                                    color="primary"
+                                    onChange={(_e, n) => setPageIndex(n)}
+                            />
                         </div>
                     </div>
                 </div>
