@@ -10,6 +10,8 @@ urlpatterns = [
     })),
     path('details/<int:userId>/', UserView.as_view({
         'get': 'get_user_details',
+        'put': 'update_user',
+        'delete': 'delete_user'
     })),
     path('profile/', include([
     ])),

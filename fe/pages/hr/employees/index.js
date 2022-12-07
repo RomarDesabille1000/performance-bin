@@ -4,12 +4,48 @@ import useSWR from 'swr';
 import AdminLayout from '../../../components/AdminLayout';
 import SearchBar from '../../../components/SearchBar';
 import dayjs from "dayjs";
+import AlertMessages from '../../../components/AlertMessages';
+import axiosInstance from '../../../utils/axiosInstance';
 
 export default function Employee() {
     const [searchText, setSearchText] = useState('')
-    const { data: employees } = useSWR(`users/employees/?lastname=${searchText}`, {
+    const { data: employees,mutate } = useSWR(`users/employees/?lastname=${searchText}`, {
         revalidateOnFocus: false,
     });
+    const [status, setStatus] = useState({
+		error: false,
+		loading: false,
+		success: false,
+		infoMessage: '',
+	})
+
+    function handleDelete(id){
+        if (confirm(`Are you sure you want to delete this User?`)) {
+            setStatus({ 
+                error: false, 
+                success: false, 
+                loading:true, 
+                infoMessage: 'Deleting Employee' 
+            })
+            axiosInstance.delete(`users/details/${id}/`)
+            .then((_e) => {
+                mutate()
+                setStatus({ 
+                    error: false, 
+                    success: true, 
+                    loading: false, 
+                    infoMessage: 'Employee Removed.' 
+                })
+            }).catch((_e) => {
+                setStatus({ 
+                    error: true, 
+                    success: false, 
+                    loading: false, 
+                    infoMessage: 'Something went wrong.' 
+                })
+            })
+        }    
+    }
 
     const onKeyUpSearch = (e) => {
         if(e.code === 'Enter')
@@ -44,6 +80,13 @@ export default function Employee() {
                             Add Employee
                         </Link>
                     </div>
+                    <AlertMessages
+                        className="mb-3"
+                        error={status.error}
+                        success={status.success}
+                        loading={status.loading}
+                        message={status.infoMessage}
+                    />
                     <div className="p-1.5 w-full inline-block align-middle">
                         <div className="overflow-hidden border rounded-lg">
                             <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
@@ -108,12 +151,12 @@ export default function Employee() {
                                                         >
                                                             Edit
                                                         </a>
-                                                        <a
+                                                        <button
                                                             className="text-red-500 hover:text-red-700"
-                                                            href="#"
+                                                            onClick = {()=>handleDelete(d.id)}
                                                         >
                                                             Delete
-                                                        </a>
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>

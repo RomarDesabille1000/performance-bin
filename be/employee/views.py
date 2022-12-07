@@ -98,12 +98,16 @@ class AbsencesView(GenericViewSet, generics.ListAPIView):
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
-        user = User.objects.get(id=kwargs['pk'])
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(user=user)
+        userdata = User.objects.get(id=kwargs['pk'])
+        print(request.data['date'])
+        if Absences.objects.filter(date=request.data['date']).filter(user=kwargs['pk']).exists():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else :
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(user=userdata)
 
-        return Response(status=status.HTTP_201_CREATED)
+            return Response(status=status.HTTP_201_CREATED)
     
     def list(self, request, *args, **kwargs):
         data = self.get_queryset().filter(user_id=kwargs['pk']).order_by('-date')

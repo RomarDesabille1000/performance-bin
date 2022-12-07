@@ -57,6 +57,17 @@ class UserView(GenericViewSet):
         self.get_queryset().get(id=kwargs['userId']), many=False)
 
         return Response(user_serializer.data, status=status.HTTP_200_OK)
+
+    def update_user(self, request,  **kwargs):
+        user = Employee.objects.get(id=kwargs['userId'])
+        serializer = EmployeeSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+        return Response(status=status.HTTP_200_OK)
+
+    def delete_user(self, request, **kwargs):
+        User.objects.get(id=kwargs['userId']).delete()
+        return Response(status=status.HTTP_200_OK)
     
 
 
