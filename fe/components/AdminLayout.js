@@ -3,6 +3,8 @@ import { useRouter } from 'next/router'
 import handleRouteId from "../helper/HandleRouteId";
 import Link from "next/link";
 import { useAuth } from '../context/AuthContext'
+import Image from 'next/image'
+import logoWhite from '../images/logo-white.jpg'
 
 const NavItem = ({href, name ,activeLinks ,clss=''}) => {
     const router = useRouter();
@@ -58,7 +60,15 @@ export default function AdminLayout({children, title, hasBack=false}) {
                     <div className="flex h-16 items-center justify-between">
                         <div className="flex items-center">
                             <div className="flex-shrink-0">
-                                <img className="h-8 w-8" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company"/>
+								<Image
+									src={logoWhite}
+									alt="logo"
+                                    width="auto"
+                                    height="auto"
+                                    loading="eager" 
+                                    priority={true}
+                                    className="rounded-sm w-[80px] h-[40px]"
+									/>
                             </div>
                             <div className="hidden md:block">
                                 <div className="ml-10 flex items-baseline space-x-4">

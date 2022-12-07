@@ -2,6 +2,8 @@ import { useState } from "react";
 import LoadingButton from "../components/LoadingButton";
 import { useAuth } from "../context/AuthContext"
 import { useForm } from 'react-hook-form';
+import Image from 'next/image'
+import logoWhite from '../images/logo-white.jpg'
 
 export default function Home() {
 	const { login, statusCode, isLoading, setStatusCode } = useAuth()
@@ -22,11 +24,17 @@ export default function Home() {
 			<div className="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
 					<div className="w-full max-w-md space-y-8">
 						<div>
-							<img
-								className="mx-auto h-12 w-auto"
-								src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-								alt="Your Company"
-							/>
+							<div className="flex justify-center mt-[50px]">
+								<Image
+									src={logoWhite}
+										alt="logo"
+										width="auto"
+										height="auto"
+										loading="eager" 
+										priority={true}
+										className="rounded-sm w-[180px] h-[80px]"
+									/>
+							</div>
 							<h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
 								Sign in to your account
 							</h2>
