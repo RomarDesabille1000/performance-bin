@@ -1,6 +1,6 @@
 import { useSignatureStore } from "../../../store/signature";
 import { useEffect, useState } from "react";
-import Signature from "../../../components/signature";
+import Signature from "../../../components/Signature";
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
