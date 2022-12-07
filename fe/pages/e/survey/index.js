@@ -44,7 +44,7 @@ const CustomerSurveySchema = yup.object().shape({
 
 export default function CustomerSurvey() {
 	const router = useRouter();
-	const { register, handleSubmit, formState: { errors } } = useForm({
+	const { register, handleSubmit, formState: { errors }, reset } = useForm({
         defaultValues: {
             q1: [],
             q2: [],
@@ -103,6 +103,7 @@ export default function CustomerSurvey() {
     }
 
     function onSubmit(data) {
+        reset();
         data = {
             ...data,
             q1: data['q1'][0],
@@ -225,7 +226,7 @@ export default function CustomerSurvey() {
                         <div className="bg-gray-50 px-4 py-3 text-right flex justify-end items-center gap-3">
                             <button 
                                 type="button"
-                                onClick={() => router.back()}
+                                onClick={() => router.push('/e')}
                                 className="btn btn-secondary">Back</button>
                             <button
                                 onClick={() => {window.location.href = '#'}}

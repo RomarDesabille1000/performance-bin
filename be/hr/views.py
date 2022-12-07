@@ -100,7 +100,10 @@ class EvalutationRubricView(GenericViewSet):
 
 class EmployeeEvaluationView(GenericViewSet):
     serializer_class = EmployeeEvaluationSerializer
-    queryset = EmployeeEvaluation.objects.all()
+    # queryset = EmployeeEvaluation.objects.all()
+
+    def get_queryset(self):
+        return search_and_filter(self, EmployeeEvaluation)
 
     def list(self, request, *args, **kwargs):
         user = User.objects.get(id=kwargs['pk'])
@@ -111,18 +114,18 @@ class EmployeeEvaluationView(GenericViewSet):
         evaluation_detail = ''
         if 'id' in kwargs.keys():
             evaluation = self.get_queryset().get(id=kwargs['id'])
-            evaluation_serializer = self.serializer_class(evaluation, many=False)
+            evaluation_serializer = self.serializer_class(evaluation, many=False).data
             evaluation_detail = EmployeeEvaluationDetailSerializer(
                 EmployeeEvaluationDetail.objects.filter(employee_evaluation=evaluation),
                 many=True
             ).data
         else:
-            evaluation_serializer = self.serializer_class(
-            self.get_queryset().filter(employee=user).order_by('-date_created'), many=True)
+            evaluation_serializer = paginated_data(self, 
+                self.get_queryset().filter(employee=user).order_by('-date_created')
+            )
 
-        print(evaluation_detail)
         return Response({
-            'evaluation': evaluation_serializer.data,
+            'evaluation': evaluation_serializer,
             'user': user_serializer.data,
             'evaluation_detail': evaluation_detail
         },status=status.HTTP_200_OK)

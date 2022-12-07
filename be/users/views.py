@@ -27,6 +27,11 @@ from employee.serializers import (
     CustomerRatingAnswers,
     Attendance
 )
+
+from utils.query import (
+    search_,
+    paginated_data,
+)
 from .permissions import HROnly, EmployeeOnly
 from .models import USER_TYPES, Employee
 
@@ -77,24 +82,20 @@ class EmployeesView(GenericViewSet):
     serializer_class = UserSerializer
 
     def get_queryset(self):
-        queryset = User.objects.all()
-        lastname = self.request.query_params.get('lastname')
-        if lastname is not None:
-            queryset = queryset.filter(user_employee__lastname__contains=lastname)
-        return queryset
+        return search_(self, User, 
+            user_employee__lastname__contains=self.request.query_params.get('lastname')
+        )
 
     def list(self, request):
-        serializer = self.serializer_class(self.get_queryset().
-            filter(user_employee__isnull=False), many=True)
-        return Response(serializer.data , status=status.HTTP_200_OK)
+        queryset = self.get_queryset().filter(user_employee__isnull=False)
+        data = paginated_data(self, queryset)
+        return Response(data , status=status.HTTP_200_OK)
 
     def evaluation_user_selection(self, request):
-        serializer = self.serializer_class(self.get_queryset().
-            filter(
-                user_employee__isnull=False,
-            ).exclude(employee_evaluation__date_created__year=datetime.now().year), 
-        many=True)
-        return Response(serializer.data , status=status.HTTP_200_OK)
+        queryset = self.get_queryset().filter(user_employee__isnull=False)\
+            .exclude(employee_evaluation__date_created__year=datetime.now().year)
+        data = paginated_data(self, queryset)
+        return Response(data, status=status.HTTP_200_OK)
 
     
     def create(self, request):
@@ -105,7 +106,7 @@ class EmployeesView(GenericViewSet):
         return Response(status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, **kwargs):
-        user = self.get_queryset().get(id=kwargs['pk'])
+        user = User.objects.get(id=kwargs['pk'])
         user_serializer = self.serializer_class(user, many=False)
 
 

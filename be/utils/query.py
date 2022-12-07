@@ -40,6 +40,12 @@ def search_and_filter(self, o, *args, **kwargs):
     except (Exception,):
         return obj
 
+def search_(self, o, *args, **kwargs):
+    queryset = o.objects.all()
+    if kwargs is not None:
+        queryset = queryset.filter(*args, **kwargs)
+    return queryset
+
 def paginated_data(self, queryset):
     page = self.paginate_queryset(queryset)
     serializer = self.serializer_class(page, many=True)

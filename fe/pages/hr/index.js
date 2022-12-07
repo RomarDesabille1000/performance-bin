@@ -24,8 +24,10 @@ export default function HRDashboard() {
 		position: '',
 		dateHired: '',
 	})
+
+    const [pageIndex, setPageIndex] = useState(1);
 	const [year, setYear] = useState(dayjs().year())
-    const { data: employees } = useSWR(`users/employees/?lastname=${searchText}`, {
+    const { data: employees } = useSWR(`users/employees/?lastname=${searchText}&page=${pageIndex}`, {
         revalidateOnFocus: false,
     });
 
@@ -42,6 +44,7 @@ export default function HRDashboard() {
 		}
 		return year;
 	}
+
 
 	useEffect(() => {
 		setEmployeeTarget(employeeSelected)
@@ -63,6 +66,8 @@ export default function HRDashboard() {
 					confirmSelection={confirmSelection}
 					employeeSelected={employeeSelected}
 					setEmployeeSelected={setEmployeeSelected}
+					pageIndex={pageIndex} 
+					setPageIndex={setPageIndex}
 				/>
 			)}
 			<div className="flex justify-between mb-5">
@@ -99,12 +104,12 @@ export default function HRDashboard() {
 				<TotalCard
 					title="Customer Satisfaction"
 					total={data?.ratings?.result ? `${data?.ratings?.result} / ${data?.total_ratings}`: '0/0'}
-					className="bg-pink-800"
+					className="!bg-pink-800"
 				/>
 				<TotalCard
 					title="Total Backjobs"
 					total={data?.backjobs ? data?.backjobs: '0'}
-					className="bg-teal-800"
+					className="!bg-teal-800"
 				/>
 				<TotalCard
 					title="Total Sales"

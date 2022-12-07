@@ -6,10 +6,13 @@ import SearchBar from '../../../components/SearchBar';
 import dayjs from "dayjs";
 import AlertMessages from '../../../components/AlertMessages';
 import axiosInstance from '../../../utils/axiosInstance';
+import {Pagination} from '@mui/material';
+import { paginationRecordCount, PAGINATION_COUNT } from '../../../helper/paginationRecordCount';
 
 export default function Employee() {
+    const [pageIndex, setPageIndex] = useState(1);
     const [searchText, setSearchText] = useState('')
-    const { data: employees,mutate } = useSWR(`users/employees/?lastname=${searchText}`, {
+    const { data: employees,mutate } = useSWR(`users/employees/?lastname=${searchText}&page=${pageIndex}`, {
         revalidateOnFocus: false,
     });
     const [status, setStatus] = useState({
@@ -126,7 +129,16 @@ export default function Employee() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {employees?.map((d) => (
+                                    {!employees?.count && (
+                                        <tr>
+                                            <td 
+                                                colSpan={5}
+                                                className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap text-center">
+                                                No data
+                                            </td>
+                                        </tr>
+                                    )}
+                                    {employees?.results?.map((d) => (
                                         <Fragment key={d.id}>
                                             <tr>
                                                 <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
@@ -202,6 +214,17 @@ export default function Employee() {
                                     ))}
                                 </tbody>
                             </table>
+                        </div>
+                        <div className="flex justify-between mt-3">
+                            <div>
+                                {paginationRecordCount(pageIndex, employees?.count)}
+                            </div>
+                            <Pagination 
+                                    count={employees?.count ? Math.ceil(employees?.count/PAGINATION_COUNT) : 0}
+                                    page={pageIndex}
+                                    color="primary"
+                                    onChange={(_e, n) => setPageIndex(n)}
+                            />
                         </div>
                     </div>
                 </div>

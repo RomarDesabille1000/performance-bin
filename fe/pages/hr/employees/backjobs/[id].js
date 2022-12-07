@@ -230,7 +230,10 @@ export default function CreateBackjobs(){
                                 </tbody>
                             </table>
                         </div>
-                        <div className="flex justify-end mt-3">
+                        <div className="flex justify-between mt-3 pl-2">
+                            <div>
+                                {paginationRecordCount(pageIndex, backjob?.count)}
+                            </div>
                             <Pagination 
                                     count={backjob?.count ? Math.ceil(backjob?.count/PAGINATION_COUNT) : 0}
                                     page={pageIndex}

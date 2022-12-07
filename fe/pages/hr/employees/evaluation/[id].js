@@ -3,11 +3,15 @@ import useSWR from "swr";
 import AdminLayout from "../../../../components/AdminLayout";
 import dayjs from "dayjs";
 import Link from 'next/link';
+import { paginationRecordCount, PAGINATION_COUNT } from "../../../../helper/paginationRecordCount";
+import {Pagination} from '@mui/material';
+import { useState } from "react";
 
 export default function Evaluation(){
+    const [pageIndex, setPageIndex] = useState(1);
     const router = useRouter();
     const { id } = router.query
-	const { data: user } = useSWR(id ? `hr/evaluation/${id}/` : '', {
+	const { data: user } = useSWR(id ? `hr/evaluation/${id}/?&page=${pageIndex}` : '', {
         revalidateOnFocus: false,    
     });
 
@@ -50,14 +54,14 @@ export default function Evaluation(){
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {!user?.evaluation?.length && (
+                                    {!user?.evaluation?.results?.length && (
                                         <tr>
                                             <td colSpan={3} className="text-center py-4">
                                                 No data
                                             </td>
                                         </tr>
                                     )}
-                                    {user?.evaluation?.map((d) => (
+                                    {user?.evaluation?.results?.map((d) => (
                                         <tr key={d.id}>
                                             <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
                                                 {dayjs(d.date_created).format('MMMM DD, YYYY')}
@@ -76,6 +80,17 @@ export default function Evaluation(){
                                     ))}
                                 </tbody>
                             </table>
+                        </div>
+                        <div className="flex justify-between mt-3 pl-2">
+                            <div>
+                                {paginationRecordCount(pageIndex, user?.evaluation?.count)}
+                            </div>
+                            <Pagination 
+                                    count={user?.evaluation?.count ? Math.ceil(user?.evaluation?.count/PAGINATION_COUNT) : 0}
+                                    page={pageIndex}
+                                    color="primary"
+                                    onChange={(_e, n) => setPageIndex(n)}
+                            />
                         </div>
                     </div>
                 </div>

@@ -1,10 +1,12 @@
 import { Fragment } from "react"
 import SearchBar from "../SearchBar"
 import dayjs from "dayjs"
+import {Pagination} from '@mui/material';
+import { paginationRecordCount, PAGINATION_COUNT } from "../../helper/paginationRecordCount";
 
 export default function SelectUserModal(
     {setIsModalOpen, employees, searchText, setSearchText, setEmployeeTarget, 
-        employeeTarget, setConfirmSelection, confirmSelection, setEmployeeSelected, employeeSelected
+        employeeTarget, setConfirmSelection, confirmSelection, setEmployeeSelected, employeeSelected, pageIndex, setPageIndex
     }){
     const onKeyUpSearch = (e) => {
         if(e.code === 'Enter')
@@ -17,6 +19,7 @@ export default function SelectUserModal(
         }
     }
     function close(){
+        setSearchText('')
         setIsModalOpen(false)
         // setEmployeeTarget({
         //     id: -1,
@@ -50,7 +53,7 @@ export default function SelectUserModal(
                             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>  
                         </button>
                     </div>
-                    <div className="p-6 space-y-2">
+                    <div className="p-6 space-y-2 pt-2">
                         <SearchBar
                             onChange={onChangeSearch}
                             onKeyUp={onKeyUpSearch}
@@ -75,48 +78,57 @@ export default function SelectUserModal(
                                         <tr>
                                             <th
                                                 scope="col"
-                                                className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                                                className="px-6 py-2 text-xs font-bold text-left text-gray-500 uppercase "
                                             >
                                                 ID
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                                                className="px-6 py-2 text-xs font-bold text-left text-gray-500 uppercase "
                                             >
                                                 Name
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                                                className="px-6 py-2 text-xs font-bold text-left text-gray-500 uppercase "
                                             >
                                                 Position
                                             </th>
                                             <th
                                                 scope="col"
-                                                className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                                                className="px-6 py-2 text-xs font-bold text-left text-gray-500 uppercase "
                                             >
                                                 Date Hired
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200">
-                                        {employees?.map((d) => (
+                                        {!employees?.count && (
+                                            <tr>
+                                                <td  
+                                                    colSpan={4}
+                                                    className="px-6 py-2 text-sm font-medium text-gray-800 text-center">
+                                                    No data
+                                                </td>
+                                            </tr>
+                                        )}
+                                        {employees?.results?.map((d) => (
                                             <Fragment key={d.id}>
                                                 <tr 
                                                     onClick={() => setEmployeeSelection(d)}
                                                     className="cursor-pointer hover:bg-gray-100">
-                                                    <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
+                                                    <td className="px-6 py-2 text-sm font-medium text-gray-800 whitespace-nowrap">
                                                         {d.id}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                                                    <td className="px-6 py-2 text-sm text-gray-800 whitespace-nowrap">
                                                         {d.user_employee?.firstname}&nbsp;
                                                         {d.user_employee?.mi}.&nbsp;
                                                         {d.user_employee?.lastname}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                                                    <td className="px-6 py-2 text-sm text-gray-800 whitespace-nowrap">
                                                         {d.user_employee?.position}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                                                    <td className="px-6 py-2 text-sm text-gray-800 whitespace-nowrap">
                                                         {dayjs(d.user_employee?.date_hired).format('MMMM DD, YYYY')}
                                                     </td>
                                                 </tr>
@@ -124,6 +136,17 @@ export default function SelectUserModal(
                                         ))}
                                     </tbody>
                                 </table>
+                            </div>
+                            <div className="flex justify-between mt-3 pl-2">
+                                <div>
+                                    {paginationRecordCount(pageIndex, employees?.count)}
+                                </div>
+                                <Pagination 
+                                        count={employees?.count ? Math.ceil(employees?.count/PAGINATION_COUNT) : 0}
+                                        page={pageIndex}
+                                        color="primary"
+                                        onChange={(_e, n) => setPageIndex(n)}
+                                />
                             </div>
                         </div>
                     </div>

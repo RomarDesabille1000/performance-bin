@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework import status, generics
 from rest_framework.viewsets import GenericViewSet
 from django.db import transaction
+from django.db.models import Sum, Count
 
 from .serializers import (
     AttendanceSerializer,
@@ -18,7 +19,9 @@ from users.serializers import (
     User,
 )
 from utils.query import (
-    convert_datetz
+    convert_datetz,
+    search_and_filter,
+    paginated_data,
 )
 from users.permissions import EmployeeOnly,HROnly
 
@@ -55,6 +58,9 @@ class CustomerRatingView(GenericViewSet):
     serializer_class =  CustomerRatingSerializer 
     queryset = CustomerRatingAnswers.objects.all()
 
+    def get_queryset(self):
+        return search_and_filter(self, CustomerRatingAnswers)
+
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -63,16 +69,26 @@ class CustomerRatingView(GenericViewSet):
         return Response(status=status.HTTP_201_CREATED)
 
     def list(self, request, *args, **kwargs):
-        customer_rating_serializer = self.serializer_class(
-            self.get_queryset().filter(user_id=kwargs['pk']).order_by('-date'), many=True)
+        queryset = self.get_queryset().filter(user_id=kwargs['pk'])\
+            .order_by('-date')
 
         user_serializer = UserSerializer(
             User.objects.get(id=kwargs['pk'])
             ,many=False)
 
+        customer_rating = paginated_data(self, queryset)
+        #back
+
+        total_customer_rating = queryset.aggregate(result=Sum('q4'))
+        total_rating = queryset.count() * 5
+
         return Response({
-            'customer_rating': customer_rating_serializer.data,
-            'user': user_serializer.data
+            'customer_rating': customer_rating,
+            'user': user_serializer.data,
+            'rating': {
+                'total_rating': total_customer_rating,
+                'over': total_rating
+            }
         },status=status.HTTP_200_OK)
 
 class AbsencesView(GenericViewSet, generics.ListAPIView):   

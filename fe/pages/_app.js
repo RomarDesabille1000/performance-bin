@@ -12,7 +12,7 @@ function MyApp({ Component, pageProps }) {
 	return (
 		<div>
 			<Head>
-				<title>First Philippine Scales</title>
+				<title>Performance Bin</title>
 				<meta name="viewport" content="initial-scale=1.0, width=device-width" />
 				<meta property="og:title" content="My page title" key="title" />
 			</Head>

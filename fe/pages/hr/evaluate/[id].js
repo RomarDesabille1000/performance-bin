@@ -224,7 +224,7 @@ export default function Evaluate() {
                             <div className="bg-white px-4 py-5 sm:p-6">
                                 <div>
                                     <button className="text-blue-500"
-                                        onClick={() => router.back()}
+                                        onClick={() => router.push('/hr/evaluate')}
                                     >Back</button>
                                 </div>
                                 {percentage.kpi !== 100 || percentage.core !== 100 ? (

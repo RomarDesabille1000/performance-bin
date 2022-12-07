@@ -232,7 +232,10 @@ export default function CreateSales(){
                                 </tbody>
                             </table>
                         </div>
-                        <div className="flex justify-end mt-3">
+                        <div className="flex justify-between mt-3 pl-2">
+                            <div>
+                                {paginationRecordCount(pageIndex, sales?.count)}
+                            </div>
                             <Pagination 
                                     count={sales?.count ? Math.ceil(sales?.count/PAGINATION_COUNT) : 0}
                                     page={pageIndex}
