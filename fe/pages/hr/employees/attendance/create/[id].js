@@ -102,7 +102,7 @@ export default function CreateOnsiteAttendance(){
                         </div>
                         <div>
                             Position:&nbsp;
-                            {e?.user_employee?.position}&nbsp;
+                            {e?.user_employee?.type == 'TECHNICIAN' ? 'Technician' : 'Sales Executive' }&nbsp;
                         </div>
                         <div>
                             Date Hired:&nbsp;

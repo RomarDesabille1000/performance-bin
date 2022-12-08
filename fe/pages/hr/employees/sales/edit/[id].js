@@ -86,7 +86,7 @@ export default function EditSales(){
                         </div>
                         <div>
                             Position:&nbsp;
-                            {e?.user?.user_employee?.position}&nbsp;
+                            {e?.user?.user_employee?.type == 'TECHNICIAN' ? 'Technician' : 'Sales Executive' }&nbsp;
                         </div>
                         <div>
                             Date Hired:&nbsp;

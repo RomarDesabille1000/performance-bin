@@ -145,7 +145,7 @@ export default function EditEmployee(){
                                     </div>
                                     <div className="col-span-6 sm:col-span-4">
                                         <label className="block text-sm font-medium text-gray-700">
-                                            Employee Type
+                                            Position
                                         </label>
                                         <select
                                             id='employee_type'
@@ -160,7 +160,7 @@ export default function EditEmployee(){
                                     </div>
                                     <div className="col-span-6 sm:col-span-4">
                                         <label className="block text-sm font-medium text-gray-700">
-                                            Position
+                                            Rank
                                         </label>
                                         <input
                                             {...register('position')} 

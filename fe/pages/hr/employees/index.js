@@ -150,7 +150,7 @@ export default function Employee() {
                                                     {d.user_employee?.lastname}
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                                    {d.user_employee?.position}
+                                                    {d.user_employee?.type == 'TECHNICIAN' ? 'Technician' : 'Sales Executive' }
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                     {dayjs(d.user_employee?.date_hired).format('MMMM DD, YYYY')}

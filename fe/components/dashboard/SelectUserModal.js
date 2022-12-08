@@ -30,7 +30,7 @@ export default function SelectUserModal(
         setEmployeeSelected({
             id: d?.id,
             name: `${d?.user_employee?.firstname} ${d?.user_employee?.mi} ${d?.user_employee?.lastname}`,
-            position: d?.user_employee?.position,
+            position: d?.user_employee?.type,
             dateHired: dayjs(d?.user_employee?.date_hired).format('MMMM DD, YYYY'),
         })
     }
@@ -126,7 +126,7 @@ export default function SelectUserModal(
                                                         {d.user_employee?.lastname}
                                                     </td>
                                                     <td className="px-6 py-2 text-sm text-gray-800 whitespace-nowrap">
-                                                        {d.user_employee?.position}
+                                                    {d.user_employee?.type == 'TECHNICIAN' ? 'Technician' : 'Sales Executive' }
                                                     </td>
                                                     <td className="px-6 py-2 text-sm text-gray-800 whitespace-nowrap">
                                                         {dayjs(d.user_employee?.date_hired).format('MMMM DD, YYYY')}

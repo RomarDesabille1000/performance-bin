@@ -93,7 +93,7 @@ export default function Evaluate() {
                                                 {d.user_employee?.lastname}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                                {d.user_employee?.position}
+                                                {d?.user_employee?.type == 'TECHNICIAN' ? 'Technician' : 'Sales Executive' }
                                             </td>
 											<td>
 												<Link className='text-blue-600 text-sm' 

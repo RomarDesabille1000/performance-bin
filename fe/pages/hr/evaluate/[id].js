@@ -248,7 +248,7 @@ export default function Evaluate() {
                                             <span> {e?.user?.user_employee?.mi.toUpperCase()}. </span>
                                         </div>
                                         <div className="text-md">
-                                            Position: {e?.user?.user_employee?.position}
+                                            Position: {e?.user?.user_employee?.type == 'TECHNICIAN' ? 'Technician' : 'Sales Executive' }
                                         </div>
                                         <div className="text-md">
                                             Review Period: {e?.review_period}

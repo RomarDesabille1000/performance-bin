@@ -77,7 +77,10 @@ export default function HRDashboard() {
 						<span></span>
 					</div>
 					<div> 
-						<span className="text-gray-500">Position: {employeeTarget.position}</span>
+						{employeeTarget.position == '' ? 
+							<span className="text-gray-500">Position: </span> :
+							<span className="text-gray-500">Position: {employeeTarget.position == 'TECHNICIAN' ? 'Technician' : 'Sales Executive' }</span>
+						}
 						<span></span>
 					</div>
 					<div> 

@@ -75,7 +75,7 @@ export default function Attendance(){
                 </div>
                 <div> 
                     <span className="text-gray-500">Position: </span>
-                    <span> {user?.user?.user_employee?.position}</span>
+                    <span>{user?.user?.user_employee?.type == 'TECHNICIAN' ? 'Technician' : 'Sales Executive' }</span>
                 </div>
             </div>
             <div className="mt-1">
