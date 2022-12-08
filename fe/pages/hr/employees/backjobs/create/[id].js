@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 const BackJobsSchema = yup.object().shape({
   customer_name: yup.string().required("This field is required.").max(255, "Only 255 characters is allowed."),
 	description: yup.string().required("This field is required.").max(255, "Only 255 characters is allowed."),
+    reason: yup.string().required("This field is required.").max(255, "Only 255 characters is allowed."),
 	date: yup.date().typeError('Must be a date').required("This field is required."),
 });
 
@@ -113,7 +114,7 @@ export default function CreateBackJob(){
                                     </div>
                                     <div className="col-span-6 sm:col-span-6">
                                         <label className="block text-sm font-medium text-gray-700">
-                                            Description
+                                            Description of service performed
                                         </label>
                                         <input
                                             {...register('description')} 
@@ -122,6 +123,18 @@ export default function CreateBackJob(){
                                             className="input"
                                         />
                                         <div className="text-red-500 text-sm pt-1">{errors?.description && errors?.description?.message}</div>
+                                    </div>
+                                    <div className="col-span-6 sm:col-span-6">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Reason for failure
+                                        </label>
+                                        <input
+                                            {...register('reason')} 
+                                            type="text"
+                                            autoComplete="off"
+                                            className="input"
+                                        />
+                                        <div className="text-red-500 text-sm pt-1">{errors?.reason && errors?.reason?.message}</div>
                                     </div>
                                 </div>
                                 <div className="mt-5">

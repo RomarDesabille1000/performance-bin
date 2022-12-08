@@ -176,7 +176,10 @@ export default function CreateBackjobs(){
                                             Customer Name
                                         </th>
                                         <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
-                                            Description
+                                            Description of Service Performed
+                                        </th>
+                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
+                                            Reason of Failure
                                         </th>
                                         <th 
                                             style={{width: '200px'}}
@@ -208,6 +211,9 @@ export default function CreateBackjobs(){
                                             </td>
                                             <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
                                                 {d.description}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
+                                                {d.reason}
                                             </td>
                                             <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
                                                 <div className="flex gap-5">

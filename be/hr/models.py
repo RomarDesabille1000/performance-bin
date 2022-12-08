@@ -50,6 +50,7 @@ class BackJobs(models.Model):
         on_delete=models.CASCADE, blank=True, null=True, related_name='employee_backjobs')
     customer_name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
+    reason = models.CharField(max_length=255, default='')
     date = models.DateTimeField(default=now)
 
     class Meta: 

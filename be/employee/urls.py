@@ -12,6 +12,10 @@ urlpatterns = [
         })),
         path('<int:pk>/', AttendanceView.as_view({
             'get': 'list',
+            'post': 'onsitecreate',
+        })),
+        path('<int:pk>/<int:id>',  AttendanceView.as_view({
+            'delete': 'delete',
         })),
     ])),
     path('customer-rating/', include([

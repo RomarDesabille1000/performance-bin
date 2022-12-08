@@ -119,7 +119,8 @@ export default function EditAbsence(){
                                     </label>
                                     <input 
                                         {...register('date')} 
-                                        type="date" 
+                                        disabled = {true}
+                                        type="text" 
                                         className="input !w-[200px]" />
                                     <div className="text-red-500 text-sm pt-1">{errors?.date && errors?.date?.message}</div>
                                 </div>

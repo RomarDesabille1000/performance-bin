@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import useSWR from "swr";
 import AdminLayout from "../../../../../components/AdminLayout";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import dayjs from "dayjs";
 import axiosInstance from "../../../../../utils/axiosInstance";
 import AlertMessages from "../../../../../components/AlertMessages";
@@ -9,32 +9,23 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 
-const BackJobsSchema = yup.object().shape({
-  customer_name: yup.string().required("This field is required.").max(255, "Only 255 characters is allowed."),
-	description: yup.string().required("This field is required.").max(255, "Only 255 characters is allowed."),
-    reason: yup.string().required("This field is required.").max(255, "Only 255 characters is allowed."),
+
+const AttendanceSchema = yup.object().shape({
 	date: yup.date().typeError('Must be a date').required("This field is required."),
 });
 
-export default function EditBackJob(){
+export default function CreateOnsiteAttendance(){
     const router = useRouter();
     //user id
     const { id } = router.query
-	const { data: e } = useSWR(id ? `hr/backjobs/retrieve/${id}/` : '', {
+	const { data: e } = useSWR(id ? `users/details/${id}/` : '', {
         revalidateOnFocus: false,       
     });
 
-	const { register, handleSubmit, formState: { errors }, setValue } = useForm({
+	const { register, handleSubmit, formState: { errors }, reset } = useForm({
 		mode: 'onSubmit',
-		resolver: yupResolver(BackJobsSchema),
+		resolver: yupResolver(AttendanceSchema),
 	})
-
-    useEffect(() => {
-        setValue('customer_name', e?.backjob?.customer_name)
-        setValue('description', e?.backjob?.description)
-        setValue('reason', e?.backjob?.reason)
-        setValue('date', dayjs(e?.backjob?.date).format('YYYY-MM-DD'))
-    }, [e])
 
 	const [status, setStatus] = useState({
 		error: false,
@@ -44,33 +35,58 @@ export default function EditBackJob(){
 	})
 
     function onClickSubmit(data){
+        let newData = {
+            type: 'ONSITE',
+            date: data.date,
+            signature: '',
+            location: 'Office Address',
+            customer_name:'none',
+        }
 		setStatus({ 
 			error: false, 
 			success: false, 
 			loading:true, 
-			infoMessage: 'Updating data.' 
+			infoMessage: 'Saving data.' 
 		})
-        axiosInstance.put(`hr/backjobs/${id}/`, data)
+        axiosInstance.post(`employee/attendance/${id}/`, newData)
         .then((_e) => {
             setStatus({ 
                 error: false, 
                 success: true, 
                 loading: false, 
-                infoMessage: 'Back Job successfully updated.' 
+                infoMessage: 'Attendance successfully recorded.' 
             })
+            reset()
         }).catch((_e) => {
-            setStatus({ 
-                error: true, 
-                success: false, 
-                loading: false, 
-                infoMessage: 'Something went wrong.' 
-            })
+            if(400 == _e?.response?.status){
+                setStatus({ 
+                    error: true, 
+                    success: false, 
+                    loading: false, 
+                    infoMessage: 'Attendance for this day already Recorded.' 
+                })
+            }else if(405 == _e?.response?.status){
+                setStatus({ 
+                    error: true, 
+                    success: false, 
+                    loading: false, 
+                    infoMessage: 'Absence for this day already Recorded.' 
+                })
+            }else{
+                setStatus({ 
+                    error: true, 
+                    success: false, 
+                    loading: false, 
+                    infoMessage: 'Something went wrong.' 
+                })
+            }
+            
         })
     }
 
     return (
         <AdminLayout
-            title="Update Back Job"
+            title="Add Onsite Attendance"
             hasBack={true}
         >
             <div className="mt-10 sm:mt-0">
@@ -80,17 +96,17 @@ export default function EditBackJob(){
                     <h3 className="text-lg font-medium leading-6 text-gray-900">Employee Information</h3>
                         <div className="mt-4">
                             Name:&nbsp;
-                            {e?.user?.user_employee?.firstname}&nbsp;
-                            {e?.user?.user_employee?.mi}.&nbsp;
-                            {e?.user?.user_employee?.lastname}
+                            {e?.user_employee?.firstname}&nbsp;
+                            {e?.user_employee?.mi}.&nbsp;
+                            {e?.user_employee?.lastname}
                         </div>
                         <div>
                             Position:&nbsp;
-                            {e?.user?.user_employee?.position}&nbsp;
+                            {e?.user_employee?.position}&nbsp;
                         </div>
                         <div>
                             Date Hired:&nbsp;
-                            {dayjs(e?.user?.user_employee?.date_hired).format('MMMM DD, YYYY')}&nbsp;
+                            {dayjs(e?.user_employee?.date_hired).format('MMMM DD, YYYY')}&nbsp;
                         </div>
                     </div>
                 </div>
@@ -108,47 +124,17 @@ export default function EditBackJob(){
                                 <div className="grid grid-cols-6 gap-6">
                                     <div className="col-span-6 sm:col-span-6">
                                         <label className="block text-sm font-medium text-gray-700">
-                                            Customer Name
+                                            Input Onsite Attendance Date
                                         </label>
-                                        <input
-                                            {...register('customer_name')} 
-                                            type="text"
-                                            autoComplete="off"
-                                            className="input !w-[200px]"
-                                        />
-                                        <div className="text-red-500 text-sm pt-1">{errors?.customer_name && errors?.customer_name?.message}</div>
                                     </div>
                                 </div>
-                                <div className="col-span-6 sm:col-span-6">
-                                        <label className="block text-sm font-medium text-gray-700">
-                                            Description of service performed
-                                        </label>
-                                        <input
-                                            {...register('description')} 
-                                            type="text"
-                                            autoComplete="off"
-                                            className="input"
-                                        />
-                                        <div className="text-red-500 text-sm pt-1">{errors?.description && errors?.description?.message}</div>
-                                    </div>
-                                    <div className="col-span-6 sm:col-span-6">
-                                        <label className="block text-sm font-medium text-gray-700">
-                                            Reason of Failure
-                                        </label>
-                                        <input
-                                            {...register('reason')} 
-                                            type="text"
-                                            autoComplete="off"
-                                            className="input"
-                                        />
-                                        <div className="text-red-500 text-sm pt-1">{errors?.reason && errors?.reason?.message}</div>
-                                    </div>
                                 <div className="mt-5">
                                     <label className="block text-sm font-medium text-gray-700">
                                         Date
                                     </label>
                                     <input 
                                         {...register('date')} 
+                                        defaultValue={dayjs(new Date()).format('YYYY-MM-DD')}
                                         type="date" 
                                         className="input !w-[200px]" />
                                     <div className="text-red-500 text-sm pt-1">{errors?.date && errors?.date?.message}</div>
@@ -160,7 +146,7 @@ export default function EditBackJob(){
                                 type="submit"
                                 className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
-                                Update
+                                Save
                             </button>
                             </div>
                         </div>

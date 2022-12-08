@@ -4,10 +4,16 @@ from django.utils.timezone import now
 from datetime import datetime
 from django.db.models import Sum
 
-
+ONSITE = "ONSITE"
+OFFSITE = "OFFSITE"
+TYPES = (
+    (ONSITE, "Onsite"),
+    (OFFSITE, "Offsite"),
+)
 class Attendance(models.Model):
     user = models.ForeignKey('users.User', 
         on_delete=models.SET_NULL, blank=True, null=True, related_name='employee_attendance')
+    type = models.CharField(max_length=20, choices=TYPES, default=OFFSITE)
     customer_name = models.CharField(max_length=100)
     signature = Base64Field(max_length=900000)
     location = models.CharField(max_length=255)
