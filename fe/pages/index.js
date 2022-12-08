@@ -9,8 +9,8 @@ export default function Home() {
 	const { login, statusCode, isLoading, setStatusCode } = useAuth()
 	const { register, handleSubmit, formState: { errors }, } = useForm({
 		defaultValues: {
-			// username: 'hr@gmail.com',
-			// password: 'fdsafdsafffffffffffff432432'
+			username: 'hr@gmail.com',
+			password: 'fdsafdsafffffffffffff432432'
 		}
 	});
 
@@ -86,12 +86,12 @@ export default function Home() {
 									disable={isLoading}
 									type="submit"
 								/>
-								<div className="text-sm mt-3 text-center">
+								{/* <div className="text-sm mt-3 text-center">
 									<span>Dont have an account? </span>
 									<a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
 										Sign up here.
 									</a>
-								</div>
+								</div> */}
 							</div>
 						</form>
 						</div>
