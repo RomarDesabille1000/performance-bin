@@ -34,6 +34,7 @@ class UserAdmin(BaseUserAdmin):
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = ('firstname', 'lastname', 'mi', 'position', 'date_hired')
+    pass
 
 
 from django.contrib.auth.models import Group

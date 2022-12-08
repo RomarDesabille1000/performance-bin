@@ -4,8 +4,8 @@ from rest_framework.viewsets import GenericViewSet
 from django.db import transaction
 import pytz
 from datetime import timedelta, datetime
-from django.db.models import Sum, Count
-from django.db.models.functions import ExtractMonth, TruncMonth
+from django.db.models import Sum, Count, Func, F
+from django.db.models.functions import ExtractMonth, TruncMonth, Cast
 import numpy as np
 
 

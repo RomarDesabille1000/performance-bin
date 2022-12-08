@@ -39,11 +39,11 @@ USER_TYPES = (
 )
 class Employee(models.Model):
     user = models.OneToOneField('users.User', 
-        on_delete=models.SET_NULL, blank=True, null=True, related_name='user_employee')
+        on_delete=models.CASCADE, blank=True, null=True, related_name='user_employee')
     firstname = models.CharField(max_length=100)
     lastname = models.CharField(max_length=100)
     mi = models.CharField(max_length=100)
-    type = models.CharField(max_length=20, choices=USER_TYPES, default=SALESEXECUTIVE)
+    type = models.CharField(max_length=50, choices=USER_TYPES, default=SALESEXECUTIVE)
     position = models.CharField(max_length=255)
     date_hired = models.DateTimeField()
 
