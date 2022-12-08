@@ -3,7 +3,7 @@ import axios from 'axios'
 import Cookies from 'js-cookie'
 import useSWR from "swr";
 import { useRouter } from 'next/router'
-import { USERTYPE } from "../helper/constants";
+import { getRole, USERTYPE } from "../helper/constants";
 
 import axiosInstance from '../utils/axiosInstance'
 
@@ -26,6 +26,8 @@ const AuthContextProvider = props => {
             }).then(({ data }) => {
                 const token = data?.token;
                 Cookies.set('token', token, { secure: true });
+                Cookies.set(process.env.userRole, getRole(data?.type), { secure: true });
+            
 
                 axiosInstance.defaults.headers['Authorization'] = `Token ${token}`
 
@@ -36,6 +38,7 @@ const AuthContextProvider = props => {
                 }else if(data.type == USERTYPE.HR){
                     router.push('/hr')
                 }
+                console.log(data);
 
             }).catch((error) => {
                 setStatusCode(error?.response?.status)
@@ -49,6 +52,7 @@ const AuthContextProvider = props => {
 
     const logout = () => {
         Cookies.remove('token')
+        Cookies.remove(process.env.userRole)
         window.location.href = '/'
     }
 
