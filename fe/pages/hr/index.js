@@ -7,6 +7,7 @@ import CustomerSatisfactionGraph from "../../components/dashboard/CustomerSatisf
 import dayjs from "dayjs";
 import { useRef } from "react";
 import { currencyDisplay } from "../../helper/numbers";
+import Loader from "../../components/Loader";
 
 export default function HRDashboard() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -88,6 +89,9 @@ export default function HRDashboard() {
 						<span></span>
 					</div>
 				</div>
+				{employeeTarget.id > 0 && !data && (
+					<Loader/>
+				)}
 				<div className="flex items-end flex-col justify-end">
 					<button 
 						onClick={() => setIsModalOpen(true)}

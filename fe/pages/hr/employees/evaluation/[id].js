@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { paginationRecordCount, PAGINATION_COUNT } from "../../../../helper/paginationRecordCount";
 import {Pagination} from '@mui/material';
 import { useState } from "react";
+import Loader from "../../../../components/Loader";
 
 export default function Evaluation(){
     const [pageIndex, setPageIndex] = useState(1);
@@ -54,12 +55,22 @@ export default function Evaluation(){
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {!user?.evaluation?.results?.length && (
+                                    {!user ? (
                                         <tr>
-                                            <td colSpan={3} className="text-center py-4">
-                                                No data
+                                            <td 
+                                                colSpan="6"
+                                                className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
+                                                    <Loader/>
                                             </td>
                                         </tr>
+                                    ):(
+                                        !user?.evaluation?.results?.length && (
+                                            <tr>
+                                                <td colSpan="3" className="text-center py-4">
+                                                    No data
+                                                </td>
+                                            </tr>
+                                        )
                                     )}
                                     {user?.evaluation?.results?.map((d) => (
                                         <tr key={d.id}>

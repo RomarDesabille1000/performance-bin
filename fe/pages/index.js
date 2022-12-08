@@ -9,8 +9,8 @@ export default function Home() {
 	const { login, statusCode, isLoading, setStatusCode } = useAuth()
 	const { register, handleSubmit, formState: { errors }, } = useForm({
 		defaultValues: {
-			// username: 'hr@gmail.com',
-			// password: 'fdsafdsafffffffffffff432432'
+			username: 'hr@gmail.com',
+			password: 'fdsafdsafffffffffffff432432'
 		}
 	});
 

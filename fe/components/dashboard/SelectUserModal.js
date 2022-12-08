@@ -3,6 +3,7 @@ import SearchBar from "../SearchBar"
 import dayjs from "dayjs"
 import {Pagination} from '@mui/material';
 import { paginationRecordCount, PAGINATION_COUNT } from "../../helper/paginationRecordCount";
+import Loader from "../Loader";
 
 export default function SelectUserModal(
     {setIsModalOpen, employees, searchText, setSearchText, setEmployeeTarget, 
@@ -103,14 +104,24 @@ export default function SelectUserModal(
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200">
-                                        {!employees?.count && (
+                                        {!employees ? (
                                             <tr>
-                                                <td  
-                                                    colSpan={4}
-                                                    className="px-6 py-2 text-sm font-medium text-gray-800 text-center">
-                                                    No data
+                                                <td 
+                                                    colSpan="6"
+                                                    className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
+                                                        <Loader/>
                                                 </td>
                                             </tr>
+                                        ):(
+                                            !employees?.results?.length && (
+                                                <tr>
+                                                    <td 
+                                                        colSpan="5"
+                                                        className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
+                                                            No record Found
+                                                    </td>
+                                                </tr>
+                                            )
                                         )}
                                         {employees?.results?.map((d) => (
                                             <Fragment key={d.id}>

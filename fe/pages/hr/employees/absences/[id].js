@@ -9,6 +9,7 @@ import {Pagination} from '@mui/material';
 import {paginationRecordCount, PAGINATION_COUNT} from '../../../../helper/paginationRecordCount'
 import AlertMessages from "../../../../components/AlertMessages";
 import axiosInstance from "../../../../utils/axiosInstance";
+import Loader from "../../../../components/Loader";
 
 
 export default function Absences(){
@@ -128,6 +129,7 @@ export default function Absences(){
                       text={filterText}
                       setText={setFilterText}
                       placeholder="Search and Enter | Reason"
+                      className="!w-[320px]"
                   />
                   <div className="flex items-center gap-3">
                     <div>From: &nbsp;</div>
@@ -170,13 +172,32 @@ export default function Absences(){
                                         </th>
                                         <th
                                             scope="col"
-                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase w-[150px]"
                                         >
                                             Actions
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
+                                    {!absences ? (
+                                        <tr>
+                                            <td 
+                                                colSpan="6"
+                                                className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
+                                                    <Loader/>
+                                            </td>
+                                        </tr>
+                                    ):(
+                                        !absences?.results?.length && (
+                                            <tr>
+                                                <td 
+                                                    colSpan="7"
+                                                    className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
+                                                        No record Found
+                                                </td>
+                                            </tr>
+                                        )
+                                    )}
                                     {Array.isArray(absences?.results) ? absences?.results.map((d) => (
                                         <tr key={d.id}>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">

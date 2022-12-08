@@ -9,6 +9,7 @@ import Link from "next/link";
 import {Pagination} from '@mui/material';
 import {paginationRecordCount, PAGINATION_COUNT} from '../../../../helper/paginationRecordCount'
 import SearchBar from "../../../../components/SearchBar";
+import Loader from "../../../../components/Loader";
 
 export default function CreateBackjobs(){
     const router = useRouter();
@@ -189,14 +190,24 @@ export default function CreateBackjobs(){
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {!backjob?.results?.length && (
+                                    {!backjob ? (
                                         <tr>
                                             <td 
-                                                colSpan="5"
+                                                colSpan="6"
                                                 className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
-                                                    No record Found
+                                                    <Loader/>
                                             </td>
                                         </tr>
+                                    ):(
+                                        !backjob?.results?.length && (
+                                            <tr>
+                                                <td 
+                                                    colSpan="6"
+                                                    className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
+                                                        No record Found
+                                                </td>
+                                            </tr>
+                                        )
                                     )}
                                     {backjob?.results?.map((d) => (
                                         <tr key={d.id}>

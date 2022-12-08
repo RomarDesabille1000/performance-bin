@@ -10,6 +10,7 @@ import {Pagination} from '@mui/material';
 import {paginationRecordCount, PAGINATION_COUNT} from '../../../../helper/paginationRecordCount'
 import SearchBar from "../../../../components/SearchBar";
 import { DoubleType } from "../../../../helper/numbers";
+import Loader from "../../../../components/Loader";
 
 export default function CreateSales(){
     const router = useRouter();
@@ -188,14 +189,24 @@ export default function CreateSales(){
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {!sales?.results?.length && (
+                                    {!sales ? (
                                         <tr>
                                             <td 
-                                                colSpan="5"
+                                                colSpan="6"
                                                 className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
-                                                    No record Found
+                                                    <Loader/>
                                             </td>
                                         </tr>
+                                    ):(
+                                        !sales?.results?.length && (
+                                            <tr>
+                                                <td 
+                                                    colSpan="5"
+                                                    className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
+                                                        No record Found
+                                                </td>
+                                            </tr>
+                                        )
                                     )}
                                     {sales?.results?.map((d) => (
                                         <tr key={d.id}>

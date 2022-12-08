@@ -8,6 +8,7 @@ import AlertMessages from '../../../components/AlertMessages';
 import axiosInstance from '../../../utils/axiosInstance';
 import {Pagination} from '@mui/material';
 import { paginationRecordCount, PAGINATION_COUNT } from '../../../helper/paginationRecordCount';
+import Loader from '../../../components/Loader';
 
 export default function Employee() {
     const [pageIndex, setPageIndex] = useState(1);
@@ -129,14 +130,24 @@ export default function Employee() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {!employees?.count && (
+                                    {!employees ? (
                                         <tr>
                                             <td 
-                                                colSpan={5}
-                                                className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap text-center">
-                                                No data
+                                                colSpan="6"
+                                                className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
+                                                    <Loader/>
                                             </td>
                                         </tr>
+                                    ):(
+                                        !employees?.results?.length && (
+                                            <tr>
+                                                <td 
+                                                    colSpan="7"
+                                                    className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
+                                                        No record Found
+                                                </td>
+                                            </tr>
+                                        )
                                     )}
                                     {employees?.results?.map((d) => (
                                         <Fragment key={d.id}>

@@ -5,6 +5,7 @@ import AdminLayout from '../../../components/AdminLayout';
 import SearchBar from '../../../components/SearchBar';
 import {Pagination} from '@mui/material';
 import { paginationRecordCount, PAGINATION_COUNT } from "../../../helper/paginationRecordCount";
+import Loader from '../../../components/Loader';
 
 
 export default function Evaluate() {
@@ -73,14 +74,24 @@ export default function Evaluate() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {!employees?.count && (
+                                    {!employees ? (
                                         <tr>
                                             <td 
-                                                colSpan={5}
-                                                className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap text-center">
-                                                No employee to evaluate
+                                                colSpan="6"
+                                                className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
+                                                    <Loader/>
                                             </td>
                                         </tr>
+                                    ):(
+                                        !employees?.results?.length && (
+                                            <tr>
+                                                <td 
+                                                    colSpan="7"
+                                                    className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
+                                                        No record Found
+                                                </td>
+                                            </tr>
+                                        )
                                     )}
                                     {employees?.results?.map((d) => (
                                         <tr key={d.id}>

@@ -7,6 +7,7 @@ import {Pagination} from '@mui/material';
 import { paginationRecordCount, PAGINATION_COUNT } from "../../../../helper/paginationRecordCount";
 import { useEffect } from "react";
 import { handleNoValue } from "../../../../helper/numbers";
+import Loader from "../../../../components/Loader";
 
 
 export default function Attendance(){
@@ -137,14 +138,24 @@ export default function Attendance(){
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {!user?.customer_rating?.count && (
+                                    {!user ? (
                                         <tr>
                                             <td 
-                                                colSpan="7"
+                                                colSpan="6"
                                                 className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
-                                                    No record Found
+                                                    <Loader/>
                                             </td>
                                         </tr>
+                                    ):(
+                                        !user?.customer_rating?.count && (
+                                            <tr>
+                                                <td 
+                                                    colSpan="7"
+                                                    className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
+                                                        No record Found
+                                                </td>
+                                            </tr>
+                                        )
                                     )}
                                     {user?.customer_rating?.results.map((d) => (
                                         <tr key={d.id}>

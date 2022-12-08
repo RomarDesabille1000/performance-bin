@@ -6,6 +6,7 @@ import { EVALUATIONTYPE } from "../../../../../helper/constants";
 import { useEffect } from "react";
 import { useState } from "react";
 import { DoubleType } from "../../../../../helper/numbers";
+import Loader from '../../../../../components/Loader'
 
 export default function Evaluation(){
     const router = useRouter();
@@ -73,6 +74,7 @@ export default function Evaluation(){
                                 <button className="text-blue-500"
                                     onClick={() => router.back()}
                                 >Back</button>
+                            {!e && <Loader/>}
                             </div>
                             <div className="text-md text-center font-medium text-red-500" aria-hidden="true">
                                 {e?.is_evaluated > 0 && (

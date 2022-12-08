@@ -9,6 +9,7 @@ import AlertMessages from "../../../../components/AlertMessages";
 import axiosInstance from "../../../../utils/axiosInstance";
 import {paginationRecordCount, PAGINATION_COUNT} from '../../../../helper/paginationRecordCount'
 import { MenuItem, Pagination, Select } from "@mui/material";
+import Loader from "../../../../components/Loader";
 
 
 export default function Attendance(){
@@ -141,17 +142,18 @@ export default function Attendance(){
                     )}
                     <div className="overflow-x-auto">
                         <div className="flex justify-between items-center">
-                            <div className="flex ">
+                            <div className="flex items-center">
                                 <SearchBar
                                     onChange={onChangeSearch}
                                     onKeyUp={onKeyUpSearch}
                                     text={filterText}
                                     setText={setFilterText}
                                     placeholder="Search and Enter | Customer Name"
+                                    className="!w-[320px]"
                                 />
                                 <select
                                     defaultValue=''
-                                    className="block w-[150px] mt-3 ml-2 p-2 pl-3 text-sm border border-indigo-500 rounded-md focus:border-indigo-800 outline-none bg-transparent h-12"
+                                    className="block w-[150px] ml-2 p-2 pl-3 text-sm border border-indigo-500 rounded-md focus:border-indigo-800 outline-none bg-transparent h-12"
                                     onChange={(e) => setType(e.target.value)}
                                     >
                                     <option value =''>All</option>
@@ -228,6 +230,25 @@ export default function Attendance(){
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
+                                    {!attendance ? (
+                                        <tr>
+                                            <td 
+                                                colSpan="6"
+                                                className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
+                                                    <Loader/>
+                                            </td>
+                                        </tr>
+                                    ):(
+                                        !attendance?.results?.length && (
+                                            <tr>
+                                                <td 
+                                                    colSpan="7"
+                                                    className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
+                                                        No record Found
+                                                </td>
+                                            </tr>
+                                        )
+                                    )}
                                     {Array.isArray(attendance?.results) ? attendance?.results.map((d) => (
                                         <tr key={d.id}>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
