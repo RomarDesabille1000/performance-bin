@@ -142,7 +142,7 @@ export default function Attendance(){
                             />
                             <button 
                                 onClick={viewImageClose}
-                                className="btn btn-secondary ml-2 mt-2">Close</button>
+                                className="btn btn-secondary ml-2 my-3">Close</button>
                         </div>
                     )}
                     <div className="overflow-x-auto">
@@ -269,11 +269,12 @@ export default function Attendance(){
                                                 {d.location}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                                {d.type == 'OFFSITE' ? <button
+                                                {d.type == 'OFFSITE' && d.signature
+                                                    ? <button
                                                     onClick={() => viewSignatureClick(d.signature)}
                                                     className="text-indigo-500 hover:text-indigo-700">
                                                         View Signature
-                                                </button> : <></>}
+                                                </button> : ''}
                                             </td>
                                             <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
                                                 <div className="flex gap-5">
