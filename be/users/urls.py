@@ -8,13 +8,14 @@ urlpatterns = [
     path('profile/', UserView.as_view({
         'get': 'info',
     })),
+    path('profile/<int:userId>/', UserView.as_view({
+        'post': 'change_password',
+    })),
     path('details/<int:userId>/', UserView.as_view({
         'get': 'get_user_details',
         'put': 'update_user',
         'delete': 'delete_user'
     })),
-    path('profile/', include([
-    ])),
     path('employees/', include([
         path('', EmployeesView.as_view({
             'get': 'list',

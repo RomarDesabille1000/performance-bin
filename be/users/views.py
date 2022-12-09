@@ -70,6 +70,18 @@ class UserView(GenericViewSet):
             serializer.save()
         return Response(status=status.HTTP_200_OK)
 
+    def change_password(self, request,  **kwargs):
+        user = User.objects.get(id=kwargs['userId'])
+        password = request.data['new_password']
+        user.set_password(password)
+        print(password)
+        user.save()
+        serializer = self.serializer_class(user, many=False)
+            # serializer = EmployeeSerializer(user, data=request.data, partial=True)
+            # if serializer.is_valid():
+            #     serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def delete_user(self, request, **kwargs):
         User.objects.get(id=kwargs['userId']).delete()
         return Response(status=status.HTTP_200_OK)

@@ -38,7 +38,7 @@ export default function CreateOnsiteAttendance(){
         let newData = {
             type: 'ONSITE',
             date: data.date,
-            signature: '',
+            signature: 'none',
             location: 'Office Address',
             customer_name:'none',
         }

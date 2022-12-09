@@ -63,10 +63,10 @@ class AttendanceView(GenericViewSet):
     def onsitecreate(self, request, *args, **kwargs):
         userdata = User.objects.get(id=kwargs['pk'])
         print(request.data['date'])
-        if Attendance.objects.filter(date=request.data['date']).filter(user=kwargs['pk']).exists():
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        if Absences.objects.filter(date=request.data['date']).filter(user=kwargs['pk']).exists():
+        if Absences.objects.filter(user=kwargs['pk']).filter(date=request.data['date']).exists():
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        if Attendance.objects.filter(user=kwargs['pk']).filter(date=request.data['date']).exists():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         else :
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
