@@ -5,6 +5,7 @@ from rest_framework import status, generics
 from rest_framework.viewsets import GenericViewSet
 from django.db import transaction
 from django.db.models import Sum, Count
+from datetime import date
 
 from .serializers import (
     AttendanceSerializer,
@@ -53,7 +54,10 @@ class AttendanceView(GenericViewSet):
             return queryset
 
     def create(self, request, *args, **kwargs):
+        if Attendance.objects.filter(user=self.request.user.id).filter(date__date=date.today()).exists():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         serializer = self.get_serializer(data=request.data)
+        print(self.request.user.id)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=self.request.user)
 

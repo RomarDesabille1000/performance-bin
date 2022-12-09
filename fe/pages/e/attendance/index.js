@@ -67,12 +67,21 @@ export default function Employee() {
 					infoMessage: 'Attendance Saved.' 
 				})
 			}).catch((_e) => {
-				setStatus({ 
-					error: true, 
-					success: false, 
-					loading: false, 
-					infoMessage: 'Something went wrong.' 
-				})
+				if(400 == _e?.response?.status){
+					setStatus({ 
+							error: true, 
+							success: false, 
+							loading: false, 
+							infoMessage: 'Attendance for this day already Recorded.' 
+					})
+				}else{
+					setStatus({ 
+						error: true, 
+						success: false, 
+						loading: false, 
+						infoMessage: 'Something went wrong.' 
+					})
+				}
 			})
 		}
 	}
