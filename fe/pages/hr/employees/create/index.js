@@ -38,7 +38,6 @@ export default function AddEmployee(){
 	})
 
     function onClickSubmit(data){
-        console.log(data)
         let newData = {
             user_employee :{
                 firstname: data.firstname,
@@ -55,7 +54,6 @@ export default function AddEmployee(){
             name: data.firstname + " " + data.mi + " " + data.lastname,
 
         }
-        console.log(newData)
 		setStatus({ 
 			error: false, 
 			success: false, 
@@ -78,7 +76,6 @@ export default function AddEmployee(){
                 loading: false, 
                 infoMessage:  _e?.response?.data?.email[0] ? _e?.response?.data?.email[0] :  'Something went wrong.'
             })
-            //console.log(_e.response.data.email[0])
         })
     }
 

@@ -112,6 +112,10 @@ export default function Absences(){
                 <span className="text-gray-500">Date Hired: </span>
                 <span> {dayjs(emp?.user_employee?.date_hired).format('MMMM DD, YYYY')} </span>
             </div>
+            <div className="mt-1">
+                <span className="text-gray-500">Total Absences: </span>
+                {absences?.count ? absences?.count: 0}
+            </div>
             <div className="flex justify-end py-2">
                 <Link 
                     className="ml-3 text-blue-500"
@@ -120,60 +124,56 @@ export default function Absences(){
                     Add Absences
                 </Link>
             </div>
+            <div className="flex justify-between items-center">
+                <SearchBar
+                    onChange={onChangeSearch}
+                    onKeyUp={onKeyUpSearch}
+                    text={filterText}
+                    setText={setFilterText}
+                    placeholder="Search and Enter | Reason"
+                    className="!w-[320px]"
+                />
+                <div>
+                    <div className="flex items-center gap-3">
+                        <div>From: &nbsp;</div>
+                        <input 
+                            value={fromDate}
+                            onChange={setFromDateValue}
+                            type="date" 
+                            className="input !mt-0 !w-[200px]" />
+                        To: &nbsp;
+                        <input 
+                            value={toDate}
+                            onChange={setToDateValue}
+                            type="date" 
+                            className="input !mt-0 !w-[200px]" />
+                    </div>
+                    <div className="text-xs mt-1 text-right">Month\Date\Year</div>
+                </div>
+            </div>
+            <AlertMessages
+                className="mb-3"
+                error={status.error}
+                success={status.success}
+                loading={status.loading}
+                message={status.infoMessage}
+            />
             <div className="flex flex-col">
                 <div className="overflow-x-auto">
-                  <div className="flex justify-between items-center">
-                  <SearchBar
-                      onChange={onChangeSearch}
-                      onKeyUp={onKeyUpSearch}
-                      text={filterText}
-                      setText={setFilterText}
-                      placeholder="Search and Enter | Reason"
-                      className="!w-[320px]"
-                  />
-                  <div className="flex items-center gap-3">
-                    <div>From: &nbsp;</div>
-                    <input 
-                        value={fromDate}
-                        onChange={setFromDateValue}
-                        type="date" 
-                        className="input !mt-0 !w-[200px]" />
-                    To: &nbsp;
-                    <input 
-                        value={toDate}
-                        onChange={setToDateValue}
-                        type="date" 
-                        className="input !mt-0 !w-[200px]" />
-                </div>
-              </div>
-              <AlertMessages
-                  className="mb-3"
-                  error={status.error}
-                  success={status.success}
-                  loading={status.loading}
-                  message={status.infoMessage}
-              />
-                    <div className="p-1.5 w-full inline-block align-middle">
+                    <div className="w-full inline-block align-middle">
                         <div className="overflow-hidden border rounded-lg">
                             <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
                                 <thead className="bg-gray-50">
                                     <tr>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
-                                        >
+                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                             Date
                                         </th>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
-                                        >
+                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                             Reason
                                         </th>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase w-[150px]"
-                                        >
+                                        <th 
+                                            style={{width: '200px'}}
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                             Actions
                                         </th>
                                     </tr>
@@ -227,13 +227,18 @@ export default function Absences(){
                                 </tbody>
                             </table>
                         </div>
-                        <div className="flex justify-end mt-3">
-                            <Pagination 
-                                    count={absences?.count ? Math.ceil(absences?.count/PAGINATION_COUNT) : 0}
-                                    page={pageIndex}
-                                    color="primary"
-                                    onChange={(_e, n) => setPageIndex(n)}
-                            />
+                        <div className="flex justify-between mt-3 pl-2">
+                            <div>
+                                {paginationRecordCount(pageIndex, absences?.count)}
+                            </div>
+                            <div className="flex justify-end mt-3">
+                                <Pagination 
+                                        count={absences?.count ? Math.ceil(absences?.count/PAGINATION_COUNT) : 0}
+                                        page={pageIndex}
+                                        color="primary"
+                                        onChange={(_e, n) => setPageIndex(n)}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

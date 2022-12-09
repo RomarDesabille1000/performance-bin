@@ -1,5 +1,5 @@
 
-export const PAGINATION_COUNT = 2
+export const PAGINATION_COUNT = 6
 
 export function paginationRecordCount(pageIndex, total){
     if(total === undefined) return

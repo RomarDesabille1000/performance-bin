@@ -9,6 +9,7 @@ urlpatterns = [
     path('attendance/', include([
         path('', AttendanceView.as_view({
             'post': 'create',
+            'patch': 'non_working_attendance',
         })),
         path('<int:pk>/', AttendanceView.as_view({
             'get': 'list',

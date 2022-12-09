@@ -4,6 +4,8 @@ from django.conf.urls.static import static
 from django.urls import path, re_path, include
 from django.views.generic.base import TemplateView
 
+admin.site.site_header = "HR@timbangan"
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include([

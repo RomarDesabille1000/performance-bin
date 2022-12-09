@@ -50,7 +50,6 @@ export default function EditEmployee(){
 	})
 
     function onClickSubmit(data){
-        console.log(data)
         try{
             let newData = {
                 firstname: data.firstname,
@@ -61,7 +60,6 @@ export default function EditEmployee(){
                 date_hired: data.date_hired,
                 
             }
-            console.log(newData)
             setStatus({ 
                 error: false, 
                 success: false, 
@@ -83,7 +81,6 @@ export default function EditEmployee(){
                     loading: false, 
                     infoMessage:  'Something went wrong.'
                 })
-                //console.log(_e.response.data.email[0])
             })
         }catch(err){}
     }

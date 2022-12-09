@@ -21,7 +21,6 @@ export function middleware(req) {
           redirect = '/hr'
         else if(userRole.EMPLOYEE === userRoleC && path === 'hr')
           redirect = '/e'
-        console.log(userRole.HR, userRoleC);
         if (redirect){
             url.pathname = redirect
             return NextResponse.redirect(url)

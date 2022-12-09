@@ -12,10 +12,10 @@ TYPES = (
 )
 class Attendance(models.Model):
     user = models.ForeignKey('users.User', 
-        on_delete=models.SET_NULL, blank=True, null=True, related_name='employee_attendance')
+        on_delete=models.CASCADE, blank=True, null=True, related_name='employee_attendance')
     type = models.CharField(max_length=20, choices=TYPES, default=OFFSITE)
     customer_name = models.CharField(max_length=100)
-    signature = models.TextField()
+    signature = models.TextField(null=True)
     location = models.CharField(max_length=255)
     date = models.DateTimeField(default=now)
 
@@ -28,7 +28,7 @@ class Attendance(models.Model):
 
 class CustomerRatingAnswers(models.Model):
     user = models.ForeignKey('users.User', 
-        on_delete=models.SET_NULL, blank=True, null=True, related_name='customer_employeeratings')
+        on_delete=models.CASCADE, blank=True, null=True, related_name='customer_employeeratings')
     VERYPOSITIVE = "VERYPOSITIVE"
     SOMEWHATPOSITIVE = "SOMEWHATPOSITIVE"
     NEUTRAL = "NEUTRAL"
@@ -98,7 +98,7 @@ class CustomerRatingAnswers(models.Model):
 
 class Absences(models.Model):
     user = models.ForeignKey('users.User', 
-        on_delete=models.SET_NULL, blank=True, null=True, related_name='employee_absences')
+        on_delete=models.CASCADE, blank=True, null=True, related_name='employee_absences')
     reason = models.CharField(max_length=255)
     date = models.DateTimeField(default=now)
 

@@ -9,7 +9,7 @@ import Link from "next/link";
 import {Pagination} from '@mui/material';
 import {paginationRecordCount, PAGINATION_COUNT} from '../../../../helper/paginationRecordCount'
 import SearchBar from "../../../../components/SearchBar";
-import { DoubleType } from "../../../../helper/numbers";
+import { currencyDisplay, DoubleType } from "../../../../helper/numbers";
 import Loader from "../../../../components/Loader";
 
 export default function CreateSales(){
@@ -118,7 +118,7 @@ export default function CreateSales(){
             <div className="mt-1">
                 <span className="text-gray-500">Total Sales: </span>
                 ₱&nbsp;
-                {sales?.employee?.total_sales ? DoubleType(sales?.employee?.total_sales): 0}
+                {sales?.employee?.total_sales ? currencyDisplay(DoubleType(sales?.employee?.total_sales)): 0}
             </div>
             <div className="flex justify-end py-2">
                 <Link 
@@ -220,7 +220,7 @@ export default function CreateSales(){
                                                 {d.item_deal}
                                             </td>
                                             <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                                                ₱ {d.amount}
+                                                ₱ {currencyDisplay(d.amount)}
                                             </td>
                                             <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
                                                 <div className="flex gap-5">

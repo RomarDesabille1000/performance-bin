@@ -21,7 +21,6 @@ export default function Rubric() {
 		percentage: '',
 		editable: true,
 	});
-	console.log(rubricValues);
 	const [totalCC, setTotalCC] = useState(0);
 	const [totalKPI, setTotalKPI] = useState(0);
 	const [selectedID, setSelectedID] = useState();
@@ -130,7 +129,6 @@ export default function Rubric() {
 	};
 
 	useEffect(() => {
-		//console.log(rubricValues)
 		if (rubricValues.name != '' && rubricValues.name.length > 255)
 			setError('Name cannot exceed 255 characters!');
 		else if (
@@ -260,7 +258,6 @@ export default function Rubric() {
 		if (item?.editable !== undefined) {
 			setIsEditable(item?.editable);
 		}
-		console.log(item);
 		setSelectedID(item.id);
 		setRubricsValues({
 			type: item.type,

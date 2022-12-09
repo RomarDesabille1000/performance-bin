@@ -62,6 +62,18 @@ class AttendanceView(GenericViewSet):
         serializer.save(user=self.request.user)
 
         return Response(status=status.HTTP_201_CREATED)
+
+    @transaction.atomic
+    def non_working_attendance(self, request, *args, **kwargs):
+        users = User.objects.filter(type="EMPLOYEE").values_list('id', flat=True)
+        for id in users:
+            Attendance.objects.create(
+                user_id=id,
+                customer_name="-",
+                location="-"
+            )
+        return Response(status=status.HTTP_201_CREATED)
+
     
     @transaction.atomic
     def onsitecreate(self, request, *args, **kwargs):
@@ -168,7 +180,6 @@ class AbsencesView(GenericViewSet, generics.ListAPIView):
         page = self.paginate_queryset(data)
         absences_serializer = AbsencesSerializer(page, many=True)
         return self.get_paginated_response(absences_serializer.data)
-        
 
         # return Response({
         #     'absences_list': self.get_paginated_response(absences_serializer.data),

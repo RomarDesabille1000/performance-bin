@@ -38,7 +38,6 @@ const AuthContextProvider = props => {
                 }else if(data.type == USERTYPE.HR){
                     router.push('/hr')
                 }
-                console.log(data);
 
             }).catch((error) => {
                 setStatusCode(error?.response?.status)

@@ -26,7 +26,6 @@ export default function Attendance(){
 	const { data: attendance,mutate } = useSWR(id ? `employee/attendance/${id}/?type=${type}&filter=${filterText}&page=${pageIndex}&from=${fromDate}&to=${toDate}` : '', {
         revalidateOnFocus: false,       
     });
-    console.log(attendance)
     const [viewImage, setViewImage] = useState('');
 
     const [status, setStatus] = useState({
@@ -123,9 +122,15 @@ export default function Attendance(){
             <div className="flex justify-end py-2">
                 <Link 
                     className="ml-3 text-blue-500"
+                    href={`/hr/employees/attendance/create/all`}
+                >
+                    Non working day attendance
+                </Link>
+                <Link 
+                    className="ml-3 text-blue-500"
                     href={`/hr/employees/attendance/create/${id}`}
                 >
-                    Add Attendance
+                    Add attendance
                 </Link>
             </div>
             <div className="flex flex-col">

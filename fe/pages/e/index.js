@@ -5,7 +5,6 @@ import logoWhite from '../../images/logo-white.jpg'
 
 export default function Employee() {
     const { user, logout } = useAuth();
-    console.log();
 
     return(
         <div className="px-5 py-16 mt-10 max-w-[400px] m-auto  ">

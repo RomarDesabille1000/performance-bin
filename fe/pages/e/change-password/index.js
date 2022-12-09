@@ -33,13 +33,11 @@ export default function ChangePassword() {
 	})
 
     async function onClickSubmit(data){
-        console.log(data)
         const email = user.email;
         const password = data.old_password;
         let newData = {
             new_password: data.new_password
         }
-        console.log(newData)
 		setStatus({ 
 			error: false, 
 			success: false, 
@@ -67,7 +65,6 @@ export default function ChangePassword() {
                         loading: false, 
                         infoMessage:  'Something went wrong.'
                     })
-                    //console.log(_e.response.data.email[0])
                 })
             }).catch((error) => {
                 setStatus({ 
