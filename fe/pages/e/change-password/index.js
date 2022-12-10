@@ -125,7 +125,7 @@ export default function ChangePassword() {
                     <button
                         onClick={() => router.back()}
                         className="btn hover:bg-red-600 bg-red-500 text-white focus:ring-0 border-0 w-[300px]"
-                        >Cancel
+                        >Back
                     </button>
                 </div>
             </div>

@@ -122,6 +122,7 @@ export default function HRDashboard() {
 					title="Total Sales"
 					total={data?.sales?.total_sales ? 
 						`₱ ${currencyDisplay(data?.sales?.total_sales)}` :'₱ 0'}
+					className="!bg-cyan-800"
 				/>
 			</div>
 			<div className="mt-10">

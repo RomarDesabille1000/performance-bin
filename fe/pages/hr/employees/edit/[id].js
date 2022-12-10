@@ -50,6 +50,15 @@ export default function EditEmployee(){
 	})
 
     function onClickSubmit(data){
+        var currentdate = new Date();
+        var dhired = data.date_hired;
+        var timeString = currentdate.getHours() + ':' + currentdate.getMinutes() + ':00';
+
+        var year = dhired.getFullYear();
+        var month = dhired.getMonth() + 1;
+        var day = dhired.getDate();
+        var dateString = '' + year + '-' + month + '-' + day + ' ' + timeString;
+        //console.log(dateString)
         try{
             let newData = {
                 firstname: data.firstname,
@@ -57,7 +66,7 @@ export default function EditEmployee(){
                 mi: data.mi,
                 position: data.position,
                 type: data.emptype,
-                date_hired: data.date_hired,
+                date_hired: dateString,
                 
             }
             setStatus({ 
