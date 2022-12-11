@@ -103,12 +103,26 @@ export default function CustomerSurvey() {
     }
 
     function onSubmit(data) {
+        let q1i = -1, q2i = -1, q3i = -1;
+        let index = 5
+        for(let i = 0; i < 5; i++){
+            if(q1.choices[i].value === data['q1'][0])
+                q1i = index;
+            if(q2.choices[i].value === data['q2'][0])
+                q2i = index;
+            if(q3.choices[i].value === data['q3'][0])
+                q3i = index;
+            index--;
+        }
         reset();
         data = {
             ...data,
             q1: data['q1'][0],
             q2: data['q2'][0],
             q3: data['q3'][0],
+            q1_score: q1i,
+            q2_score: q2i,
+            q3_score: q3i,
         }
 		setStatus({ 
 			error: false, 

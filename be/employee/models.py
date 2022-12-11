@@ -43,6 +43,7 @@ class CustomerRatingAnswers(models.Model):
     )
     q1 = models.CharField(max_length=50, choices=Question1Answers, 
         help_text="Overall, how would you rate the quality of your customer service experience")
+    q1_score = models.IntegerField(default=1, help_text="Index of question 1")
 
     EXTREMELYWELL = "EXTREMELYWELL"
     VERYWELL = "VERYWELL"
@@ -58,6 +59,7 @@ class CustomerRatingAnswers(models.Model):
     )
     q2 = models.CharField(max_length=50, choices=Question2Answers, 
         help_text="How well we understand and address your questions and concerns?")
+    q2_score = models.IntegerField(default=1, help_text="Index of question 2")
 
     MUCHSHORTERTHANEXPECTED = "MUCHSHORTERTHANEXPECTED"
     ABOUTWHATIEXPECT = "ABOUTWHATIEXPECT"
@@ -73,6 +75,8 @@ class CustomerRatingAnswers(models.Model):
     )
     q3 = models.CharField(max_length=50, choices=Question3Answers, 
         help_text="How much time did it take us to address your questions and concerns?")
+    q3_score = models.IntegerField(default=1, help_text="Index of question 3")
+
     q4 = models.IntegerField(
         help_text="How likely is it that you would recommend our company/product/services to a friend or colleagues? Rate us between 1 to 5, wherein 5 is the Highest and 1 is the Lowest: ")
     q5 = models.TextField(max_length=500, blank=True, null=True,
@@ -87,8 +91,8 @@ class CustomerRatingAnswers(models.Model):
             user_id=pk
         )
         data = dict()
-        data['customer_rating'] = ratings.aggregate(result=Sum('q4'))
-        data['total'] = ratings.count() * 5
+        data['customer_rating'] = ratings.aggregate(result=Sum('q1_score')+Sum('q2_score')+Sum('q3_score'))
+        data['total'] = ratings.count() * 3 * 5
         return data
     class Meta: 
         verbose_name_plural = 'Customer Satisfaction Ratings'

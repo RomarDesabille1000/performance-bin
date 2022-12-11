@@ -154,6 +154,7 @@ class EmployeesView(GenericViewSet):
             date_created__year=datetime.now().year,
             employee=user
         )
+
         return Response({
             'user': user_serializer.data,
             'rubric': rubric_serializer.data,

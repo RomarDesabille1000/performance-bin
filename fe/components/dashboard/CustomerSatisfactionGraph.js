@@ -100,6 +100,7 @@ export default function CustomerSatisfactionGraph({ workdays, attendance }){
     return(
         <div>
 			<div className="h-[300px]">
+				<div>Attendance</div>
 				<Bar
 					data={data}
 					options={options}

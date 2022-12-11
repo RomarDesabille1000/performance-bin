@@ -127,8 +127,8 @@ class CustomerRatingView(GenericViewSet):
         customer_rating = paginated_data(self, queryset)
         #back
 
-        total_customer_rating = queryset.aggregate(result=Sum('q4'))
-        total_rating = queryset.count() * 5
+        total_customer_rating = queryset.aggregate(result=Sum('q1_score')+Sum('q2_score')+Sum('q3_score'))
+        total_rating = queryset.count() * 3 * 5
 
         return Response({
             'customer_rating': customer_rating,

@@ -64,6 +64,10 @@ export default function Attendance(){
         setPageIndex(1)
     }
 
+    function calculateTotal(q){
+        return q.q1_score + q.q2_score + q.q3_score
+    }
+
     return(
         <AdminLayout
             title="Ratings"
@@ -124,13 +128,16 @@ export default function Attendance(){
                                             Question 3
                                         </th>
                                         <th className="px-6 py-3 text-xs font-bold text-center text-gray-500 uppercase">
-                                            Question 4 &nbsp; | &nbsp; Rate 1 to 5
+                                            Rate
                                         </th>
                                         <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                             Question 5
                                         </th>
                                         <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                             Question 6
+                                        </th>
+                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
+                                            Total
                                         </th>
                                         <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                             Date
@@ -141,7 +148,7 @@ export default function Attendance(){
                                     {!user ? (
                                         <tr>
                                             <td 
-                                                colSpan="6"
+                                                colSpan="8"
                                                 className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
                                                     <Loader/>
                                             </td>
@@ -150,7 +157,7 @@ export default function Attendance(){
                                         !user?.customer_rating?.count && (
                                             <tr>
                                                 <td 
-                                                    colSpan="7"
+                                                    colSpan="8"
                                                     className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
                                                         No record Found
                                                 </td>
@@ -159,14 +166,17 @@ export default function Attendance(){
                                     )}
                                     {user?.customer_rating?.results.map((d) => (
                                         <tr key={d.id}>
-                                            <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                                                {q1[d.q1]}
+                                            <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                                                {q1[d.q1]} 
+                                                &nbsp; | {d.q1_score}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {q2[d.q2]}
+                                                &nbsp; | {d.q2_score}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {q3[d.q3]}
+                                                &nbsp; | {d.q3_score}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
                                                 {d.q4}
@@ -176,6 +186,9 @@ export default function Attendance(){
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {d.q6 ? d.q6 : 'No answer'}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                                                {calculateTotal(d)}/15
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {dayjs(d.data).format('MMMM DD, YYYY')}

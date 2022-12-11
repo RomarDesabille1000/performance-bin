@@ -303,8 +303,8 @@ class Dashboard(GenericViewSet):
         total_backjobs = BackJobs.objects.filter(user_id=id, date__year=year).count()
         #ratings
         ratings = CustomerRatingAnswers.objects.filter(user_id=id, date__year=year)
-        customer_rating = ratings.aggregate(result=Sum('q4'))
-        total_rating = ratings.count() * 5
+        customer_rating = ratings.aggregate(result=Sum('q1_score')+Sum('q2_score')+Sum('q3_score'))
+        total_rating = ratings.count() * 3 * 5
 
         return Response({
             'attendance': months_count_,
