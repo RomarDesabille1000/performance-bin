@@ -60,7 +60,7 @@ export default function AdminLayout({children, title, hasBack=false}) {
                     <div className="flex h-16 items-center justify-between">
                         <div className="flex items-center">
                             <div className="flex-shrink-0">
-								<Image
+								{/* <Image
 									src={logoWhite}
 									alt="logo"
                                     width="auto"
@@ -68,7 +68,7 @@ export default function AdminLayout({children, title, hasBack=false}) {
                                     loading="eager" 
                                     priority={true}
                                     className="rounded-sm w-[80px] h-[40px]"
-									/>
+									/> */}
                             </div>
                             <div className="hidden md:block">
                                 <div className="ml-10 flex items-baseline space-x-4">

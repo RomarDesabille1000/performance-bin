@@ -9,7 +9,7 @@ export default function Employee() {
     return(
         <div className="px-5 py-16 mt-10 max-w-[400px] m-auto  ">
             <div className="flex flex-col justify-center items-center">
-                <Image
+                {/* <Image
 					src={logoWhite}
 						alt="logo"
 						width="auto"
@@ -17,7 +17,7 @@ export default function Employee() {
 						loading="eager" 
 						priority={true}
 						className="rounded-sm w-[180px] h-[80px]"
-					/>
+					/> */}
                 <div className="mt-4">  
                     <span>Hello, </span>
                     <span>{user?.user_employee?.firstname.toUpperCase()} </span>

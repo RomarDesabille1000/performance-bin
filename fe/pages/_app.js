@@ -13,8 +13,7 @@ function MyApp({ Component, pageProps }) {
 			<Head>
 				<title>Performance Bin</title>
 				<meta name="viewport" content="initial-scale=1.0, width=device-width" />
-				<meta property="og:title" content="My page title" key="title" />
-				<link rel="shortcut icon" href="/favicon.jpg" />
+				{/* <link rel="shortcut icon" href="/favicon.jpg" /> */}
 			</Head>
 			<SWRConfig 
 				value={{
