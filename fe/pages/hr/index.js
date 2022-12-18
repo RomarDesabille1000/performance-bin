@@ -129,6 +129,7 @@ export default function HRDashboard() {
 				<CustomerSatisfactionGraph
 					attendance={data?.attendance}
 					workdays={data?.workdays}
+					lates={data?.lates}
 				/>
 			</div>
 		</AdminLayout>

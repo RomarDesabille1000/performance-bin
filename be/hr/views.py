@@ -271,6 +271,11 @@ class Dashboard(GenericViewSet):
             .values('month').annotate(c=Count('id'))\
                 .annotate(c=Count('id'))\
                 .order_by('date__date')
+
+        lates = Attendance.objects.filter(user_id=id, date__year=year, late=True)\
+            .annotate(month=ExtractMonth('date')) \
+            .values('month').annotate(c=Count('id'))\
+                .order_by('date__date')
         
 
         #key represents month
@@ -290,6 +295,23 @@ class Dashboard(GenericViewSet):
         }
         for a in attendance:
             months_count[str(a['month'])] += 1  
+
+        lates_count = {
+            '1': 0,
+            '2': 0,
+            '3': 0,
+            '4': 0,
+            '5': 0,
+            '6': 0,
+            '7': 0,
+            '8': 0,
+            '9': 0,
+            '10': 0,
+            '11': 0,
+            '12': 0,
+        }
+        for l in lates:
+            lates_count[str(l['month'])] += 1  
 
         now = datetime.now()
         current = datetime(int(year)+1, 1, 1)
@@ -319,10 +341,13 @@ class Dashboard(GenericViewSet):
 
         workdays_ = []
         months_count_ = []
+        lates_count_ = []
         for key, value in workdays.items():
             workdays_.append(value)
         for key, value in months_count.items():
             months_count_.append(value)
+        for key, value in lates_count.items():
+            lates_count_.append(value)
 
         #sales
         total_sales = Sales.objects.filter(user_id=id, date__year=year).\
@@ -335,6 +360,7 @@ class Dashboard(GenericViewSet):
         total_rating = ratings.count() * 3 * 5
 
         return Response({
+            'lates': lates_count_,
             'attendance': months_count_,
             'workdays': workdays_,
             'sales': total_sales,
@@ -357,26 +383,40 @@ class CSV(GenericViewSet):
                 try:
                     date = parser.parse(row['Date']).isoformat().split('T')[0]
                     time = '06:00:00'
-                    date = date+'T'+time
+                    datetime = date+'T'+time
+                    
 
-                    if row['Punctuality'] == 'not logged in':
-                        Absences.objects.create(
-                            user=employee.user,
-                            reason='*',
-                            date=date,
-                        )
+                    employee = Employee.objects.get(emp_id=row['IDNo'])
+                    
+                    if Attendance.objects.filter(user=employee.user)\
+                        .filter(date__date=date).exists():
+                        pass
                     else:
-                        employee = Employee.objects.get(emp_id=row['IDNo'])
-                        attendance = Attendance.objects.create(
-                            user=employee.user,
-                            type='ONSITE',
-                            customer_name='*',
-                            location='*',
-                            date=date,
-                        )
-                        if row['Punctuality'] == 'logged in late':
-                            attendance.late = True
-                            attendance.save()
+                        if row['Punctuality'] != 'not logged in':
+                            employee = Employee.objects.get(emp_id=row['IDNo'])
+                            attendance = Attendance.objects.create(
+                                user=employee.user,
+                                type='ONSITE',
+                                customer_name='*',
+                                location='*',
+                                date=datetime,
+                            )
+                            if row['Punctuality'] == 'logged in late':
+                                attendance.late = True
+                                attendance.save()
+                    
+
+                    if Absences.objects.filter(user=employee.user)\
+                        .filter(date__date=date).exists():
+                        pass
+                    else:
+                        if row['Punctuality'] == 'not logged in':
+                            Absences.objects.create(
+                                user=employee.user,
+                                reason='*',
+                                date=datetime,
+                            )
+
                 except (Exception,):
                     if row['IDNo'] not in not_exist_ids:
                         not_exist_ids.append(row['IDNo']) 

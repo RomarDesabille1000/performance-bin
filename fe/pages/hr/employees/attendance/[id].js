@@ -263,7 +263,7 @@ export default function Attendance(){
                                                 {d.type}
                                             </td>
                                             <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                                                {d.type == 'OFFSITE' ? d.customer_name : ''}
+                                                {d.type == 'OFFSITE' || d.customer_name == '*' ? d.customer_name : ''}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {d.location}

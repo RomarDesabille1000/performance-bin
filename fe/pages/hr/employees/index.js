@@ -22,6 +22,7 @@ export default function Employee() {
 		success: false,
 		infoMessage: '',
 	})
+    console.log(employees);
 
     function handleDelete(id){
         if (confirm(`Are you sure you want to delete this User?`)) {
@@ -100,7 +101,7 @@ export default function Employee() {
                                             scope="col"
                                             className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                                         >
-                                            ID
+                                            EMP ID
                                         </th>
                                         <th
                                             scope="col"
@@ -153,7 +154,7 @@ export default function Employee() {
                                         <Fragment key={d.id}>
                                             <tr>
                                                 <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                                                    {d.id}
+                                                    {d.user_employee.emp_id}
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                     {d.user_employee?.firstname}&nbsp;

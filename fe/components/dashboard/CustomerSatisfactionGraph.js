@@ -17,29 +17,39 @@ ChartJS.register(
     Legend
 );
 
-export default function CustomerSatisfactionGraph({ workdays, attendance }){
+export default function CustomerSatisfactionGraph({ workdays, attendance, lates }){
 	const data = {
 		datasets: [
-		{
-			backgroundColor: '#3F51B5',
-			barPercentage: 0.5,
-			barThickness: 12,
-			borderRadius: 4,
-			categoryPercentage: 0.5,
-			data: workdays,
-			label: 'Total Workdays',
-			maxBarThickness: 10
-		},
-		{
-			backgroundColor: '#9D174D',
-			barPercentage: 0.5,
-			barThickness: 12,
-			borderRadius: 4,
-			categoryPercentage: 0.5,
-			data: attendance,
-			label: 'Employee attendance',
-			maxBarThickness: 10
-		}
+			{
+				backgroundColor: '#3F51B5',
+				barPercentage: 0.5,
+				barThickness: 12,
+				borderRadius: 4,
+				categoryPercentage: 0.5,
+				data: workdays,
+				label: 'Total Workdays',
+				maxBarThickness: 10
+			},
+			{
+				backgroundColor: '#9D174D',
+				barPercentage: 0.5,
+				barThickness: 12,
+				borderRadius: 4,
+				categoryPercentage: 0.5,
+				data: attendance,
+				label: 'No. of Attendance',
+				maxBarThickness: 10
+			},
+			{
+				backgroundColor: '#115E59',
+				barPercentage: 0.5,
+				barThickness: 12,
+				borderRadius: 4,
+				categoryPercentage: 0.5,
+				data: lates,
+				label: 'No. of Lates',
+				maxBarThickness: 10
+			}
 		],
 		labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 	};
