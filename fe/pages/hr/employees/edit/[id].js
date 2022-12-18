@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 
 
 const EmployeeSchema = yup.object().shape({
+    id: yup.string().required("This field is required."),
     email: yup.string().required("This field is required.").email("must be a valid email"),
     firstname: yup.string().required("This field is required.").max(255, "Only 255 characters is allowed."),
     lastname: yup.string().required("This field is required.").max(255, "Only 255 characters is allowed."),
@@ -28,6 +29,7 @@ export default function EditEmployee(){
         revalidateOnFocus: false,       
     });
     useEffect(() => {
+        setValue('id', emp?.user_employee?.emp_id)
         setValue('firstname', emp?.user_employee?.firstname)
         setValue('lastname', emp?.user_employee?.lastname)
         setValue('mi', emp?.user_employee?.mi)
@@ -113,6 +115,19 @@ export default function EditEmployee(){
                                     message={status.infoMessage}
                                 />
                                 <div className="grid grid-cols-6 gap-6">
+                                    <div className="col-span-6 sm:col-span-6">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Employee ID
+                                        </label>
+                                        <input
+                                            {...register('id')} 
+                                            disabled = {true}
+                                            type="text"
+                                            autoComplete="off"
+                                            className="input"
+                                        />
+                                        <div className="text-red-500 text-sm pt-1">{errors?.id && errors?.id?.message}</div>
+                                    </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label className="block text-sm font-medium text-gray-700">
                                             First Name

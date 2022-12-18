@@ -153,12 +153,17 @@ class SalesView(GenericViewSet, generics.ListAPIView):
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         user = User.objects.get(id=kwargs['id'])
+        date_hired = user.user_employee.date_hired
+        date_added = datetime.strptime(request.data['date'],'%Y-%m-%dT%H:%M:%S.%fZ')
+        date_added = date_added + timedelta(days=1)
+        if date_hired.timestamp() > date_added.timestamp():
+            return Response('Unable to add Sales on Date before Employee was Hired.', status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(user=user)
 
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(user=user)
-
-        return Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
     
     def retrieve(self, request, *args, **kwargs):
         sale = self.get_queryset().get(id=kwargs['id'])
@@ -173,10 +178,16 @@ class SalesView(GenericViewSet, generics.ListAPIView):
 
     def update(self, request, *args, **kwargs):
         s = Sales.objects.get(pk=kwargs['id'])
-        serializer = self.serializer_class(s, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-        return Response(status=status.HTTP_200_OK)
+        date_hired = s.user.user_employee.date_hired
+        date_added = datetime.strptime(request.data['date'],'%Y-%m-%dT%H:%M:%S.%fZ')
+        date_added = date_added + timedelta(days=1)
+        if date_hired.timestamp() > date_added.timestamp():
+            return Response('Unable to add Sales on Date before Employee was Hired.', status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = self.serializer_class(s, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+            return Response(status=status.HTTP_200_OK)
 
     def delete(self, request, *args, **kwargs):
         Sales.objects.get(id=kwargs['id']).delete()
@@ -195,11 +206,17 @@ class BackJobsView(GenericViewSet, generics.ListAPIView):
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         user = User.objects.get(id=kwargs['id'])
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(user=user)
+        date_hired = user.user_employee.date_hired
+        date_added = datetime.strptime(request.data['date'],'%Y-%m-%dT%H:%M:%S.%fZ')
+        date_added = date_added + timedelta(days=1)
+        if date_hired.timestamp() > date_added.timestamp():
+            return Response('Unable to add Back Job on Date before Employee was Hired.', status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(user=user)
 
-        return Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset().filter(user_id=kwargs['id']).order_by('-date')
@@ -221,10 +238,16 @@ class BackJobsView(GenericViewSet, generics.ListAPIView):
         } ,status=status.HTTP_200_OK)
     def update(self, request, *args, **kwargs):
         backjob = BackJobs.objects.get(pk=kwargs['id'])
-        serializer = self.serializer_class(backjob, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-        return Response(status=status.HTTP_200_OK)
+        date_hired = backjob.user.user_employee.date_hired
+        date_added = datetime.strptime(request.data['date'],'%Y-%m-%dT%H:%M:%S.%fZ')
+        date_added = date_added + timedelta(days=1)
+        if date_hired.timestamp() > date_added.timestamp():
+            return Response('Unable to add Back Job on Date before Employee was Hired.', status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = self.serializer_class(backjob, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+            return Response(status=status.HTTP_200_OK)
 
     def delete(self, request, *args, **kwargs):
         BackJobs.objects.get(id=kwargs['id']).delete()

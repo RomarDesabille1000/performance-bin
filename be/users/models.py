@@ -40,6 +40,7 @@ USER_TYPES = (
 class Employee(models.Model):
     user = models.OneToOneField('users.User', 
         on_delete=models.CASCADE, blank=True, null=True, related_name='user_employee')
+    emp_id = models.CharField(max_length=100,null=True, default = None)
     firstname = models.CharField(max_length=100)
     lastname = models.CharField(max_length=100)
     mi = models.CharField(max_length=100)

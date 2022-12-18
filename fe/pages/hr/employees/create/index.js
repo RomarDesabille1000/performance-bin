@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 
 
 const EmployeeSchema = yup.object().shape({
+    id: yup.string().required("This field is required."),
 	email: yup.string().required("This field is required.").email("must be a valid email"),
     firstname: yup.string().required("This field is required.").max(255, "Only 255 characters is allowed."),
     lastname: yup.string().required("This field is required.").max(255, "Only 255 characters is allowed."),
@@ -49,6 +50,7 @@ export default function AddEmployee(){
         //console.log(dateString)
         let newData = {
             user_employee :{
+                emp_id: data.id,
                 firstname: data.firstname,
                 lastname: data.lastname,
                 mi: data.mi,
@@ -79,12 +81,21 @@ export default function AddEmployee(){
             })
             reset()
         }).catch((_e) => {
-            setStatus({ 
-                error: true, 
-                success: false, 
-                loading: false, 
-                infoMessage:  _e?.response?.data?.email[0] ? _e?.response?.data?.email[0] :  'Something went wrong.'
-            })
+            if(400 == _e?.response?.status){
+                setStatus({ 
+                    error: true, 
+                    success: false, 
+                    loading: false, 
+                    infoMessage: _e?.response?.data ?? ''
+                })
+            }else{
+                setStatus({ 
+                    error: true, 
+                    success: false, 
+                    loading: false, 
+                    infoMessage: 'Something went wrong.' 
+                })
+            }
         })
     }
 
@@ -107,6 +118,18 @@ export default function AddEmployee(){
                                     message={status.infoMessage}
                                 />
                                 <div className="grid grid-cols-6 gap-6">
+                                    <div className="col-span-6 sm:col-span-6">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Employee ID
+                                        </label>
+                                        <input
+                                            {...register('id')} 
+                                            type="text"
+                                            autoComplete="off"
+                                            className="input"
+                                        />
+                                        <div className="text-red-500 text-sm pt-1">{errors?.id && errors?.id?.message}</div>
+                                    </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label className="block text-sm font-medium text-gray-700">
                                             First Name

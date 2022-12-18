@@ -24,6 +24,7 @@ from utils.query import (
     search_and_filter,
     paginated_data,
 )
+import datetime
 from users.permissions import EmployeeOnly,HROnly
 
 
@@ -78,11 +79,15 @@ class AttendanceView(GenericViewSet):
     @transaction.atomic
     def onsitecreate(self, request, *args, **kwargs):
         userdata = User.objects.get(id=kwargs['pk'])
-        print(request.data['date'])
+        date_hired = userdata.user_employee.date_hired
+        date_added = datetime.datetime.strptime(request.data['date'],'%Y-%m-%dT%H:%M:%S.%fZ')
+        date_added = date_added + datetime.timedelta(days=1)
         if Absences.objects.filter(user=kwargs['pk']).filter(date=request.data['date']).exists():
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            return Response('Absence for this day already Recorded.', status=status.HTTP_400_BAD_REQUEST)
         if Attendance.objects.filter(user=kwargs['pk']).filter(date=request.data['date']).exists():
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response('Attendance for this day already Recorded.', status=status.HTTP_400_BAD_REQUEST)
+        if date_hired.timestamp() > date_added.timestamp():
+            return Response('Unable to add Attendance on Date before Employee was Hired.', status=status.HTTP_400_BAD_REQUEST)
         else :
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
@@ -163,11 +168,15 @@ class AbsencesView(GenericViewSet, generics.ListAPIView):
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         userdata = User.objects.get(id=kwargs['pk'])
-        print(request.data['date'])
+        date_hired = userdata.user_employee.date_hired
+        date_added = datetime.datetime.strptime(request.data['date'],'%Y-%m-%dT%H:%M:%S.%fZ')
+        date_added = date_added + datetime.timedelta(days=1)
         if Absences.objects.filter(date=request.data['date']).filter(user=kwargs['pk']).exists():
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response('Absence for this day already Recorded.', status=status.HTTP_400_BAD_REQUEST)
         if Attendance.objects.filter(date=request.data['date']).filter(user=kwargs['pk']).exists():
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            return Response('Attendance for this day already Recorded.', status=status.HTTP_400_BAD_REQUEST)
+        if date_hired.timestamp() > date_added.timestamp():
+            return Response('Unable to add Absence on Date before Employee was Hired.', status=status.HTTP_400_BAD_REQUEST)
         else :
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)

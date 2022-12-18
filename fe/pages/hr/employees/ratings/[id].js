@@ -191,7 +191,7 @@ export default function Attendance(){
                                                 {calculateTotal(d)}/15
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                                {dayjs(d.data).format('MMMM DD, YYYY')}
+                                                {dayjs(d.date).format('MMMM DD, YYYY')}
                                             </td>
                                         </tr>
                                     ))}

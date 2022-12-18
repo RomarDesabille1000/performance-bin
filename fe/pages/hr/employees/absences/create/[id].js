@@ -57,14 +57,7 @@ export default function CreateAbsences(){
                     error: true, 
                     success: false, 
                     loading: false, 
-                    infoMessage: 'Absence for this day already Recorded.' 
-                })
-            }else if(405 == _e?.response?.status){
-                setStatus({ 
-                    error: true, 
-                    success: false, 
-                    loading: false, 
-                    infoMessage: 'Attendance for this day already Recorded.' 
+                    infoMessage: _e?.response?.data ?? ''
                 })
             }else{
                 setStatus({ 

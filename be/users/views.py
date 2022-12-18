@@ -111,11 +111,18 @@ class EmployeesView(GenericViewSet):
 
     
     def create(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        emp_data = request.data['user_employee']
+        print(emp_data['emp_id'])
+        if Employee.objects.filter(emp_id = emp_data['emp_id']).exists():
+            return Response('Employee with this ID already Exists.', status=status.HTTP_400_BAD_REQUEST)
+        if User.objects.filter(email = request.data['email']).exists():
+            return Response('Employee with this Email already Exists.', status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
 
-        return Response(status=status.HTTP_201_CREATED)
+            return Response(status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, **kwargs):
         user = User.objects.get(id=kwargs['pk'])
