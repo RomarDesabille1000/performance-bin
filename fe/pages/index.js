@@ -26,7 +26,7 @@ export default function Home() {
 					<div className="w-full max-w-md space-y-8">
 						<div>
 							<div className="flex justify-center mt-[50px]">
-								{/* <Image
+								<Image
 									src={logoWhite}
 										alt="logo"
 										width="auto"
@@ -34,7 +34,7 @@ export default function Home() {
 										loading="eager" 
 										priority={true}
 										className="rounded-sm w-[180px] h-[80px]"
-									/> */}
+									/>
 							</div>
 							<h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
 								Sign in to your account
