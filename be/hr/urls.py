@@ -6,6 +6,7 @@ from .views import (
     SalesView,
     BackJobsView,
     Dashboard,
+    CSV,
 )
 
 urlpatterns = [
@@ -57,4 +58,5 @@ urlpatterns = [
         })),
     ])),
     path('dashboard/<int:id>/', Dashboard.as_view({'get': 'list'})),
+    path('import-csv/', CSV.as_view({'post': 'import_file'})),
 ]

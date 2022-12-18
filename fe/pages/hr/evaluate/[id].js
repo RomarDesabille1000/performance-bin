@@ -142,10 +142,10 @@ export default function Evaluate() {
                         <td className="px-6 py-2">
                             {d.description}
                         </td>
-                        <td className="px-6 py-2 text-center">
+                        <td className="px-6 py-2">
                             {d.percentage}
                         </td>
-                        <td className="px-6 py-2 text-center">
+                        <td className="px-6 py-2">
                             {attendanceTitle !== d.name ? (
                                 <input 
                                     value={d.score}
@@ -153,7 +153,7 @@ export default function Evaluate() {
                                     type="number" 
                                     className="input" />
                             ): (
-                                <div className="text-center">
+                                <div className="">
                                      {e?.attendance.total_attendance} / {e?.attendance?.days_count} * {d?.percentage}
                                      <span> = </span>
                                     {DoubleType((e?.attendance.total_attendance / e?.attendance.days_count) * d?.percentage, d.percentage)}%
@@ -182,10 +182,10 @@ export default function Evaluate() {
                         <td className="px-6 py-2">
                             {d.description}
                         </td>
-                        <td className="px-6 py-2 text-center">
+                        <td className="px-6 py-2">
                             {d.percentage}
                         </td>
-                        <td className="px-6 py-2 text-center">
+                        <td className="px-6 py-2">
                             {customerService !== d.name ? (
                                 <input 
                                     value={d.score}
@@ -193,7 +193,7 @@ export default function Evaluate() {
                                     onChange={(event) => handleRubricScoreChange(event, i)}
                                     className="input" />
                             ): (
-                                <div className="text-center">
+                                <div className="">
                                     {handleNoValue(e?.customer_service_rating?.customer_rating.result, 0)} / 
                                     {e?.customer_service_rating?.total} * 0.{d.percentage}
                                     &nbsp;=&nbsp;
@@ -303,8 +303,8 @@ export default function Evaluate() {
                                                         <tr>
                                                             <td></td>
                                                             <td></td>
-                                                            <td className="text-center py-4">Total</td>
-                                                            <td className="text-center">{coreTotal}%</td>
+                                                            <td className="px-6 py-2">Total</td>
+                                                            <td className="px-6 py-2">{coreTotal}%</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -348,8 +348,8 @@ export default function Evaluate() {
                                                         <tr>
                                                             <td></td>
                                                             <td></td>
-                                                            <td className="text-center py-4">Total</td>
-                                                            <td className="text-center">{kpiTotal}%</td>
+                                                            <td className="px-6 py-2">Total</td>
+                                                            <td className="px-6 py-2">{kpiTotal}%</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>

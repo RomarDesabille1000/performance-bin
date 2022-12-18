@@ -7,6 +7,9 @@ from datetime import timedelta, datetime
 from django.db.models import Sum, Count, Func, F
 from django.db.models.functions import ExtractMonth, TruncMonth, Cast
 import numpy as np
+import pandas as pd
+from django.utils.dateparse import parse_datetime
+from dateutil import parser
 
 
 from users.permissions import HROnly
@@ -25,10 +28,12 @@ from .serializers import (
 from users.serializers import (
     UserSerializer,
     User,
+    Employee,
 )
 from employee.serializers import (
     Attendance,
-    CustomerRatingAnswers
+    CustomerRatingAnswers,
+    Absences,
 )
 from utils.query import (
     convert_datetz,
@@ -337,3 +342,45 @@ class Dashboard(GenericViewSet):
             'ratings': customer_rating,
             'total_ratings': total_rating,
         },status=status.HTTP_200_OK)
+
+
+
+class CSV(GenericViewSet):
+
+    @transaction.atomic
+    def import_file(self, request, *args, **kwargs):
+        not_exist_ids = []
+        if 'csv' in request.FILES:
+            file = request.FILES['csv']
+            csv = pd.read_csv(file)
+            for i, row in csv.iterrows():
+                try:
+                    date = parser.parse(row['Date']).isoformat().split('T')[0]
+                    time = '06:00:00'
+                    date = date+'T'+time
+
+                    if row['Punctuality'] == 'not logged in':
+                        Absences.objects.create(
+                            user=employee.user,
+                            reason='*',
+                            date=date,
+                        )
+                    else:
+                        employee = Employee.objects.get(emp_id=row['IDNo'])
+                        attendance = Attendance.objects.create(
+                            user=employee.user,
+                            type='ONSITE',
+                            customer_name='*',
+                            location='*',
+                            date=date,
+                        )
+                        if row['Punctuality'] == 'logged in late':
+                            attendance.late = True
+                            attendance.save()
+                except (Exception,):
+                    if row['IDNo'] not in not_exist_ids:
+                        not_exist_ids.append(row['IDNo']) 
+
+        return Response({ 
+            'not_exist_ids': not_exist_ids
+        }, status=status.HTTP_200_OK)

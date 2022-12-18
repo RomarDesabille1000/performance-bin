@@ -138,7 +138,7 @@ class EmployeesView(GenericViewSet):
         date_hired_m = int(date_hired[1])
         current_year = str(datetime.now().year)
         # this means newly hired
-        total_attendance = Attendance.objects.filter(user=user, date__year=current_year)\
+        total_attendance = Attendance.objects.filter(user=user, date__year=current_year, late=False)\
             .annotate(month=TruncMonth('date__date'))\
                 .values('month')\
                 .annotate(c=Count('id'))\

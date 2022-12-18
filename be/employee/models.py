@@ -18,6 +18,7 @@ class Attendance(models.Model):
     signature = models.TextField(null=True)
     location = models.CharField(max_length=255)
     date = models.DateTimeField(default=now)
+    late = models.BooleanField(default=False)
 
     class Meta: 
         verbose_name_plural = 'Attendance'
