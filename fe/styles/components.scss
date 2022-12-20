@@ -16,3 +16,16 @@
 .text-area{
     @apply border border-gray-300 w-full px-3 py-2 mt-2 hover:outline-none focus:outline-none focus:ring-indigo-500 focus:ring-1 rounded-md;
 }
+
+.password-container{
+    position: relative;
+    input{
+        padding-right: 50px;
+    }
+    .password-icon{
+        position: absolute;
+        top: 20%;
+        right: 10px;
+        z-index: 1000;
+    }
+}

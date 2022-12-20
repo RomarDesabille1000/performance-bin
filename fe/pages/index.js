@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import Image from 'next/image'
 import logoWhite from '../images/logo-white.jpg'
 import { userRole } from "../helper/constants";
+import IconEye from "../components/icons/IconEye";
 
 export default function Home() {
 	const { login, statusCode, isLoading, setStatusCode } = useAuth()
@@ -14,6 +15,8 @@ export default function Home() {
 			// password: 'fdsafdsafffffffffffff432432'
 		}
 	});
+
+	const [showPassword, setShowPassword] = useState(false);
 
 	const onSubmit = ({ username, password }) => {
         setStatusCode(0)
@@ -70,15 +73,17 @@ export default function Home() {
 									Password
 								</label>
 								<div className="text-red-500">{errors?.password && errors?.password?.message}</div>
-								<input
-									{...register("password")}
-									autoComplete="off"
-									type="password"
-									className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-								/>
+								<div className="password-container">
+									<input
+										{...register("password")}
+										autoComplete="off"
+										type={!showPassword ? 'password': 'text'}
+										className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+									/>
+									<IconEye show={showPassword} setShow={setShowPassword}/>
+								</div>
 							</div>
 							</div>
-
 
 							<div>
 								<LoadingButton

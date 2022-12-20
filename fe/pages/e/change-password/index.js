@@ -9,6 +9,7 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import axios from "axios";
+import IconEye from "../../../components/icons/IconEye";
 
 const EmployeeSchema = yup.object().shape({
     new_password: yup.string().required("This field is required.").min(8,"Password must be 8 characters long"),
@@ -24,6 +25,10 @@ export default function ChangePassword() {
 		mode: 'onSubmit',
 		resolver: yupResolver(EmployeeSchema),
 	})
+
+	const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+	const [showNewPassword, setShowNewPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
 	const [status, setStatus] = useState({
 		error: false,
@@ -88,27 +93,45 @@ export default function ChangePassword() {
                 <div  className="flex flex-col items-center gap-3 py-5 max-w-[300px]">
                     <div className="w-[300px]">
                         <label className="text-left">Current Password</label>
-                        <input className="input w-[300px]" 
-                            type='password'
-                            {...register('old_password')} 
-                            placeholder="Current Password"/>
-                        <div className="text-red-500 text-sm pt-1">{errors?.old_password && errors?.old_password?.message}</div>
+                        <div className="password-container">
+                            <input className="input w-[300px]" 
+                                type={!showCurrentPassword ? 'password': 'text'}
+                                {...register('old_password')} 
+                                placeholder="Current Password"/>
+                            <IconEye 
+                                className="!top-[13px]"
+                                show={showCurrentPassword} 
+                                setShow={setShowCurrentPassword}/>
+                            <div className="text-red-500 text-sm pt-1">{errors?.old_password && errors?.old_password?.message}</div>
+                        </div>
                     </div>
                     <div className="w-[300px]">
                         <label className="text-left">New Password</label>
-                        <input className="input" 
-                            type='password'
-                            {...register('new_password')} 
-                            placeholder="New Password"/>
-                        <div className="text-red-500 text-sm pt-1">{errors?.new_password && errors?.new_password?.message}</div>
+                        <div className="password-container">
+                            <input className="input" 
+                                type={!showNewPassword ? 'password': 'text'}
+                                {...register('new_password')} 
+                                placeholder="New Password"/>
+                            <IconEye 
+                                className="!top-[13px]"
+                                show={showNewPassword} 
+                                setShow={setShowNewPassword}/>
+                            <div className="text-red-500 text-sm pt-1">{errors?.new_password && errors?.new_password?.message}</div>
+                        </div>
                     </div>
                     <div className="w-[300px]">
                         <label className="text-left">Confirm Password</label>
-                        <input className="input" 
-                            type='password'
-                            {...register('confirm_password')} 
-                            placeholder="Confirm Password"/>
-                        <div className="text-red-500 text-sm pt-1">{errors?.confirm_password && errors?.confirm_password?.message}</div>
+                        <div className="password-container">
+                            <input className="input" 
+                                type={!showConfirmPassword ? 'password': 'text'}
+                                {...register('confirm_password')} 
+                                placeholder="Confirm Password"/>
+                            <IconEye 
+                                className="!top-[13px]"
+                                show={showConfirmPassword} 
+                                setShow={setShowConfirmPassword}/>
+                            <div className="text-red-500 text-sm pt-1">{errors?.confirm_password && errors?.confirm_password?.message}</div>
+                        </div>
                     </div>
                     <AlertMessages
                         className="mb-3"

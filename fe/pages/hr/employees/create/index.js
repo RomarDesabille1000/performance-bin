@@ -8,6 +8,7 @@ import AlertMessages from "../../../../components/AlertMessages";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
+import IconEye from "../../../../components/icons/IconEye";
 
 
 const EmployeeSchema = yup.object().shape({
@@ -37,6 +38,9 @@ export default function AddEmployee(){
 		success: false,
 		infoMessage: '',
 	})
+
+	const [showPassword, setShowPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     function onClickSubmit(data){
         var currentdate = new Date();
@@ -209,25 +213,37 @@ export default function AddEmployee(){
                                         <label className="block text-sm font-medium text-gray-700">
                                             Password
                                         </label>
-                                        <input
-                                            {...register('password')} 
-                                            type="password"
-                                            autoComplete="off"
-                                            className="input"
-                                        />
-                                        <div className="text-red-500 text-sm pt-1">{errors?.password && errors?.password?.message}</div>
+                                        <div className="password-container">
+                                            <input
+                                                type={!showPassword ? 'password': 'text'}
+                                                {...register('password')} 
+                                                autoComplete="off"
+                                                className="input"
+                                            />
+                                            <div className="text-red-500 text-sm pt-1">{errors?.password && errors?.password?.message}</div>
+                                            <IconEye 
+                                                className="!top-[13px]"
+                                                show={showPassword} 
+                                                setShow={setShowPassword}/>
+                                        </div>
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label className="block text-sm font-medium text-gray-700">
                                             Confirm Password
                                         </label>
-                                        <input
-                                            {...register('confirm_password')} 
-                                            type="password"
-                                            autoComplete="off"
-                                            className="input"
-                                        />
-                                        <div className="text-red-500 text-sm pt-1">{errors?.confirm_password && errors?.confirm_password?.message}</div>
+                                        <div className="password-container">
+                                            <input
+                                                {...register('confirm_password')} 
+                                                type={!showConfirmPassword ? 'password': 'text'}
+                                                autoComplete="off"
+                                                className="input"
+                                            />
+                                            <div className="text-red-500 text-sm pt-1">{errors?.confirm_password && errors?.confirm_password?.message}</div>
+                                            <IconEye 
+                                                className="!top-[13px]"
+                                                show={showConfirmPassword} 
+                                                setShow={setShowConfirmPassword}/>
+                                        </div>
                                     </div>
 
                                    
