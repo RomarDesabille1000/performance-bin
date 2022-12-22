@@ -28,5 +28,10 @@ urlpatterns = [
             'get': 'retrieve',
             'post': 'evaluation'
         })),
+        path('<int:pk>/sunday_attendance/', EmployeesView.as_view({
+            'get': 'check_sunday_attendance',
+            'post': 'sunday_attendance',
+            'put': 'cancel_sunday_attendance',
+        })),
     ])),
 ]

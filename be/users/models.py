@@ -47,6 +47,7 @@ class Employee(models.Model):
     type = models.CharField(max_length=50, choices=USER_TYPES, default=SALESEXECUTIVE)
     position = models.CharField(max_length=255)
     date_hired = models.DateTimeField()
+    next_sunday = models.DateField(null=True, blank=True)
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

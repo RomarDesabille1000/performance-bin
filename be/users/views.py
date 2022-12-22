@@ -4,7 +4,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import GenericViewSet
 from django.db import transaction
 import numpy as np
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from django.db.models.functions import TruncMonth, ExtractMonth
 from django.db.models import Count
 from rest_framework import filters
@@ -31,6 +31,8 @@ from employee.serializers import (
 from utils.query import (
     search_,
     paginated_data,
+    daterange,
+    get_object_or_none
 )
 from .permissions import HROnly, EmployeeOnly
 from .models import USER_TYPES, Employee
@@ -74,7 +76,6 @@ class UserView(GenericViewSet):
         user = User.objects.get(id=kwargs['userId'])
         password = request.data['new_password']
         user.set_password(password)
-        print(password)
         user.save()
         serializer = self.serializer_class(user, many=False)
             # serializer = EmployeeSerializer(user, data=request.data, partial=True)
@@ -86,7 +87,6 @@ class UserView(GenericViewSet):
         User.objects.get(id=kwargs['userId']).delete()
         return Response(status=status.HTTP_200_OK)
     
-
 
 class EmployeesView(GenericViewSet):
     # permission_classes = (HROnly,)
@@ -103,6 +103,40 @@ class EmployeesView(GenericViewSet):
         data = paginated_data(self, queryset)
         return Response(data , status=status.HTTP_200_OK)
 
+    def check_sunday_attendance(self, request, **kwargs):
+        status_ = False
+        date_ = ''
+        employee = get_object_or_none(Employee, user_id=kwargs['pk'])
+        if employee:   
+            next_sunday = employee.next_sunday
+            if next_sunday is not None:
+                if date.today() < next_sunday or date.today() == next_sunday:
+                    status_ = True
+                    date_ = next_sunday
+        return Response({ 
+            'status': status_,
+            'date': date_,
+        }, status=status.HTTP_200_OK)
+    
+    def sunday_attendance(self, request, **kwargs):
+        start_date = date.today()
+        end_date = start_date + timedelta(days=7)
+        for check_date in daterange(start_date, end_date):
+            weekname = check_date.strftime("%A")
+            if weekname == 'Sunday':
+                employee = get_object_or_none(Employee, user_id=kwargs['pk'])
+                if employee:
+                    employee.next_sunday = check_date
+                    employee.save()
+        return Response(status=status.HTTP_200_OK)
+    
+    def cancel_sunday_attendance(self, request, **kwargs):
+        employee = get_object_or_none(Employee, user_id=kwargs['pk'])
+        if employee:
+            employee.next_sunday = None
+            employee.save()
+        return Response(status=status.HTTP_200_OK)
+
     def evaluation_user_selection(self, request):
         queryset = self.get_queryset().filter(user_employee__isnull=False)\
             .exclude(employee_evaluation__date_created__year=datetime.now().year)
@@ -112,7 +146,6 @@ class EmployeesView(GenericViewSet):
     
     def create(self, request):
         emp_data = request.data['user_employee']
-        print(emp_data['emp_id'])
         if Employee.objects.filter(emp_id = emp_data['emp_id']).exists():
             return Response('Employee with this ID already Exists.', status=status.HTTP_400_BAD_REQUEST)
         if User.objects.filter(email = request.data['email']).exists():

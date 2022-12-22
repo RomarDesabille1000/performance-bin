@@ -22,7 +22,6 @@ export default function Employee() {
 		success: false,
 		infoMessage: '',
 	})
-    console.log(employees);
 
     function handleDelete(id){
         if (confirm(`Are you sure you want to delete this User?`)) {

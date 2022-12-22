@@ -3,6 +3,8 @@ import useSWR from "swr";
 import AdminLayout from "../../../../components/AdminLayout";
 import SearchBar from "../../../../components/SearchBar";
 import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc'
+import tz from 'dayjs/plugin/timezone'
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AlertMessages from "../../../../components/AlertMessages";
@@ -10,7 +12,10 @@ import axiosInstance from "../../../../utils/axiosInstance";
 import {paginationRecordCount, PAGINATION_COUNT} from '../../../../helper/paginationRecordCount'
 import { MenuItem, Pagination, Select } from "@mui/material";
 import Loader from "../../../../components/Loader";
+import LoadingButton from "../../../../components/LoadingButton";
 
+dayjs.extend(utc)
+dayjs.extend(tz)
 
 export default function Attendance(){
     const router = useRouter();
@@ -33,35 +38,35 @@ export default function Attendance(){
         loading: false,
         success: false,
         infoMessage: '',
-      })
-      function handleDelete(a_id){
-          if (confirm(`Are you sure you want to delete id this Record?`)) {
-              setStatus({ 
-                  error: false, 
-                  success: false, 
-                  loading:true, 
-                  infoMessage: 'Deleting Recorded Attendance.' 
-              })
-              axiosInstance.delete(`employee/attendance/${id}/${a_id}`)
-              .then((_e) => {
-                  mutate()
-                  setStatus({ 
-                      error: false, 
-                      success: true, 
-                      loading: false, 
-                      infoMessage: 'Record deleted' 
-                  })
-              }).catch((_e) => {
-                  setStatus({ 
-                      error: true, 
-                      success: false, 
-                      loading: false, 
-                      infoMessage: 'Something went wrong.' 
-                  })
-              })
-          }    
-      }
+    })
 
+    function handleDelete(a_id){
+        if (confirm(`Are you sure you want to delete id this Record?`)) {
+            setStatus({ 
+                error: false, 
+                success: false, 
+                loading:true, 
+                infoMessage: 'Deleting Recorded Attendance.' 
+            })
+            axiosInstance.delete(`employee/attendance/${id}/${a_id}`)
+            .then((_e) => {
+                mutate()
+                setStatus({ 
+                    error: false, 
+                    success: true, 
+                    loading: false, 
+                    infoMessage: 'Record deleted' 
+                })
+            }).catch((_e) => {
+                setStatus({ 
+                    error: true, 
+                    success: false, 
+                    loading: false, 
+                    infoMessage: 'Something went wrong.' 
+                })
+            })
+        }    
+    }
 
     function viewSignatureClick(image){
         setViewImage(image);
@@ -80,8 +85,8 @@ export default function Attendance(){
         if(e.target.value === ''){
             setFilterText('')
         }
-      }
-      //filter
+    }
+    //filter
     useEffect(() => {
         //jan 1
         setFromDate(`${dayjs().year()}-01-01`)
@@ -98,6 +103,33 @@ export default function Attendance(){
 
     const setToDateValue = (e) => {
         setToDate(e.target.value)
+    }
+
+    const [btnSundayLoading, setBtnSundayLoading] = useState(false)
+	const { data: sundayAttendance, mutate: sundayAttendanceMutate } = 
+        useSWR(id ? `users/employees/${id}/sunday_attendance/` : '', {
+            revalidateOnFocus: false,       
+        });
+    function setNextSundayAttendance(){
+        setBtnSundayLoading(true)
+        axiosInstance.post(`users/employees/${id}/sunday_attendance/`, {})
+        .then((_e) => {
+            sundayAttendanceMutate()
+            setBtnSundayLoading(false)
+        }).catch((_e) => {
+            setBtnSundayLoading(false)
+        })
+    }
+
+    function cancelSundayAttendance(){
+        setBtnSundayLoading(true)
+        axiosInstance.put(`users/employees/${id}/sunday_attendance/`, {})
+        .then((_e) => {
+            sundayAttendanceMutate()
+            setBtnSundayLoading(false)
+        }).catch((_e) => {
+            setBtnSundayLoading(false)
+        })
     }
 
     return(
@@ -119,15 +151,39 @@ export default function Attendance(){
                 <span className="text-gray-500">Date Hired: </span>
                 <span> {dayjs(emp?.user_employee?.date_hired).format('MMMM DD, YYYY')} </span>
             </div>
-            <div className="flex justify-end py-2">
+            <div className="flex justify-between items-center">
+                {sundayAttendance?.status ? (
+                    <LoadingButton
+                        handleOnClick={cancelSundayAttendance}
+                        disable={!sundayAttendance || btnSundayLoading}
+                        loading={!sundayAttendance || btnSundayLoading}
+                        className="!border-gray-300 !bg-white !text-gray-700 !hover:bg-gray-50 !focus:ring-indigo-500 w-auto mt-3"
+                        text="Cancel Sunday attendance"
+                    />
+                ): (
+                    <LoadingButton
+                        handleOnClick={setNextSundayAttendance}
+                        disable={!sundayAttendance || btnSundayLoading}
+                        loading={!sundayAttendance || btnSundayLoading}
+                        className="!w-auto mt-3"
+                        text="Next Sunday attendance"
+                    />
+                )}
+                <div>
+                    {sundayAttendance?.status && (
+                        `Enable on : ${dayjs(sundayAttendance?.date).format('dddd MMMM D, YYYY')}`
+                    )}
+                </div>
+            </div>
+            <div className="flex justify-end items-center gap-3 py-2">
                 <Link 
-                    className="ml-3 text-blue-500"
+                    className="text-blue-500"
                     href={`/hr/employees/attendance/create/all`}
                 >
                     Non working day attendance
                 </Link>
                 <Link 
-                    className="ml-3 text-blue-500"
+                    className="text-blue-500"
                     href={`/hr/employees/attendance/create/${id}`}
                 >
                     Add attendance

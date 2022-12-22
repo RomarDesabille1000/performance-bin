@@ -51,3 +51,7 @@ def paginated_data(self, queryset):
     serializer = self.serializer_class(page, many=True)
     return self.get_paginated_response(serializer.data).data
 
+
+def daterange(start_date, end_date):
+    for n in range(int ((end_date - start_date).days)):
+        yield start_date + timedelta(n)
