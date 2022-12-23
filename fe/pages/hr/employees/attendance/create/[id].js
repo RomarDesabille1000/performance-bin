@@ -8,10 +8,14 @@ import AlertMessages from "../../../../../components/AlertMessages";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
+import { extractTimeLate24hrFormat } from "../../../../../helper/datetime";
 
 
 const AttendanceSchema = yup.object().shape({
 	date: yup.date().typeError('Must be a date').required("This field is required."),
+    reason: yup.string().required("This field is required."),
+    time_in: yup.string().required("This field is required."),
+    time_out: yup.string().required("This field is required."),
 });
 
 export default function CreateOnsiteAttendance(){
@@ -25,6 +29,10 @@ export default function CreateOnsiteAttendance(){
 	const { register, handleSubmit, formState: { errors }, reset } = useForm({
 		mode: 'onSubmit',
 		resolver: yupResolver(AttendanceSchema),
+        defaultValues: {
+            time_in: '08:00',
+            time_out: '17:00'
+        }
 	})
 
 	const [status, setStatus] = useState({
@@ -36,11 +44,8 @@ export default function CreateOnsiteAttendance(){
 
     function onClickSubmit(data){
         let newData = {
-            type: 'ONSITE',
-            date: data.date,
-            signature: 'none',
-            location: 'Office Address',
-            customer_name:'none',
+            ...data,
+            minutes_late: extractTimeLate24hrFormat(data?.time_in),
         }
 		setStatus({ 
 			error: false, 
@@ -79,7 +84,7 @@ export default function CreateOnsiteAttendance(){
 
     return (
         <AdminLayout
-            title="Add Onsite Attendance"
+            title="Add Attendance"
             hasBack={true}
         >
             <div className="mt-10 sm:mt-0">
@@ -117,7 +122,7 @@ export default function CreateOnsiteAttendance(){
                                 <div className="grid grid-cols-6 gap-6">
                                     <div className="col-span-6 sm:col-span-6">
                                         <label className="block text-sm font-medium text-gray-700">
-                                            Input Onsite Attendance Date
+                                            Add Attendance
                                         </label>
                                     </div>
                                 </div>
@@ -131,6 +136,42 @@ export default function CreateOnsiteAttendance(){
                                         type="date" 
                                         className="input !w-[200px]" />
                                     <div className="text-red-500 text-sm pt-1">{errors?.date && errors?.date?.message}</div>
+                                </div>
+                                <div className="mt-3 flex gap-5 items-center">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Time In
+                                        </label>
+                                        <input 
+                                            {...register('time_in')} 
+                                            type="time" 
+                                            className="input !w-[200px]"/>
+                                        <div className="text-red-500 text-sm pt-1">{errors?.time_in && errors?.time_out?.message}</div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Time Out
+                                        </label>
+                                        <input 
+                                            {...register('time_out')} 
+                                            type="time" 
+                                            className="input !w-[200px]"/>
+                                        <div className="text-red-500 text-sm pt-1">{errors?.time_out && errors?.time_out?.message}</div>
+                                    </div>
+                                </div>
+                                <div className="mt-3">
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Reason
+                                    </label>
+                                    <textarea
+                                        {...register('reason')} 
+                                        id="" 
+                                        cols="30" 
+                                        rows="5" 
+                                        className="input !p-2 !h-auto !min-w-min">
+                                    </textarea>
+                                    <div className="text-red-500 text-sm pt-1">{errors?.reason && errors?.reason?.message}</div>
                                 </div>
                             </div>
                             <div className="bg-gray-50 px-4 py-3 text-right sm:px-6">

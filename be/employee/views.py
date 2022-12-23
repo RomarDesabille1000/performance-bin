@@ -45,10 +45,10 @@ class AttendanceView(GenericViewSet):
                 queryset = queryset.filter(date__range=[date_from, date_to])
 
             filter = self.request.query_params.get('filter')
-            if filter is not '':
+            if filter != '':
                 queryset = queryset.filter(customer_name__contains=filter).filter(type='OFFSITE')
             a_type = self.request.query_params.get('type')
-            if a_type is not '':
+            if a_type != '':
                 queryset = queryset.filter(type=a_type)
             return queryset
         except (Exception,):
@@ -68,24 +68,21 @@ class AttendanceView(GenericViewSet):
     def non_working_attendance(self, request, *args, **kwargs):
         users = User.objects.filter(type="EMPLOYEE").values_list('id', flat=True)
         for id in users:
-            Attendance.objects.create(
-                user_id=id,
-                customer_name="-",
-                location="-"
-            )
+            Attendance.objects.create(user_id=id, **request.data)
         return Response(status=status.HTTP_201_CREATED)
 
     
     @transaction.atomic
-    def onsitecreate(self, request, *args, **kwargs):
+    def hr_create_attendance(self, request, *args, **kwargs):
         userdata = User.objects.get(id=kwargs['pk'])
         date_hired = userdata.user_employee.date_hired
         date_added = datetime.datetime.strptime(request.data['date'],'%Y-%m-%dT%H:%M:%S.%fZ')
         date_added = date_added + datetime.timedelta(days=1)
-        if Absences.objects.filter(user=kwargs['pk']).filter(date=request.data['date']).exists():
-            return Response('Absence for this day already Recorded.', status=status.HTTP_400_BAD_REQUEST)
-        if Attendance.objects.filter(user=kwargs['pk']).filter(date=request.data['date']).exists():
-            return Response('Attendance for this day already Recorded.', status=status.HTTP_400_BAD_REQUEST)
+
+        # if Absences.objects.filter(user=kwargs['pk']).filter(date=request.data['date']).exists():
+        #     return Response('Absence for this day already Recorded.', status=status.HTTP_400_BAD_REQUEST)
+        # if Attendance.objects.filter(user=kwargs['pk']).filter(date=request.data['date']).exists():
+        #     return Response('Attendance for this day already Recorded.', status=status.HTTP_400_BAD_REQUEST)
         if date_hired.timestamp() > date_added.timestamp():
             return Response('Unable to add Attendance on Date before Employee was Hired.', status=status.HTTP_400_BAD_REQUEST)
         else :
@@ -96,10 +93,21 @@ class AttendanceView(GenericViewSet):
             return Response(status=status.HTTP_201_CREATED)
     
     def list(self, request, *args, **kwargs):
-        data = self.get_queryset().filter(user_id=kwargs['pk']).order_by('-date')
-        page = self.paginate_queryset(data)
-        attendance_serializer = AttendanceSerializer(page, many=True)
-        return self.get_paginated_response(attendance_serializer.data)
+        queryset = self.get_queryset().filter(user_id=kwargs['pk']).order_by('-date')
+        data = paginated_data(self, queryset=queryset)
+        total_minutes_late = queryset.filter(minutes_late__gt=0).aggregate(result=Sum('minutes_late'))
+
+        # todo
+        # current_year = str(datetime.now().year)
+        # total_attendance = queryset.filter(date__year=current_year)\
+        #     .annotate(month=TruncMonth('date__date'))\
+        #         .values('month')\
+        #         .annotate(c=Count('id'))\
+        #         .order_by('date__date')
+        return Response({ 
+            'attendance': data,
+            'total_minutes_late': total_minutes_late,
+        },status=status.HTTP_200_OK)
     
     def delete(self, request, *args, **kwargs):
         Attendance.objects.get(user_id=kwargs['pk'],id=kwargs['id']).delete()

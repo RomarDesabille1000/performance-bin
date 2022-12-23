@@ -13,6 +13,7 @@ import {paginationRecordCount, PAGINATION_COUNT} from '../../../../helper/pagina
 import { MenuItem, Pagination, Select } from "@mui/material";
 import Loader from "../../../../components/Loader";
 import LoadingButton from "../../../../components/LoadingButton";
+import { timeFormat, toHoursAndMinutes } from "../../../../helper/datetime";
 
 dayjs.extend(utc)
 dayjs.extend(tz)
@@ -28,7 +29,7 @@ export default function Attendance(){
     const { data: emp } = useSWR(id ? `users/details/${id}/` : '', {
         revalidateOnFocus: false,       
     });
-	const { data: attendance,mutate } = useSWR(id ? `employee/attendance/${id}/?type=${type}&filter=${filterText}&page=${pageIndex}&from=${fromDate}&to=${toDate}` : '', {
+	const { data: data_,mutate } = useSWR(id ? `employee/attendance/${id}/?type=${type}&filter=${filterText}&page=${pageIndex}&from=${fromDate}&to=${toDate}` : '', {
         revalidateOnFocus: false,       
     });
     const [viewImage, setViewImage] = useState('');
@@ -131,6 +132,7 @@ export default function Attendance(){
             setBtnSundayLoading(false)
         })
     }
+    console.log(data_);
 
     return(
         <AdminLayout
@@ -150,6 +152,10 @@ export default function Attendance(){
             <div className="mt-1">
                 <span className="text-gray-500">Date Hired: </span>
                 <span> {dayjs(emp?.user_employee?.date_hired).format('MMMM DD, YYYY')} </span>
+            </div>
+            <div className="mt-1">
+                <span className="text-gray-500">Total Late: </span>
+                <span>{toHoursAndMinutes(data_?.total_minutes_late?.result)}</span>
             </div>
             <div className="flex justify-between items-center">
                 {sundayAttendance?.status ? (
@@ -212,7 +218,7 @@ export default function Attendance(){
                                     placeholder="Search and Enter | Customer Name"
                                     className="!w-[320px]"
                                 />
-                                <select
+                                {/* <select
                                     defaultValue=''
                                     className="block w-[150px] ml-2 p-2 pl-3 text-sm border border-indigo-500 rounded-md focus:border-indigo-800 outline-none bg-transparent h-12"
                                     onChange={(e) => setType(e.target.value)}
@@ -220,9 +226,9 @@ export default function Attendance(){
                                     <option value =''>All</option>
                                     <option value ='ONSITE'>Onsite</option>
                                     <option value ='OFFSITE'>Offsite</option>
-                                </select>               
+                                </select>                */}
                             </div>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3 pr-4">
                                 <div>From: &nbsp;</div>
                                 <input 
                                     value={fromDate}
@@ -247,92 +253,135 @@ export default function Attendance(){
                     />
                     <div className="p-1.5 w-full inline-block align-middle">
                         <div className="overflow-hidden border rounded-lg">
-                            <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200 block overflow-x-auto">
                                 <thead className="bg-gray-50">
                                     <tr>
                                         <th
                                             scope="col"
-                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[190px]"
                                         >
                                             Date
                                         </th>
-                                        <th
+                                        {/* <th
                                             scope="col"
                                             className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                                         >
                                             Type
-                                        </th>
+                                        </th> */}
                                         <th
                                             scope="col"
-                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[200px]"
                                         >
                                             Customer Name
                                         </th>
                                         <th
                                             scope="col"
-                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                                            className="px-6 py-3 text-xs font-bold text-center text-gray-500 uppercase min-w-[100px]"
+                                        >
+                                            Contact No.
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[250px]"
+                                        >
+                                            Reason
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[190px]"
+                                        >
+                                            Time in Late
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[130px]"
+                                        >
+                                            Time in
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[130px]"
+                                        >
+                                            Time out
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[250px]"
                                         >
                                             Location
                                         </th>
                                         <th
                                             scope="col"
-                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
-                                            style={{width: '50px'}}
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[160px]"
                                         >
                                             Signature
                                         </th>
                                         <th
                                             scope="col"
-                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
-                                            style={{width: '50px'}}
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[50px]"
                                         >
                                             Action
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {!attendance ? (
+                                    {!data_?.attendance ? (
                                         <tr>
                                             <td 
-                                                colSpan="6"
+                                                colSpan="10"
                                                 className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
                                                     <Loader/>
                                             </td>
                                         </tr>
                                     ):(
-                                        !attendance?.results?.length && (
+                                        !data_?.attendance?.results?.length && (
                                             <tr>
                                                 <td 
-                                                    colSpan="7"
+                                                    colSpan="10"
                                                     className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
                                                         No record Found
                                                 </td>
                                             </tr>
                                         )
                                     )}
-                                    {Array.isArray(attendance?.results) ? attendance?.results.map((d) => (
+                                    {Array.isArray(data_?.attendance?.results) ? data_?.attendance?.results.map((d) => (
                                         <tr key={d.id}>
-                                            <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                                            <td className="px-6 py-4 text-sm text-gray-800">
                                                 {dayjs(d.date).format('MMMM DD, YYYY')}
                                             </td>
-                                            <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
+                                            {/* <td className="px-6 py-4 text-sm font-medium text-gray-800">
                                                 {d.type}
+                                            </td> */}
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-800">
+                                                {d.customer_name}
                                             </td>
-                                            <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                                                {d.type == 'OFFSITE' || d.customer_name == '*' ? d.customer_name : ''}
+                                            <td className="px-6 py-4 text-sm text-gray-800">
+                                                {d.contact_no}
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-800">
+                                                {d.reason}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-800">
+                                                {toHoursAndMinutes(d.minutes_late)}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-800">
+                                                {timeFormat(d.time_in)}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-800">
+                                                {timeFormat(d.time_out)}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-800">
                                                 {d.location}
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                                {d.type == 'OFFSITE' && d.signature
+                                            <td className="px-6 py-4 text-sm text-gray-800">
+                                                {d.signature
                                                     ? <button
                                                     onClick={() => viewSignatureClick(d.signature)}
                                                     className="text-indigo-500 hover:text-indigo-700">
                                                         View Signature
                                                 </button> : ''}
                                             </td>
-                                            <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-800">
                                                 <div className="flex gap-5">
                                                     <button
                                                         onClick={() => handleDelete(d.id)}
@@ -349,7 +398,7 @@ export default function Attendance(){
                         </div>
                         <div className="flex justify-end mt-3">
                             <Pagination 
-                                    count={attendance?.count ? Math.ceil(attendance?.count/PAGINATION_COUNT) : 0}
+                                    count={data_?.attendance?.count ? Math.ceil(data_?.attendance?.count/PAGINATION_COUNT) : 0}
                                     page={pageIndex}
                                     color="primary"
                                     onChange={(_e, n) => setPageIndex(n)}

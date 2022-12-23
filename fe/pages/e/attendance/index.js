@@ -10,6 +10,8 @@ import AlertMessages from "../../../components/AlertMessages";
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc'
 import tz from 'dayjs/plugin/timezone'
+import { useAuth } from '../../../context/AuthContext'
+import useSWR from "swr";
 
 dayjs.extend(utc)
 dayjs.extend(tz)
@@ -24,6 +26,12 @@ const AttendanceSchema = yup.object().shape({
 
 export default function Employee() {
 	const router = useRouter()
+
+	const { user } = useAuth();
+	const { data: e } = useSWR(user?.id ? `users/details/${user?.id}/` : '', {
+        revalidateOnFocus: false,       
+    });
+
 	const signatureStore = useSignatureStore();
 	const [isAddingSignature, setIsAddingSignature] = useState(false);
 	const [isImageEmpty, setIsImageEmpty] = useState(false);
@@ -88,82 +96,97 @@ export default function Employee() {
 
 
 	function isSunday(){
+		const schedule = e?.user_employee?.next_sunday;
+		if(schedule){
+			return dayjs(new Date()).tz("Asia/Shanghai").format('MM-D-YYYY') === dayjs(schedule).format('MM-D-YYYY') ? false : true;
+		}
 		return 'Sunday' === dayjs(new Date()).tz("Asia/Shanghai").format('dddd')
 	}
 
 	return (
 		<div>
-			{isSunday() && (
+			{!e ? (
 				<div className="max-w-lg w-[90%] py-5 mt-5 m-auto">
-					<div className="mb-3 text-lg font-bold">No attendance for this sunday</div>
-					<button 
-						type="button"
-						onClick={() => router.back()}
-						className="btn btn-secondary mt-3 mr-3">Back</button>
+					<div className="mb-3 text-lg">Checking your schedule..</div>
 				</div>
-			)}
-			{!isSunday() && (
-				<div>
-					{isAddingSignature ? (
-						<Signature setIsAddingSignature={setIsAddingSignature}/>
-					): (
-						<form 
-							onSubmit={handleSubmit(onSubmit)}
-							className="max-w-lg w-[90%] py-5 mt-5 m-auto">
-							<div className="mb-3 text-lg font-bold">Attendance</div>
-
-							<AlertMessages
-								error={status.error}
-								success={status.success}
-								loading={status.loading}
-								message={status.infoMessage}
-								className="pb-2"
-							/>
-							<label className="block text-md font-medium text-gray-700">Customer Name</label>
-							<input type="text" 
-									autoComplete="off"
-									{...register('customerName')}
-									className="input"
-							/>
-							<div className="text-red-500">{errors?.customerName && errors?.customerName?.message}</div>
-
-							<div className="border border-indigo-600 p-4 rounded-lg max-w-[600px] mt-10">
-								{signatureStore.image ? (
-									<img src={signatureStore.image} 
-										height={signatureStore.h} 
-										width={signatureStore.w} />
-								): 'No signature yet'}
-							</div>
-							<div className="text-red-500">{isImageEmpty && 'Signature is required.'}</div>
-							<div className="mt-5">
-								<button 
-										type="button"
-										className="btn btn-primary" 
-										onClick={() => setIsAddingSignature(true)}> 
-									{signatureStore.image ? 'Update Signature' : 'Add Signature'}
-								</button>
-							</div>
-
-
-							<label className="block text-md font-medium text-gray-700 mt-10">Location</label>
-							<input type="text" 
-									autoComplete="off"
-									{...register('location')}
-									className="input"
-							/>
-							<div className="text-red-500">{errors?.location && errors?.location?.message}</div>
-
-							<button 
-								type="submit"
-								disabled={status.loading}
-								className="btn btn-primary mt-5 float-right">Submit</button>
+			):(
+				<>
+					{isSunday() && (
+						<div className="max-w-lg w-[90%] py-5 mt-5 m-auto">
+							<div className="mb-3 text-lg font-bold">No attendance for this sunday</div>
 							<button 
 								type="button"
 								onClick={() => router.back()}
-								className="btn btn-secondary mt-5 mr-3 float-right">Back</button>
-						</form>
+								className="btn btn-secondary mt-3 mr-3">Back</button>
+						</div>
 					)}
-				</div>
+					{!isSunday() && (
+						<div>
+							{isAddingSignature ? (
+								<Signature setIsAddingSignature={setIsAddingSignature}/>
+							): (
+								<form 
+									onSubmit={handleSubmit(onSubmit)}
+									className="max-w-lg w-[90%] py-5 mt-5 m-auto">
+									<button 
+										type="button"
+										className="text-blue-500 mb-2"
+										onClick={() => router.push('/e')}
+									>
+										Back
+									</button>
+									<div className="mb-3 text-lg font-bold">Attendance</div>
+
+									<AlertMessages
+										error={status.error}
+										success={status.success}
+										loading={status.loading}
+										message={status.infoMessage}
+										className="pb-2"
+									/>
+									<label className="block text-md font-medium text-gray-700">Customer Name</label>
+									<input type="text" 
+											autoComplete="off"
+											{...register('customerName')}
+											className="input"
+									/>
+									<div className="text-red-500">{errors?.customerName && errors?.customerName?.message}</div>
+
+									<div className={`border border-indigo-600 rounded-lg max-w-[600px] mt-10 ${!signatureStore.image? 'p-4': ''}`}>
+										{signatureStore.image ? (
+											<img src={signatureStore.image} 
+												height={signatureStore.h} 
+												width={signatureStore.w} />
+										): 'No signature yet'}
+									</div>
+									<div className="text-red-500">{isImageEmpty && 'Signature is required.'}</div>
+									<div className="mt-5">
+										<button 
+												type="button"
+												className="btn btn-primary" 
+												onClick={() => setIsAddingSignature(true)}> 
+											{signatureStore.image ? 'Update Signature' : 'Add Signature'}
+										</button>
+									</div>
+
+
+									<label className="block text-md font-medium text-gray-700 mt-10">Location</label>
+									<input type="text" 
+											autoComplete="off"
+											{...register('location')}
+											className="input"
+									/>
+									<div className="text-red-500">{errors?.location && errors?.location?.message}</div>
+
+									<button 
+										type="submit"
+										disabled={status.loading}
+										className="btn btn-primary mt-5 float-right">Submit</button>
+								</form>
+							)}
+						</div>
+					)}
+				</>
 			)}
 		</div>
 	)

@@ -13,7 +13,7 @@ urlpatterns = [
         })),
         path('<int:pk>/', AttendanceView.as_view({
             'get': 'list',
-            'post': 'onsitecreate',
+            'post': 'hr_create_attendance',
         })),
         path('<int:pk>/<int:id>',  AttendanceView.as_view({
             'delete': 'delete',

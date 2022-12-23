@@ -190,26 +190,25 @@ export default function CustomerSurvey() {
     }, [])
 
     return(
-        <div className="bg-gray-100 min-h-screen">
+        <div className="bg-white min-h-screen">
             <div className="max-w-[900px] m-auto pt-10 px-5">
                 {isAddingSignature ? (
                     <Signature setIsAddingSignature={setIsAddingSignature}/>
                 ): (
                     <form onSubmit={handleSubmit(onSubmit)} className="pb-5">
-                        <div className="overflow-hidden shadow sm:rounded-md">
-                            <div className="space-y-6 bg-white px-4 py-5 sm:p-6">
-                                <button 
-                                    type="button"
-                                    className="text-blue-500"
-                                    onClick={() => {
-                                        router.push('/e');
-                                        signatureStore.emtpyImage();
-                                    }}
-                                >
-                                    Back
-                                </button>
+                        <div className="overflow-hidden shadow-lg sm:rounded-md">
+                            <div className="space-y-6 bg-white md:px-10 px-4 py-5 sm:p-6">
                                 <div className="text-lg font-medium text-gray-900" aria-hidden="true">
-                                    Customer FeedbackForm
+                                    <button 
+                                        type="button"
+                                        className="text-blue-500 !font-normal mb-2"
+                                        onClick={() => router.push('/e')}
+                                    >
+                                        Back
+                                    </button>
+                                    <div>
+                                        Customer FeedbackForm
+                                    </div>
                                 </div>
                                 <AlertMessages
                                     error={status.error}
@@ -302,7 +301,7 @@ export default function CustomerSurvey() {
                                 </div>
                             </div>
 
-                            <div className="bg-gray-50 px-4 py-3 text-right flex justify-end items-center gap-3">
+                            <div className="bg-gray-50 md:px-10 px-4 py-5 text-right flex justify-end items-center gap-3">
                                 <button
                                     onClick={() => window.location.href = '#'}
                                     type="submit"

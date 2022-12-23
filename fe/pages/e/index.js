@@ -1,10 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect } from "react";
 import { useAuth } from '../../context/AuthContext';
 import logoWhite from '../../images/logo-white.jpg'
+import { useSignatureStore } from "../../store/signature";
 
 export default function Employee() {
     const { user, logout } = useAuth();
+	const signatureStore = useSignatureStore();
+
+    useEffect(() => {
+        signatureStore.emtpyImage();
+    }, [])
 
     return(
         <div className="px-5 py-16 mt-10 max-w-[400px] m-auto  ">

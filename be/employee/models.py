@@ -1,7 +1,7 @@
 from django.db import models
 from django_base64field.fields import Base64Field
 from django.utils.timezone import now
-from datetime import datetime
+from datetime import datetime, date
 from django.db.models import Sum
 
 ONSITE = "ONSITE"
@@ -14,14 +14,27 @@ class Attendance(models.Model):
     user = models.ForeignKey('users.User', 
         on_delete=models.CASCADE, blank=True, null=True, related_name='employee_attendance')
     type = models.CharField(max_length=20, choices=TYPES, default=OFFSITE)
-    customer_name = models.CharField(max_length=100)
+    customer_name = models.CharField(max_length=100, null=True)
     signature = models.TextField(null=True)
-    location = models.CharField(max_length=255)
-    date = models.DateTimeField(default=now)
+    location = models.CharField(max_length=255, null=True)
+    date = models.DateTimeField(default=now, null=True)
     late = models.BooleanField(default=False)
+    time_in = models.TimeField(null=True, blank=True)
+    time_out = models.TimeField(null=True, blank=True)
+    reason = models.TextField(null=True)
+    contact_no = models.CharField(max_length=255, null=True)
+    completed = models.BooleanField(default=False)
+    minutes_late = models.IntegerField(default=0, null=True)
+    is_sunday = models.BooleanField(default=False)
 
     class Meta: 
         verbose_name_plural = 'Attendance'
+
+    def save(self, *args, **kwargs):
+        weekname = date.today().strftime("%A")
+        if weekname == 'Sunday':
+            self.is_sunday = True
+        super(Attendance, self).save(*args, **kwargs)
 
     def __str__(self):
             return self.user.user_employee.firstname + ' ' + self.user.user_employee.mi + ' ' + self.user.user_employee.lastname
