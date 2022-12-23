@@ -21,6 +21,8 @@ export default function Attendance(){
         revalidateOnFocus: false,       
     });
 
+    const [viewImage, setViewImage] = useState('');
+
     const q1 = {
         'VERYPOSITIVE': 'Very Positive',
         'SOMEWHATPOSITIVE': 'Somewhat Positive',
@@ -68,6 +70,14 @@ export default function Attendance(){
         return q.q1_score + q.q2_score + q.q3_score
     }
 
+    function viewSignatureClick(image){
+        setViewImage(image);
+    }
+
+    function viewImageClose(){
+        setViewImage('');
+    }
+
     return(
         <AdminLayout
             title="Ratings"
@@ -111,33 +121,56 @@ export default function Attendance(){
                 </div>
             </div>
             <div className="flex flex-col">
+                {viewImage && (
+                    <div className="mt-3">
+                        <img className="rounded-lg border-2 border-indigo-500" src={viewImage} width="300" height="100" 
+                            alt="no image"
+                        />
+                        <button 
+                            onClick={viewImageClose}
+                            className="btn btn-secondary ml-2 my-3">Close</button>
+                    </div>
+                )}
                 Question Answers
                 <div className="overflow-x-auto">
                     <div className="w-full inline-block align-middle">
                         <div className="overflow-hidden border rounded-lg">
-                            <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200 block overflow-x-auto">
                                 <thead className="bg-gray-50">
                                     <tr>
-                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
+                                        <th 
+                                            style={{minWidth: '215px'}}
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                             Question 1
                                         </th>
-                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
+                                        <th 
+                                            style={{minWidth: '200px'}}
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                             Question 2
                                         </th>
-                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
+                                        <th 
+                                            style={{minWidth: '200px'}}
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                             Question 3
                                         </th>
                                         <th className="px-6 py-3 text-xs font-bold text-center text-gray-500 uppercase">
                                             Rate
                                         </th>
-                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
+                                        <th style={{minWidth: '200px'}} className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                             Question 5
                                         </th>
-                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
+                                        <th style={{minWidth: '200px'}} className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                             Question 6
                                         </th>
                                         <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                             Total
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                                            style={{minWidth: '50px'}}
+                                        >
+                                            Signature
                                         </th>
                                         <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                             Date
@@ -157,7 +190,7 @@ export default function Attendance(){
                                         !user?.customer_rating?.count && (
                                             <tr>
                                                 <td 
-                                                    colSpan="8"
+                                                    colSpan="9"
                                                     className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
                                                         No record Found
                                                 </td>
@@ -167,16 +200,13 @@ export default function Attendance(){
                                     {user?.customer_rating?.results.map((d) => (
                                         <tr key={d.id}>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                                {q1[d.q1]} 
-                                                &nbsp; | {d.q1_score}
+                                                {d.q1_score} - {q1[d.q1]} 
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                                {q2[d.q2]}
-                                                &nbsp; | {d.q2_score}
+                                                {d.q2_score} - {q2[d.q2]}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                                {q3[d.q3]}
-                                                &nbsp; | {d.q3_score}
+                                                {d.q3_score} - {q3[d.q3]}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
                                                 {d.q4}
@@ -189,6 +219,14 @@ export default function Attendance(){
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {calculateTotal(d)}/15
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                                                {d.signature
+                                                    ? <button
+                                                    onClick={() => viewSignatureClick(d.signature)}
+                                                    className="text-indigo-500 hover:text-indigo-700">
+                                                        View Signature
+                                                </button> : ''}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {dayjs(d.date).format('MMMM DD, YYYY')}

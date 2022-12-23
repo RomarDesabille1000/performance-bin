@@ -85,6 +85,7 @@ class CustomerRatingAnswers(models.Model):
     q6 = models.CharField(max_length=255, blank=True, null=True,
         help_text="Do you know the name of the person who assisted you")
     date = models.DateTimeField(default=now)
+    signature = models.TextField(null=True)
 
     def customer_rating_percentage(pk):
         ratings = CustomerRatingAnswers.objects.filter(

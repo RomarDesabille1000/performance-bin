@@ -5,6 +5,10 @@ import * as yup from "yup";
 import axiosInstance from "../../../utils/axiosInstance";
 import AlertMessages from "../../../components/AlertMessages";
 import { useRouter } from "next/router";
+import Signature from "../../../components/Signature";
+import { useSignatureStore } from "../../../store/signature";
+import Link from "next/link";
+import { useEffect } from "react";
 
 const QuestionWithChoices = memo(function QuestionWithChoices(props) {
 
@@ -43,8 +47,12 @@ const CustomerSurveySchema = yup.object().shape({
 });
 
 export default function CustomerSurvey() {
+	const signatureStore = useSignatureStore();
+	const [isAddingSignature, setIsAddingSignature] = useState(false);
+	const [isImageEmpty, setIsImageEmpty] = useState(false);
+
 	const router = useRouter();
-	const { register, handleSubmit, formState: { errors }, reset } = useForm({
+	const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm({
         defaultValues: {
             q1: [],
             q2: [],
@@ -103,6 +111,10 @@ export default function CustomerSurvey() {
     }
 
     function onSubmit(data) {
+		if(!signatureStore.image){
+			setIsImageEmpty(true);
+            return;
+        }
         let q1i = -1, q2i = -1, q3i = -1;
         let index = 5
         for(let i = 0; i < 5; i++){
@@ -114,7 +126,6 @@ export default function CustomerSurvey() {
                 q3i = index;
             index--;
         }
-        reset();
         data = {
             ...data,
             q1: data['q1'][0],
@@ -123,6 +134,7 @@ export default function CustomerSurvey() {
             q1_score: q1i,
             q2_score: q2i,
             q3_score: q3i,
+            signature: signatureStore.image,
         }
 		setStatus({ 
 			error: false, 
@@ -138,6 +150,20 @@ export default function CustomerSurvey() {
                 loading: false, 
                 infoMessage: 'Feedback Saved.' 
             })
+            reset();
+            let qq1 = {...q1}
+            let qq2 = {...q2}
+            let qq3 = {...q3}
+            for(let i = 0; i < 5; i++){
+                qq1.choices[i].checked = false;
+                qq2.choices[i].checked = false;
+                qq3.choices[i].checked = false;
+                index--;
+            }
+            setQ1(qq1);
+            setQ2(qq2);
+            setQ3(qq3);
+            signatureStore.emtpyImage()
         }).catch((_e) => {
             setStatus({ 
                 error: true, 
@@ -147,6 +173,12 @@ export default function CustomerSurvey() {
             })
         })
     }
+
+	useEffect(() => {
+		if(signatureStore.image){
+			setIsImageEmpty(false);
+		}
+	}, [signatureStore.image])
 
     const onClickHandleChecks = useCallback((index, setState) => {
         setState(prevState => ({
@@ -158,100 +190,130 @@ export default function CustomerSurvey() {
     }, [])
 
     return(
-        <div className="bg-gray-200 min-h-screen">
+        <div className="bg-gray-100 min-h-screen">
             <div className="max-w-[900px] m-auto pt-10 px-5">
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="overflow-hidden shadow sm:rounded-md">
-                        <div className="space-y-6 bg-white px-4 py-5 sm:p-6">
-                            <div className="text-lg font-medium text-gray-900" aria-hidden="true">
-                                Customer FeedbackForm
-                            </div>
-                            <AlertMessages
-                                error={status.error}
-                                success={status.success}
-                                loading={status.loading}
-                                message={status.infoMessage}
-                            />
-                            <div className="text-[16px]">
-                                At First Philippines Scales, we makesure customers come first. Let us know how we are
-                                doing and how we can serve you better. Please rate us on the degree of which
-                                you agree or disagree based on your experience with them.
-                            </div>
-                            <QuestionWithChoices
-                                no="1"
-                                state={q1}
-                                setState={setQ1}
-                                register={register}
-                                name="q1"
-                                onClickHandleChecks={onClickHandleChecks}
-                            />
-                            <div className="text-red-500">{errors?.q1 && errors?.q1?.message}</div>
-                            <QuestionWithChoices
-                                no="2"
-                                state={q2}
-                                setState={setQ2}
-                                register={register}
-                                name="q2"
-                                onClickHandleChecks={onClickHandleChecks}
-                            />
-                            <div className="text-red-500">{errors?.q2 && errors?.q2?.message}</div>
-                            <QuestionWithChoices
-                                no="3"
-                                state={q3}
-                                setState={setQ3}
-                                register={register}
-                                name="q3"
-                                onClickHandleChecks={onClickHandleChecks}
-                            />
-                            <div className="text-red-500">{errors?.q3 && errors?.q3?.message}</div>
-                            <div className="mt-5">
-                                <div>4. {q.q4.main}</div>
-                                <div className="px-5">
-                                    <div className="ml-4">{q.q4.sub}</div>
-                                    <input type="text" 
-                                        autoComplete="off"
-                                        {...register('q4')} 
-                                        className="input max-w-[100px] ml-10" />
+                {isAddingSignature ? (
+                    <Signature setIsAddingSignature={setIsAddingSignature}/>
+                ): (
+                    <form onSubmit={handleSubmit(onSubmit)} className="pb-5">
+                        <div className="overflow-hidden shadow sm:rounded-md">
+                            <div className="space-y-6 bg-white px-4 py-5 sm:p-6">
+                                <button 
+                                    type="button"
+                                    className="text-blue-500"
+                                    onClick={() => {
+                                        router.push('/e');
+                                        signatureStore.emtpyImage();
+                                    }}
+                                >
+                                    Back
+                                </button>
+                                <div className="text-lg font-medium text-gray-900" aria-hidden="true">
+                                    Customer FeedbackForm
+                                </div>
+                                <AlertMessages
+                                    error={status.error}
+                                    success={status.success}
+                                    loading={status.loading}
+                                    message={status.infoMessage}
+                                />
+                                <div className="text-[16px]">
+                                    At First Philippines Scales, we makesure customers come first. Let us know how we are
+                                    doing and how we can serve you better. Please rate us on the degree of which
+                                    you agree or disagree based on your experience with them.
+                                </div>
+                                <QuestionWithChoices
+                                    no="1"
+                                    state={q1}
+                                    setState={setQ1}
+                                    register={register}
+                                    name="q1"
+                                    onClickHandleChecks={onClickHandleChecks}
+                                />
+                                <div className="text-red-500">{errors?.q1 && errors?.q1?.message}</div>
+                                <QuestionWithChoices
+                                    no="2"
+                                    state={q2}
+                                    setState={setQ2}
+                                    register={register}
+                                    name="q2"
+                                    onClickHandleChecks={onClickHandleChecks}
+                                />
+                                <div className="text-red-500">{errors?.q2 && errors?.q2?.message}</div>
+                                <QuestionWithChoices
+                                    no="3"
+                                    state={q3}
+                                    setState={setQ3}
+                                    register={register}
+                                    name="q3"
+                                    onClickHandleChecks={onClickHandleChecks}
+                                />
+                                <div className="text-red-500">{errors?.q3 && errors?.q3?.message}</div>
+                                <div className="mt-5">
+                                    <div>4. {q.q4.main}</div>
+                                    <div className="px-5">
+                                        <div className="ml-4">{q.q4.sub}</div>
+                                        <input type="text" 
+                                            autoComplete="off"
+                                            {...register('q4')} 
+                                            className="input max-w-[100px] ml-10" />
+                                    </div>
+                                </div>
+                                <div className="text-red-500">{errors?.q4 && errors?.q4?.message}</div>
+                                <div className="mt-5">
+                                    <div>5. {q.q5} (Optional)</div>
+                                    <div className="px-5">
+                                        <textarea 
+                                            name="" 
+                                            id="" 
+                                            {...register('q5')} 
+                                            className="text-area" 
+                                            rows="2"
+                                        ></textarea>
+                                    </div>
+                                </div>
+                                <div className="mt-5">
+                                    <div>6. {q.q6} (Optional)</div>
+                                    <div className="px-5">
+                                        <input 
+                                            type="text" 
+                                            {...register('q6')}
+                                            className="input" />
+                                    </div>
+                                </div>
+                                <div className="px-6">
+                                    <div className={`border border-indigo-600 rounded-lg max-w-[600px] mt-10 ${!signatureStore.image? 'p-4': ''}`}>
+                                        {signatureStore.image ? (
+                                            <img src={signatureStore.image} 
+                                                height={signatureStore.h} 
+                                                width={signatureStore.w} />
+                                        ): 'No signature yet'}
+                                    </div>
+                                    <div className="text-red-500">{isImageEmpty && 'Signature is required.'}</div>
+                                    <div className="mt-5">
+                                        <button 
+                                                type="button"
+                                                className="btn btn-primary" 
+                                                onClick={() => setIsAddingSignature(true)}> 
+                                            {signatureStore.image ? 'Update Signature' : 'Add Signature'}
+                                        </button>
+                                    </div>
+
                                 </div>
                             </div>
-                            <div className="text-red-500">{errors?.q4 && errors?.q4?.message}</div>
-                            <div className="mt-5">
-                                <div>5. {q.q5} (Optional)</div>
-                                <div className="px-5">
-                                    <textarea 
-                                        name="" 
-                                        id="" 
-                                        {...register('q5')} 
-                                        className="text-area" 
-                                        rows="2"
-                                    ></textarea>
-                                </div>
-                            </div>
-                            <div className="mt-5">
-                                <div>6. {q.q6} (Optional)</div>
-                                <div className="px-5">
-                                    <input 
-                                        type="text" 
-                                        {...register('q6')}
-                                        className="input" />
-                                </div>
+
+                            <div className="bg-gray-50 px-4 py-3 text-right flex justify-end items-center gap-3">
+                                <button
+                                    onClick={() => window.location.href = '#'}
+                                    type="submit"
+                                    className="btn btn-primary"
+                                >
+                                    Submit
+                                </button>
                             </div>
                         </div>
-                        <div className="bg-gray-50 px-4 py-3 text-right flex justify-end items-center gap-3">
-                            <button 
-                                type="button"
-                                onClick={() => router.push('/e')}
-                                className="btn btn-secondary">Back</button>
-                            <button
-                                onClick={() => {window.location.href = '#'}}
-                                type="submit"
-                                className="btn btn-primary"
-                            >
-                                Submit
-                            </button>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                )}
             </div>
         </div>
     )

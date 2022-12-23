@@ -29,7 +29,7 @@ def search_and_filter(self, o, *args, **kwargs):
         date_to = self.request.query_params.get('to')
         if date_from is not None and date_to is not None:
             date_from = convert_datetz(date_from)
-            date_to = convert_datetz(date_to)
+            date_to = convert_datetz(date_to) + timedelta(days=1)
             obj = obj.filter(date__range=[date_from, date_to])
 
         # search = self.request.query_params.get('search')

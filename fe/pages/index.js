@@ -90,6 +90,7 @@ export default function Home() {
 									text={`${isLoading ? 'Logging in': 'Sign In'}`}
 									loading={isLoading}
 									disable={isLoading}
+									className="!w-[100%]"
 									type="submit"
 								/>
 								{/* <div className="text-sm mt-3 text-center">
