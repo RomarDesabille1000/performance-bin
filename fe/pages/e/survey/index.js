@@ -210,12 +210,6 @@ export default function CustomerSurvey() {
                                         Customer FeedbackForm
                                     </div>
                                 </div>
-                                <AlertMessages
-                                    error={status.error}
-                                    success={status.success}
-                                    loading={status.loading}
-                                    message={status.infoMessage}
-                                />
                                 <div className="text-[16px]">
                                     At First Philippines Scales, we makesure customers come first. Let us know how we are
                                     doing and how we can serve you better. Please rate us on the degree of which
@@ -298,12 +292,19 @@ export default function CustomerSurvey() {
                                         </button>
                                     </div>
 
+                                    <AlertMessages
+                                        error={status.error}
+                                        success={status.success}
+                                        loading={status.loading}
+                                        message={status.infoMessage}
+                                        className="mt-5"
+                                    />
                                 </div>
                             </div>
 
+
                             <div className="bg-gray-50 md:px-10 px-4 py-5 text-right flex justify-end items-center gap-3">
                                 <button
-                                    onClick={() => window.location.href = '#'}
                                     type="submit"
                                     className="btn btn-primary"
                                 >

@@ -18,10 +18,15 @@ dayjs.extend(tz)
 
 
 const AttendanceSchema = yup.object().shape({
-	customerName: yup.string().required('This field is required')
+	customer_name: yup.string().required('This field is required')
 		.max(100, "Only 100 characters is allowed."),
+	contact_no: yup.string().required('This field is required')
+		.max(100, "Only 100 characters is allowed."),
+    time_in: yup.string().required("This field is required."),
+    time_out: yup.string().required("This field is required."),
 	location: yup.string().required('This field is required')
 		.max(255, "Only 255 characters is allowed."),
+    reason: yup.string().required("This field is required."),
 });
 
 export default function Employee() {
@@ -42,7 +47,7 @@ export default function Employee() {
 		infoMessage: 'Attendance Saved.',
 	})
 
-	const { register, handleSubmit, formState: { errors } } = useForm({
+	const { register, handleSubmit, formState: { errors }, reset } = useForm({
 		mode: 'onBlur',
 		resolver: yupResolver(AttendanceSchema)
 	})
@@ -53,19 +58,18 @@ export default function Employee() {
 		}
 	}, [signatureStore.image])
 
-	const onSubmit = ({ customerName, location }) => {
-		setStatus({ 
-			error: false, 
-			success: false, 
-			loading:true, 
-			infoMessage: 'Saving attendance.' 
-		})
+	const onSubmit = (data) => {
 		if(!signatureStore.image){
 			setIsImageEmpty(true);
 		}else{
+			setStatus({ 
+				error: false, 
+				success: false, 
+				loading:true, 
+				infoMessage: 'Saving attendance.' 
+			})
 			axiosInstance.post('employee/attendance/', {
-				customer_name: customerName,
-				location,
+				...data,
 				signature: signatureStore.image,
 			}).then((_e) => {
 				setStatus({ 
@@ -74,6 +78,8 @@ export default function Employee() {
 					loading: false, 
 					infoMessage: 'Attendance Saved.' 
 				})
+				reset();
+				signatureStore.emtpyImage();
 			}).catch((_e) => {
 				if(400 == _e?.response?.status){
 					setStatus({ 
@@ -138,29 +144,32 @@ export default function Employee() {
 									</button>
 									<div className="mb-3 text-lg font-bold">Attendance</div>
 
-									<AlertMessages
-										error={status.error}
-										success={status.success}
-										loading={status.loading}
-										message={status.infoMessage}
-										className="pb-2"
-									/>
-									<label className="block text-md font-medium text-gray-700">Customer Name</label>
+									<label className="block text-md text-gray-700">Customer Name</label>
 									<input type="text" 
 											autoComplete="off"
-											{...register('customerName')}
+											{...register('customer_name')}
 											className="input"
 									/>
-									<div className="text-red-500">{errors?.customerName && errors?.customerName?.message}</div>
+									<small className="text-red-500">{errors?.customer_name && errors?.customer_name?.message}</small>
 
-									<div className={`border border-indigo-600 rounded-lg max-w-[600px] mt-10 ${!signatureStore.image? 'p-4': ''}`}>
+									<div className="mt-3">
+										<label className="block text-md text-gray-700">Contact No.</label>
+										<input type="text" 
+												autoComplete="off"
+												{...register('contact_no')}
+												className="input"
+										/>
+										<small className="text-red-500">{errors?.contact_no && errors?.contact_no?.message}</small>
+									</div>
+
+									<div className={`border border-indigo-600 rounded-lg max-w-[600px] mt-5 ${!signatureStore.image? 'p-4': ''}`}>
 										{signatureStore.image ? (
 											<img src={signatureStore.image} 
 												height={signatureStore.h} 
 												width={signatureStore.w} />
 										): 'No signature yet'}
 									</div>
-									<div className="text-red-500">{isImageEmpty && 'Signature is required.'}</div>
+									<small className="text-red-500">{isImageEmpty && 'Signature is required.'}</small>
 									<div className="mt-5">
 										<button 
 												type="button"
@@ -170,19 +179,76 @@ export default function Employee() {
 										</button>
 									</div>
 
+									<div className="mt-5 flex gap-5 items-start">
+										<div className="w-[50%]">
+											<label className="text-gray-700">
+												Time In (Arrival)
+											</label>
+											<input 
+												{...register('time_in')} 
+												type="time" 
+												className="input"/>
+											<small className="text-red-500 pt-1">{errors?.time_in && errors?.time_out?.message}</small>
+										</div>
 
-									<label className="block text-md font-medium text-gray-700 mt-10">Location</label>
+										<div className="w-[50%]">
+											<label className="text-gray-700">
+												Time Out (Departure)
+											</label>
+											<input 
+												{...register('time_out')} 
+												type="time" 
+												className="input"/>
+											<small className="text-red-500 pt-1">{errors?.time_out && errors?.time_out?.message}</small>
+										</div>
+									</div>
+
+
+									<label className="block text-gray-700 mt-5">Location</label>
 									<input type="text" 
 											autoComplete="off"
 											{...register('location')}
 											className="input"
 									/>
-									<div className="text-red-500">{errors?.location && errors?.location?.message}</div>
+									<small className="text-red-500">{errors?.location && errors?.location?.message}</small>
+
+									<div className="mt-3">
+										<label className="block text-gray-700">
+											Reason
+										</label>
+										<textarea
+											{...register('reason')} 
+											id="" 
+											cols="30" 
+											rows="3" 
+											className="input !p-2 !h-auto !min-w-min">
+										</textarea>
+										<small className="text-red-500 pt-1">{errors?.reason && errors?.reason?.message}</small>
+									</div>
+
+									<div className="flex items-center gap-3 mt-3">
+										<input
+											style={{width: '15px', height: '15px'}}
+											{...register('completed')}
+											type="checkbox"
+										/>
+										<label className="block text-gray-700 text-sm">
+											Check if completed
+										</label>
+									</div>
+
+									<AlertMessages
+										error={status.error}
+										success={status.success}
+										loading={status.loading}
+										message={status.infoMessage}
+										className="mt-4"
+									/>
 
 									<button 
 										type="submit"
 										disabled={status.loading}
-										className="btn btn-primary mt-5 float-right">Submit</button>
+										className="btn btn-primary mt-5 mb-10 float-right">Submit</button>
 								</form>
 							)}
 						</div>
