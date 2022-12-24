@@ -47,6 +47,7 @@ export default function Employee() {
                 <div  className="flex flex-col gap-3 py-3 max-w-[300px]">
                     <Link className="btn btn-primary" href="/e/attendance">Attendance</Link>
                     <Link className="btn btn-primary" href="/e/survey">Customer Survey</Link>
+                    <Link className="btn btn-primary" href="/e/evaluation">Evaluation</Link>
                     <Link className="btn btn-primary" href="/e/change-password">Change Password</Link>
                     <button
                         onClick={logout}

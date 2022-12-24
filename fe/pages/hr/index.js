@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import { useRef } from "react";
 import { currencyDisplay } from "../../helper/numbers";
 import Loader from "../../components/Loader";
+import LineGraph from "../../components/dashboard/LineGraph";
 
 export default function HRDashboard() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -107,7 +108,7 @@ export default function HRDashboard() {
 					</select>
 				</div>
 			</div>
-			<div className="grid grid-cols-3 gap-3">
+			{/* <div className="grid grid-cols-3 gap-3">
 				<TotalCard
 					title="Customer Satisfaction"
 					total={data?.ratings?.result ? `${data?.ratings?.result} / ${data?.total_ratings}`: '0/0'}
@@ -124,14 +125,15 @@ export default function HRDashboard() {
 						`₱ ${currencyDisplay(data?.sales?.total_sales)}` :'₱ 0'}
 					className="!bg-cyan-800"
 				/>
-			</div>
-			<div className="mt-10">
+			</div> */}
+			{/* <div className="mt-10">
 				<CustomerSatisfactionGraph
 					attendance={data?.attendance}
 					workdays={data?.workdays}
 					lates={data?.lates}
 				/>
-			</div>
+			</div> */}
+			<LineGraph/>
 		</AdminLayout>
 	)
 }

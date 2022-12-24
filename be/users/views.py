@@ -128,6 +128,7 @@ class EmployeesView(GenericViewSet):
                 if employee:
                     employee.next_sunday = check_date
                     employee.save()
+                break
         return Response(status=status.HTTP_200_OK)
     
     def cancel_sunday_attendance(self, request, **kwargs):

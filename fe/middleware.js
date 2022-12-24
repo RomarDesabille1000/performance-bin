@@ -11,16 +11,24 @@ export function middleware(req) {
     // const url = req.nextUrl.clone()
     // url.pathname = '/'
 
-    // let path = req.nextUrl.pathname.split('/')[1]
+    // let path = req.nextUrl.pathname.split('/')
 
     // if (!isAuth)
     //     return NextResponse.redirect(url)
     // else {
     //     let redirect = ''
-    //     if(userRole.HR === userRoleC && path === 'e')
+    //     if(userRole.HR === userRoleC && path[1] === 'e')
     //       redirect = '/hr'
-    //     else if(userRole.EMPLOYEE === userRoleC && path === 'hr')
-    //       redirect = '/e'
+    //     else if(userRole.EMPLOYEE === userRoleC && path[1] === 'hr'){
+    //       if(path.length >= 4){
+    //         const currentPath = `${path[1]}/${path[2]}/${path[3]}`;
+    //         if(currentPath !== 'hr/employees/evaluation'){
+    //           redirect = '/e'
+    //         }
+    //       }else{
+    //         redirect = '/e'
+    //       }
+    //     }
     //     if (redirect){
     //         url.pathname = redirect
     //         return NextResponse.redirect(url)
