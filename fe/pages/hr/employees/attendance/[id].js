@@ -132,7 +132,6 @@ export default function Attendance(){
             setBtnSundayLoading(false)
         })
     }
-    console.log(data_);
 
     return(
         <AdminLayout
@@ -156,6 +155,10 @@ export default function Attendance(){
             <div className="mt-1">
                 <span className="text-gray-500">Total Late: </span>
                 <span>{toHoursAndMinutes(data_?.total_minutes_late?.result)}</span>
+            </div>
+            <div className="mt-1">
+                <span className="text-gray-500">Total Attendance: </span>
+                <span>{data_?.total_attendance}</span>
             </div>
             <div className="flex justify-between items-center">
                 {sundayAttendance?.status ? (
@@ -329,7 +332,7 @@ export default function Attendance(){
                                         <tr>
                                             <td 
                                                 colSpan="10"
-                                                className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
+                                                className="px-6 py-4 text-sm text-gray-800">
                                                     <Loader/>
                                             </td>
                                         </tr>
@@ -338,7 +341,7 @@ export default function Attendance(){
                                             <tr>
                                                 <td 
                                                     colSpan="10"
-                                                    className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
+                                                    className="px-6 py-4 text-sm text-gray-800">
                                                         No record Found
                                                 </td>
                                             </tr>

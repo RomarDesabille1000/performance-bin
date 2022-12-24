@@ -6,6 +6,7 @@ from rest_framework.viewsets import GenericViewSet
 from django.db import transaction
 from django.db.models import Sum, Count
 from datetime import date
+from django.db.models.functions import TruncMonth, ExtractMonth
 
 from .serializers import (
     AttendanceSerializer,
@@ -97,16 +98,17 @@ class AttendanceView(GenericViewSet):
         data = paginated_data(self, queryset=queryset)
         total_minutes_late = queryset.filter(minutes_late__gt=0).aggregate(result=Sum('minutes_late'))
 
-        # todo
-        # current_year = str(datetime.now().year)
-        # total_attendance = queryset.filter(date__year=current_year)\
-        #     .annotate(month=TruncMonth('date__date'))\
-        #         .values('month')\
-        #         .annotate(c=Count('id'))\
-        #         .order_by('date__date')
+        current_year = str(datetime.datetime.now().year)
+        total_attendance = queryset.filter(date__year=current_year)\
+            .annotate(month=TruncMonth('date__date'))\
+                .values('month')\
+                .annotate(c=Count('id'))\
+                .order_by('date__date')
+        total_attendance = len(total_attendance)
         return Response({ 
             'attendance': data,
             'total_minutes_late': total_minutes_late,
+            'total_attendance': total_attendance,
         },status=status.HTTP_200_OK)
     
     def delete(self, request, *args, **kwargs):

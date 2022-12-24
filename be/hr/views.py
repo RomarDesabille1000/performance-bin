@@ -39,6 +39,8 @@ from utils.query import (
     convert_datetz,
     search_and_filter,
     paginated_data,
+    convertTime24,
+    extractTimeLate24hrFormat,
 )
 
 
@@ -385,38 +387,44 @@ class CSV(GenericViewSet):
                     time = '06:00:00'
                     datetime = date+'T'+time
                     
+                    time_in = row['Login Time']
+                    time_out = row['Logout Time']
+                    minutes_late = extractTimeLate24hrFormat(time_in)
 
                     employee = Employee.objects.get(emp_id=row['IDNo'])
-                    
-                    if Attendance.objects.filter(user=employee.user)\
-                        .filter(date__date=date).exists():
-                        pass
+                    attendance = Attendance.objects.filter(user=employee.user)
+
+                    if attendance.filter(date__date=date).exists():
+                        attendance = attendance.filter(date__date=date)
+                        attendance.update(time_in=time_in)
+                        attendance.update(time_out=time_out)
+                        attendance.update(minutes_late=minutes_late)
                     else:
                         if row['Punctuality'] != 'not logged in':
                             employee = Employee.objects.get(emp_id=row['IDNo'])
                             attendance = Attendance.objects.create(
                                 user=employee.user,
-                                type='ONSITE',
-                                customer_name='*',
-                                location='*',
                                 date=datetime,
+                                time_in=time_in,
+                                time_out=time_out,
+                                minutes_late=minutes_late,
+                                completed=True,
+                                reason="from csv",
                             )
                             if row['Punctuality'] == 'logged in late':
-                                attendance.late = True
                                 attendance.save()
-                    
+                        
 
-                    if Absences.objects.filter(user=employee.user)\
-                        .filter(date__date=date).exists():
-                        pass
-                    else:
-                        if row['Punctuality'] == 'not logged in':
-                            Absences.objects.create(
-                                user=employee.user,
-                                reason='*',
-                                date=datetime,
-                            )
-
+                        if Absences.objects.filter(user=employee.user)\
+                            .filter(date__date=date).exists():
+                            pass
+                        else:
+                            if row['Punctuality'] == 'not logged in':
+                                Absences.objects.create(
+                                    user=employee.user,
+                                    reason="from csv",
+                                    date=datetime,
+                                )
                 except (Exception,):
                     if row['IDNo'] not in not_exist_ids:
                         not_exist_ids.append(row['IDNo']) 

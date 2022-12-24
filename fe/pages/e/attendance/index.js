@@ -97,10 +97,11 @@ export default function Employee() {
 
 	function isSunday(){
 		const schedule = e?.user_employee?.next_sunday;
-		if(schedule){
+		const is_sunday = 'Sunday' === dayjs(new Date()).tz("Asia/Shanghai").format('dddd')
+		if(schedule && is_sunday){
 			return dayjs(new Date()).tz("Asia/Shanghai").format('MM-D-YYYY') === dayjs(schedule).format('MM-D-YYYY') ? false : true;
 		}
-		return 'Sunday' === dayjs(new Date()).tz("Asia/Shanghai").format('dddd')
+		return is_sunday;
 	}
 
 	return (

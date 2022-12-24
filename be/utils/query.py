@@ -55,3 +55,33 @@ def paginated_data(self, queryset):
 def daterange(start_date, end_date):
     for n in range(int ((end_date - start_date).days)):
         yield start_date + timedelta(n)
+
+def convertTime24(str1):
+    # Checking if last two elements of time
+    # is AM and first two elements are 12
+    if str1[-2:] == "AM" and str1[:2] == "12":
+        return "00" + str1[2:-2]
+         
+    # remove the AM    
+    elif str1[-2:] == "AM":
+        return str1[:-2]
+     
+    # Checking if last two elements of time
+    # is PM and first two elements are 12
+    elif str1[-2:] == "PM" and str1[:2] == "12":
+        return str1[:-2]
+         
+    else:
+        # add 12 to hours and remove PM
+        return str(int(str1[:2]) + 12) + str1[2:5]
+
+def extractTimeLate24hrFormat(time):
+    time = time.split(':')
+    totalMinutesLate = 0
+    hr = int(time[0])
+    minutes = int(time[1])
+    if hr >= 8:
+        totalMinutesLate += minutes
+    if hr > 8:
+        totalMinutesLate += (abs(hr - 8) * 60)
+    return totalMinutesLate
