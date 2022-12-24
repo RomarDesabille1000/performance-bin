@@ -33,6 +33,7 @@ export default function CreateOnsiteAttendance(){
             ...data,
             time_in: '08:00',
             time_out: '17:00',
+            completed: true,
         }
 		setStatus({ 
 			error: false, 

@@ -315,6 +315,12 @@ export default function Attendance(){
                                         </th>
                                         <th
                                             scope="col"
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[100px]"
+                                        >
+                                            Completed
+                                        </th>
+                                        <th
+                                            scope="col"
                                             className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[160px]"
                                         >
                                             Signature
@@ -341,7 +347,7 @@ export default function Attendance(){
                                             <tr>
                                                 <td 
                                                     colSpan="10"
-                                                    className="px-6 py-4 text-sm text-gray-800">
+                                                    className="px-6 py-4 text-sm text-gray-800 text-center">
                                                         No record Found
                                                 </td>
                                             </tr>
@@ -375,6 +381,9 @@ export default function Attendance(){
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800">
                                                 {d.location}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-800 text-center">
+                                                {d.completed ? 'Yes': 'No'}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800">
                                                 {d.signature

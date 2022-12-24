@@ -46,6 +46,7 @@ export default function CreateOnsiteAttendance(){
         let newData = {
             ...data,
             minutes_late: extractTimeLate24hrFormat(data?.time_in),
+            completed: true,
         }
 		setStatus({ 
 			error: false, 
