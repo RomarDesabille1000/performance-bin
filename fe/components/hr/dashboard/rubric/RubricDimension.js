@@ -180,6 +180,9 @@ export default function RubricDimension(props) {
 									<th className='p-2 whitespace-nowrap'>
 										<div className='font-semibold text-left'>Description</div>
 									</th>
+                                    <th className='p-2 whitespace-nowrap'>
+										<div className='font-semibold text-left'>Template</div>
+									</th>
 									<th className='p-2 whitespace-nowrap w-[120px]'>
 										<div className='font-semibold text-left'>Percentage</div>
 									</th>

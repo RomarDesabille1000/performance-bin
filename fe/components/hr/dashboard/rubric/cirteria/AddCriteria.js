@@ -3,6 +3,7 @@ import axiosInstance from "../../../../../utils/axiosInstance";
 
 export default function AddCriteria(props) {
     const [isEditable, setIsEditable] = useState(true);
+		const [showMenu, setShowMenu] = useState(false)
     const [rubricValues, setRubricsValues] = useState({
 		name: '',
 		description: '',
@@ -38,6 +39,8 @@ export default function AddCriteria(props) {
 			description: '',
 			percentage: '',
 		});
+		setIsEditable(true)
+		setShowMenu(false)
 	};
 
     const onSubmit = async (rubric) => {
@@ -49,11 +52,7 @@ export default function AddCriteria(props) {
 			infoMessage: 'Saving Rubric.',
 		});
 		axiosInstance
-			.post(`hr/criteria/${props.id}/`, {
-				name: rubric.name,
-				description: rubric.description,
-				percentage: rubric.percentage,
-			})
+			.post(`hr/criteria/${props.id}/`, rubric)
 			.then((_e) => {
 				props.mutate();
 				props.setStatus({
@@ -75,10 +74,40 @@ export default function AddCriteria(props) {
 			});
 	};
 
+	function addTemplate(name){
+		if(name == 'Attendance'){
+			setIsEditable(false)
+			setRubricsValues({
+				name: 'Attendance',
+				description: 'Attendance Details here',
+				percentage: '',
+				template_name: 'Attendance'
+			});
+		}
+		if(name == 'Customer Satisfaction'){
+			setIsEditable(false)
+			setRubricsValues({
+				name: 'Customer Satisfaction',
+				description: 'Customer Satisfaction Details here',
+				percentage: '',
+				template_name: 'Customer Satisfaction'
+			});
+		}
+		if(name == 'No Template'){
+			setIsEditable(true)
+			setRubricsValues({
+				name: '',
+				description: '',
+				percentage: '',
+			});
+		}
+		
+
+	}
 
 	return (
 		<tr className={props?.show ? 'bg-slate-300' : 'hidden'}>
-			<td scope='row' className='py-4 px-6 font-medium  w-[100px]'>
+			<td scope='row' className='py-8 px-6 font-medium  w-[100px]'>
 				<input
 					className='w-[150px] rounded-[12px] pl-2'
 					type='text'
@@ -97,7 +126,6 @@ export default function AddCriteria(props) {
 				<input
 					className='min-w-full rounded-[12px] pl-2 '
 					type='text'
-					readOnly={!isEditable}
 					placeholder='Description'
 					value={rubricValues.description}
 					onChange={(event) =>
@@ -107,6 +135,9 @@ export default function AddCriteria(props) {
 						})
 					}
 				/>
+			</td>
+			<td className='py-4 w-max pr-4'>
+				<p className='text-left whitespace-normal pl-2'>{ rubricValues?.template_name ?? ''}</p>
 			</td>
 			<td className='py-4 w-[120px]  pl-2'>
 				<input
@@ -128,12 +159,26 @@ export default function AddCriteria(props) {
 				/>
 			</td>
 			<td className='py-4 pr-5'>
-				<button
-					className='btn w-full bg-emerald-500 border border-emerald-500'
-					onClick={() => onSubmit(rubricValues)}
-				>
-					Save
-				</button>
+				<div className="flex flex-row items-center">
+					<div className="ml-auto relative mr-3">
+						<button onClick={() => setShowMenu(!showMenu)}>&#9776;</button>
+						<div className={showMenu ? '' : 'hidden'}>
+								<div className="absolute flex flex-col items-start top-5 right-0 bg-white border-[1px] border-black px-10 py-2 w-[400px]">
+										Add Criteria Template
+										<button className="text-indigo-500 hover:text-indigo-700" onClick={() => addTemplate('No Template')}>No Template</button>
+										<button className="text-indigo-500 hover:text-indigo-700" onClick={() => addTemplate('Attendance')}>Attendance</button>
+										<button className="text-indigo-500 hover:text-indigo-700" onClick={() => addTemplate('Customer Satisfaction')}>Customer Satisfaction</button>
+								</div>
+						</div>
+					</div>
+					<button
+							className='btn w-full bg-emerald-500 border border-emerald-500'
+							onClick={() => onSubmit(rubricValues)}
+						>
+							Save
+					</button>
+				</div>
+				
 			</td>
 		</tr>
 	);

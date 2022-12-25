@@ -3,7 +3,7 @@ import axiosInstance from '../../../../../utils/axiosInstance';
 
 export default function Criteria(props) {
     const [update, setUpdate] = useState(false);
-    const [isEditable, setIsEditable] = useState(true);
+    const [isEditable, setIsEditable] = useState(props?.isTemplate == 'none' ? false : true);
     const [rubricValues, setRubricsValues] = useState({
         name: props?.name,
         description: props?.description,
@@ -120,7 +120,6 @@ export default function Criteria(props) {
                     <input
                     className='min-w-full rounded-[12px] pl-2 '
                     type='text'
-                    readOnly={!isEditable}
                     placeholder='Description'
                     value={rubricValues.description}
                     onChange={(event) =>
@@ -133,6 +132,9 @@ export default function Criteria(props) {
                 :
                 <p className='text-left whitespace-normal'>{props?.description ?? ''}</p>
             }
+			</td>
+            <td className='py-4'>
+                <p className='text-left whitespace-normal pl-2'>{props?.isTemplate == 'none' ? '' : props?.isTemplate}</p>
 			</td>
 			<td className='py-4'>
 				{update ? 
@@ -157,7 +159,7 @@ export default function Criteria(props) {
                     <p className='w-[100px] text-center'>{props?.percentage ?? ''}%</p>
                 }
 			</td>
-			<td className='py-4 flex justify-center'>
+			<td className='py-4 flex justify-center items-center'>
 				{update ? 
                     <div className='flex gap-5'>
                         <button
