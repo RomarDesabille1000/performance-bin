@@ -23,12 +23,16 @@ export default function Employee() {
 		}
 	);
     function getPosition (id) {
+        if(positions == undefined)
+            return ''
         for(let pos of positions){
             if(pos.id == id) return pos.title
         }
         return 'No Title'
     }
     function showType (id, type) {
+        if(positions == undefined)
+            return false
         for(let pos of positions){
             if(pos.id != id) 
                 continue

@@ -184,7 +184,7 @@ export default function AddEmployee(){
                                             Position
                                         </label>
                                         <select
-                                            id='employee_type'
+                                            id='position'
                                             className='border rounded-[5px] px-2 py-1 bg-white !w-[200px]'
                                             {...register('position')} 
                                         >
@@ -204,13 +204,13 @@ export default function AddEmployee(){
                                             Designation
                                         </label>
                                         <select
-                                            id='employee_type'
+                                            id='designation'
                                             className='border rounded-[5px] px-2 py-1 bg-white !w-[200px]'
                                             defaultValue={'STAFF'}
                                             {...register('designation')} 
                                         >
                                             <option key = {0} value={'STAFF'}>Staff</option>
-                                            <option key = {0} value={'SUPERVISOR'}>Supervisor</option>
+                                            <option key = {1} value={'SUPERVISOR'}>Supervisor</option>
                                         </select>
                                         <div className="text-red-500 text-sm pt-1">{errors?.designation && errors?.designation?.message}</div>
                                     </div>

@@ -134,10 +134,11 @@ const setChecked = (name, checked) => {
                                     </div>
                                     <div className="col-span-6 sm:col-span-6">
                                         <div className="flex flex-row items-center">
-                                            <Checkbox
+                                            <input
+                                                type="checkbox"
                                                 className="mr-2"
                                                 label="has Rating"
-                                                checked={ticks.has_rating}
+                                                checked={ticks.has_rating  ?? false}
                                                 onChange={(event) => setChecked('has_rating', event.target.checked)}
                                             />
                                             <label>has Customer Satisfaction Rating</label>
@@ -146,10 +147,11 @@ const setChecked = (name, checked) => {
                                     </div>
                                     <div className="col-span-6 sm:col-span-6">
                                         <div className="flex flex-row items-center">
-                                            <Checkbox
+                                            <input
+                                                type="checkbox"
                                                 className="mr-2"
                                                 label="has Backjobs"
-                                                checked={ticks.has_backjob}
+                                                checked={ticks.has_backjob ?? false}
                                                 onChange={(event) => setChecked('has_backjob', event.target.checked)}
                                             />
                                             <label>has Back Jobs</label>
@@ -158,10 +160,11 @@ const setChecked = (name, checked) => {
                                     </div>
                                     <div className="col-span-6 sm:col-span-6">
                                         <div className="flex flex-row items-center">
-                                            <Checkbox
+                                            <input
+                                                type="checkbox"
                                                 className="mr-2"
                                                 label="has Sales"
-                                                checked={ticks.has_sales}
+                                                checked={ticks.has_sales  ?? false}
                                                 onChange={(event) => setChecked('has_sales', event.target.checked)}
                                             />
                                             <label>has Sales</label>
