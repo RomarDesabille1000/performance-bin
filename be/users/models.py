@@ -37,6 +37,12 @@ USER_TYPES = (
     (SALESEXECUTIVE, "Sales Executive"),
     (TECHNICIAN, "Tecnician"),
 )
+SUPERVISOR = "SUPERVISOR"
+STAFF = "STAFF"
+DESIGNATION = (
+    (SUPERVISOR, "Supervisor"),
+    (STAFF, "Staff"),
+)
 class Employee(models.Model):
     user = models.OneToOneField('users.User', 
         on_delete=models.CASCADE, blank=True, null=True, related_name='user_employee')
@@ -44,8 +50,9 @@ class Employee(models.Model):
     firstname = models.CharField(max_length=100)
     lastname = models.CharField(max_length=100)
     mi = models.CharField(max_length=100)
-    type = models.CharField(max_length=50, choices=USER_TYPES, default=SALESEXECUTIVE)
-    position = models.CharField(max_length=255)
+    position = models.ForeignKey('hr.EmployeePositions', 
+        on_delete=models.PROTECT, blank=True, null=True, related_name='user_employee2')
+    designation = models.CharField(max_length=50, choices=DESIGNATION, default=STAFF)
     date_hired = models.DateTimeField()
     next_sunday = models.DateField(null=True, blank=True)
 

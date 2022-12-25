@@ -74,7 +74,6 @@ export default function RubricDimension(props) {
             })
             props.mutate()
             setUpdate(false)
-            reset()
         }).catch((_e) => {
             if(400 == _e?.response?.status){
                 setStatus({ 

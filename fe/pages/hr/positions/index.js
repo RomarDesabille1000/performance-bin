@@ -41,12 +41,21 @@ export default function Positions() {
                     infoMessage: 'Position Removed.' 
                 })
             }).catch((_e) => {
-                setStatus({ 
-                    error: true, 
-                    success: false, 
-                    loading: false, 
-                    infoMessage: 'Something went wrong.' 
-                })
+                if(500 == _e?.response?.status){
+                    setStatus({ 
+                        error: true, 
+                        success: false, 
+                        loading: false, 
+                        infoMessage: 'Unable to Delete, There are employees who have this Position.'
+                    })
+                }else{
+                    setStatus({ 
+                        error: true, 
+                        success: false, 
+                        loading: false, 
+                        infoMessage: 'Something went wrong.' 
+                    })
+                }
             })
         }    
     }

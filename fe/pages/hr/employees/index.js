@@ -16,6 +16,31 @@ export default function Employee() {
     const { data: employees,mutate } = useSWR(`users/employees/?lastname=${searchText}&page=${pageIndex}`, {
         revalidateOnFocus: false,
     });
+    const { data: positions,} = useSWR(
+		`hr/positions/all/`,
+		{
+			revalidateOnFocus: false,
+		}
+	);
+    function getPosition (id) {
+        for(let pos of positions){
+            if(pos.id == id) return pos.title
+        }
+        return 'No Title'
+    }
+    function showType (id, type) {
+        for(let pos of positions){
+            if(pos.id != id) 
+                continue
+            if(type == 'rating')
+                return pos.has_rating
+            if(type == 'backjob')
+                return pos.has_backjob
+            if(type == 'sales')
+                return pos.has_sales
+        }
+        return false
+    }
     const [status, setStatus] = useState({
 		error: false,
 		loading: false,
@@ -118,6 +143,12 @@ export default function Employee() {
                                             scope="col"
                                             className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                                         >
+                                            Designation
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                                        >
                                             Date Hired
                                         </th>
                                         <th
@@ -161,7 +192,10 @@ export default function Employee() {
                                                     {d.user_employee?.lastname}
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                                    {d.user_employee?.type == 'TECHNICIAN' ? 'Technician' : 'Sales Executive' }
+                                                    {getPosition(d.user_employee?.position)}
+                                                </td>
+                                                <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                                                    {d.user_employee?.designation == 'SUPERVISOR' ? 'Supervisor' : 'Staff' }
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                     {dayjs(d.user_employee?.date_hired).format('MMMM DD, YYYY')}
@@ -199,17 +233,23 @@ export default function Employee() {
                                                             Attendance
                                                         </Link>
                                                         <Link href={`/hr/employees/ratings/${d.id}`}
-                                                            className="text-indigo-500 hover:text-indigo-700"
+                                                            className={showType(d.user_employee?.position, 'rating') ? 
+                                                            "text-indigo-500 hover:text-indigo-700" : 
+                                                            "hidden"}
                                                         >
                                                             Ratings
                                                         </Link>
                                                         <Link href={`/hr/employees/backjobs/${d.id}`}
-                                                            className="text-indigo-500 hover:text-indigo-700"
+                                                            className={showType(d.user_employee?.position, 'backjob') ? 
+                                                                "text-indigo-500 hover:text-indigo-700" : 
+                                                                "hidden"}
                                                         >
                                                             Back Jobs
                                                         </Link>
                                                         <Link href={`/hr/employees/sales/${d.id}`}
-                                                            className="text-indigo-500 hover:text-indigo-700"
+                                                            className={showType(d.user_employee?.position, 'sales') ? 
+                                                            "text-indigo-500 hover:text-indigo-700" : 
+                                                            "hidden"}
                                                         >
                                                             Sales
                                                         </Link>

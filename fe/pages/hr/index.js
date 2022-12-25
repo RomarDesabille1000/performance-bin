@@ -32,6 +32,19 @@ export default function HRDashboard() {
     const { data: employees } = useSWR(`users/employees/?lastname=${searchText}&page=${pageIndex}`, {
         revalidateOnFocus: false,
     });
+		const { data: positions,} = useSWR(
+			`hr/positions/all/`,
+			{
+				revalidateOnFocus: false,
+			}
+		);
+			function getPosition (id) {
+				for(let pos of positions){
+					if(pos.id == id) return pos.title
+				}
+				return 'No Title'
+						
+		}
 
 	const [confirmSelection, setConfirmSelection] = useState(false);
     const { data } = useSWR(employeeTarget.id > 0 ? 
@@ -81,7 +94,7 @@ export default function HRDashboard() {
 					<div> 
 						{employeeTarget.position == '' ? 
 							<span className="text-gray-500">Position: </span> :
-							<span className="text-gray-500">Position: {employeeTarget.position == 'TECHNICIAN' ? 'Technician' : 'Sales Executive' }</span>
+							<span className="text-gray-500">Position: {getPosition(employeeTarget.position)}</span>
 						}
 						<span></span>
 					</div>

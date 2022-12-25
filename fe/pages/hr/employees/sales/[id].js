@@ -19,6 +19,19 @@ export default function CreateSales(){
 	const { data: emp } = useSWR(id ? `users/details/${id}/` : '', {
         revalidateOnFocus: false,       
     });
+    const { data: positions,} = useSWR(
+		`hr/positions/all/`,
+		{
+			revalidateOnFocus: false,
+		}
+	);
+    function getPosition (id) {
+        for(let pos of positions){
+            if(pos.id == id) return pos.title
+        }
+        return 'No Title'
+            
+    }
 
     const [pageIndex, setPageIndex] = useState(1);
     const [fromDate, setFromDate] = useState('');
@@ -108,7 +121,7 @@ export default function CreateSales(){
                 </div>
                 <div> 
                     <span className="text-gray-500">Position: </span>
-                    <span> {emp?.user_employee?.type == 'TECHNICIAN' ? 'Technician' : 'Sales Executive' }</span>
+                    <span> {getPosition(emp?.user_employee?.position)}</span>
                 </div>
             </div>
             <div className="mt-1">

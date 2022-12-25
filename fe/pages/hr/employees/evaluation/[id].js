@@ -15,6 +15,19 @@ export default function Evaluation(){
 	const { data: user } = useSWR(id ? `hr/evaluation/${id}/?&page=${pageIndex}` : '', {
         revalidateOnFocus: false,    
     });
+    const { data: positions,} = useSWR(
+		`hr/positions/all/`,
+		{
+			revalidateOnFocus: false,
+		}
+	);
+    function getPosition (id) {
+        for(let pos of positions){
+            if(pos.id == id) return pos.title
+        }
+        return 'No Title'
+            
+    }
 
 
     return(
@@ -29,7 +42,7 @@ export default function Evaluation(){
                 </div>
                 <div> 
                     <span className="text-gray-500">Position: </span>
-                    <span> {user?.user?.user_employee?.type == 'TECHNICIAN' ? 'Technician' : 'Sales Executive' }</span>
+                    <span> {getPosition(user?.user?.user_employee?.position)}</span>
                 </div>
             </div>
             <div className="mt-1">

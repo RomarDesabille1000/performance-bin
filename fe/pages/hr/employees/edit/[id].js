@@ -17,7 +17,7 @@ const EmployeeSchema = yup.object().shape({
     lastname: yup.string().required("This field is required.").max(255, "Only 255 characters is allowed."),
     mi: yup.string().required("This field is required.").max(2, "Only 1 or 2 characters is allowed."),
     position: yup.string().required("This field is required."),
-    emptype: yup.string().required("This field is required."),
+    designation: yup.string().required("This field is required."),
 	date_hired: yup.date().typeError('Must be a date').required("This field is required."),
 });
 
@@ -28,12 +28,18 @@ export default function EditEmployee(){
     const { data: emp } = useSWR(id ? `users/details/${id}/` : '', {
         revalidateOnFocus: false,       
     });
+    const { data: positions,} = useSWR(
+		`hr/positions/all/`,
+		{
+			revalidateOnFocus: false,
+		}
+	);
     useEffect(() => {
         setValue('id', emp?.user_employee?.emp_id)
         setValue('firstname', emp?.user_employee?.firstname)
         setValue('lastname', emp?.user_employee?.lastname)
         setValue('mi', emp?.user_employee?.mi)
-        setValue('emptype', emp?.user_employee?.type)
+        setValue('designation', emp?.user_employee?.designation)
         setValue('position', emp?.user_employee?.position)
         setValue('date_hired', dayjs(emp?.user_employee?.date_hired).format('YYYY-MM-DD'))
         setValue('email', emp?.email)
@@ -67,7 +73,7 @@ export default function EditEmployee(){
                 lastname: data.lastname,
                 mi: data.mi,
                 position: data.position,
-                type: data.emptype,
+                designation: data.designation,
                 date_hired: dateString,
                 
             }
@@ -172,24 +178,33 @@ export default function EditEmployee(){
                                             id='employee_type'
                                             className='border rounded-[5px] px-2 py-1 bg-white !w-[200px]'
                                             defaultValue='SALESEXECUTIVE'
-                                            {...register('emptype')} 
+                                            {...register('position')} 
                                         >
-                                            <option value='SALESEXECUTIVE'>Sales Executive</option>
-                                            <option value='TECHNICIAN'>Technician</option>
+                                            {/** RENDER ALL POSITIONS */}
+                                            <option key = {0} value={null}></option>
+                                            {
+                                                positions ? positions.map((pos) => (
+                                                        <option key = {pos?.id} value={pos?.id}>{pos?.title}</option>
+                                                    )
+                                                ) : <></>
+                                            }
                                         </select>
-                                        <div className="text-red-500 text-sm pt-1">{errors?.emptype && errors?.emptype?.message}</div>
+                                        <div className="text-red-500 text-sm pt-1">{errors?.position && errors?.position?.message}</div>
                                     </div>
                                     <div className="col-span-6 sm:col-span-4">
                                         <label className="block text-sm font-medium text-gray-700">
-                                            Rank
+                                            Designation
                                         </label>
-                                        <input
-                                            {...register('position')} 
-                                            type="text"
-                                            autoComplete="off"
-                                            className="input"
-                                        />
-                                        <div className="text-red-500 text-sm pt-1">{errors?.position && errors?.position?.message}</div>
+                                        <select
+                                            id='employee_type'
+                                            className='border rounded-[5px] px-2 py-1 bg-white !w-[200px]'
+                                            defaultValue={'STAFF'}
+                                            {...register('designation')} 
+                                        >
+                                            <option key = {0} value={'STAFF'}>Staff</option>
+                                            <option key = {1} value={'SUPERVISOR'}>Supervisor</option>
+                                        </select>
+                                        <div className="text-red-500 text-sm pt-1">{errors?.designation && errors?.designation?.message}</div>
                                     </div>
  
 
