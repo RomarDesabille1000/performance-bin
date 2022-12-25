@@ -15,20 +15,7 @@ export default function Evaluation(){
 	const { data: user } = useSWR(id ? `hr/evaluation/${id}/?&page=${pageIndex}` : '', {
         revalidateOnFocus: false,    
     });
-    const { data: positions,} = useSWR(
-		`hr/positions/all/`,
-		{
-			revalidateOnFocus: false,
-		}
-	);
-    function getPosition (id) {
-        for(let pos of positions){
-            if(pos.id == id) return pos.title
-        }
-        return 'No Title'
-            
-    }
-
+    
 
     return(
         <AdminLayout
@@ -42,7 +29,7 @@ export default function Evaluation(){
                 </div>
                 <div> 
                     <span className="text-gray-500">Position: </span>
-                    <span> {getPosition(user?.user?.user_employee?.position)}</span>
+                    <span> {user?.user?.user_employee?.position?.title}</span>
                 </div>
             </div>
             <div className="mt-1">
@@ -53,7 +40,7 @@ export default function Evaluation(){
                 <div className="overflow-x-auto">
                     <div className="w-full inline-block align-middle">
                         <div className="overflow-hidden border rounded-lg">
-                            <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
+                            <table className="divide-y divide-gray-200 overflow-x-auto">
                                 <thead className="bg-gray-50">
                                     <tr>
                                         <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
@@ -61,6 +48,9 @@ export default function Evaluation(){
                                         </th>
                                         <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                             Review Period
+                                        </th>
+                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase w-[100%]">
+                                            Comment
                                         </th>
                                         <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                             Action
@@ -92,6 +82,9 @@ export default function Evaluation(){
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {d.review_period}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-800">
+                                                {d.comment}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 <Link href={`/hr/employees/evaluation/${user?.user?.id}/${d.id}`}

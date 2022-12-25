@@ -18,18 +18,19 @@ from .serializers import (
     EmployeeEvaluationSerializer,
     EvaluationRubric,
     EmployeeEvaluation,
-    EmployeeEvaluationDetail,
     Sales,
     SalesSerializer,
     BackJobsSerializer,
     BackJobs,
-    EmployeeEvaluationDetailSerializer,
     EmployeePositions,
     EmployeePositionsSerializer,
     RubricTemplate,
     RubricTemplateSerializer,
     RubricCriteria,
-    RubricCriteriaSerializer
+    RubricCriteriaSerializer,
+    EvaluationRubricCriteriaSerializer,
+    EvaluationRubricTemplateSerializer,
+    EvaluationRubricTemplate,
 )
 from users.serializers import (
     UserSerializer,
@@ -129,8 +130,8 @@ class EmployeeEvaluationView(GenericViewSet):
         if 'id' in kwargs.keys():
             evaluation = self.get_queryset().get(id=kwargs['id'])
             evaluation_serializer = self.serializer_class(evaluation, many=False).data
-            evaluation_detail = EmployeeEvaluationDetailSerializer(
-                EmployeeEvaluationDetail.objects.filter(employee_evaluation=evaluation),
+            evaluation_detail = EvaluationRubricTemplateSerializer(
+                EvaluationRubricTemplate.objects.filter(employee_evaluation=evaluation),
                 many=True
             ).data
         else:

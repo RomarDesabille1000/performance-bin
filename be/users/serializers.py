@@ -8,6 +8,9 @@ from .models import (
     User,
     Employee
 )
+from hr.models import (
+    EmployeePositions,
+)
 
 
 class LoginSerializer(Serializer):
@@ -46,7 +49,13 @@ class LoginSerializer(Serializer):
 
         return resp
 
+class PositionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmployeePositions
+        fields = '__all__'
+
 class EmployeeSerializer(serializers.ModelSerializer):
+    position = PositionSerializer(many=False)
     class Meta:
         model = Employee
         fields = '__all__'

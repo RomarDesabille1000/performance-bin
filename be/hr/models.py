@@ -29,6 +29,7 @@ class RubricTemplate(models.Model):
 
     def __str__(self):
             return self.emplyee_position.title + ' - ' + self.dimension_name
+
     class Meta: 
         verbose_name_plural = 'Rubric Template'
 
@@ -65,6 +66,7 @@ class EmployeeEvaluation(models.Model):
         on_delete=models.CASCADE, blank=True, null=True, related_name='employee_evaluation')
     date_created = models.DateTimeField(default=now)
     review_period = models.CharField(max_length=255, null=True)
+    comment = models.TextField(null=True, blank=True)
 
     def __str__(self):
             return self.employee.user_employee.firstname + ' ' + self.employee.user_employee.mi + ' ' + self.employee.user_employee.lastname
@@ -72,14 +74,23 @@ class EmployeeEvaluation(models.Model):
     class Meta: 
         verbose_name_plural = 'Evaluation'
 
-class EmployeeEvaluationDetail(models.Model): 
-    type = models.CharField(max_length=20, choices=TYPES, default=CORE)
+class EvaluationRubricTemplate(models.Model):
     employee_evaluation = models.ForeignKey('hr.EmployeeEvaluation', 
-        on_delete=models.CASCADE, blank=True, null=True, related_name='employee_evaluation')
+        on_delete=models.CASCADE, blank=True, null=True, related_name='evaluation_rubric')
+    name = models.CharField(max_length=255)
+    percentage = models.IntegerField()
+    score = models.DecimalField(default=0, max_digits=20, decimal_places=2)
+
+class EvaluationRubricCriteria(models.Model):
+    evaluation_rubric = models.ForeignKey(EvaluationRubricTemplate, 
+        on_delete=models.CASCADE, blank=True, null=True, related_name='evaluation_criteria')
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
     percentage = models.IntegerField()
     score = models.DecimalField(default=0, max_digits=20, decimal_places=2)
+
+    class Meta: 
+        verbose_name_plural = 'Evaluation Criterias'
 
 
 class BackJobs(models.Model):
