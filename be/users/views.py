@@ -167,7 +167,8 @@ class EmployeesView(GenericViewSet):
         position = user.user_employee.position
         rubricT_percentage = 0
         rubricT = RubricTemplate.objects.filter(emplyee_position=position)
-        # print(rubricT)
+        if rubricT.count() == 0:
+            return Response({'err': 'Please set rubric for position ' + position.title})
         for rT in rubricT:
             rubricT_percentage += rT.percentage
 

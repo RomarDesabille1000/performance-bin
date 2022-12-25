@@ -32,7 +32,7 @@ export default function Evaluate() {
 
 
     useEffect(() => {
-        if(data){
+        if(data && !data?.err){
             const total = Array(data?.rubric?.length).fill(0)
             const newRubric =  [...data?.rubric].map((r, rI) => ({
                 ...r, 

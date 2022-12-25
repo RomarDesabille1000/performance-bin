@@ -55,7 +55,8 @@ class PositionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class EmployeeSerializer(serializers.ModelSerializer):
-    position = PositionSerializer(many=False)
+    position = PositionSerializer(read_only=True ,many=False)
+    position_id = serializers.IntegerField(write_only=True)
     class Meta:
         model = Employee
         fields = '__all__'
@@ -65,7 +66,7 @@ class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     class Meta:
         model = User
-        fields = ('id','email', 'name', 'type', 'user_employee', 'password', 'is_active',)
+        fields = ('id','email', 'name', 'type', 'user_employee', 'password', 'is_active', )
 
     @transaction.atomic
     def create(self, validated_data):
@@ -76,6 +77,9 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
 
-        Employee.objects.create(**employee_data, user=user)
+        Employee.objects.create(
+            **employee_data, 
+            user=user,
+        )
         return user
         

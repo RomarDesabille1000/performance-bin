@@ -23,19 +23,7 @@ export default function EditSales(){
 	const { data: e } = useSWR(id ? `hr/sales/retrieve/${id}/` : '', {
         revalidateOnFocus: false,       
     });
-    const { data: positions,} = useSWR(
-		`hr/positions/all/`,
-		{
-			revalidateOnFocus: false,
-		}
-	);
-    function getPosition (id) {
-        for(let pos of positions){
-            if(pos.id == id) return pos.title
-        }
-        return 'No Title'
-            
-    }
+   
 
 	const { register, handleSubmit, formState: { errors }, setValue } = useForm({
 		mode: 'onSubmit',
@@ -108,7 +96,7 @@ export default function EditSales(){
                         </div>
                         <div>
                             Position:&nbsp;
-                            {getPosition(e?.user?.user_employee?.position)}&nbsp;
+                            {e?.user?.user_employee?.position?.title}&nbsp;
                         </div>
                         <div>
                             Date Hired:&nbsp;

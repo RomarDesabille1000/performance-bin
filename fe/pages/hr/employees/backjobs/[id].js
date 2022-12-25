@@ -26,19 +26,7 @@ export default function CreateBackjobs(){
 	const { data: backjob, mutate } = useSWR(id ? `hr/backjobs/${id}/?search=${searchText}&page=${pageIndex}&from=${fromDate}&to=${toDate}` : '', {
         revalidateOnFocus: false,       
     });
-    const { data: positions,} = useSWR(
-		`hr/positions/all/`,
-		{
-			revalidateOnFocus: false,
-		}
-	);
-    function getPosition (id) {
-        for(let pos of positions){
-            if(pos.id == id) return pos.title
-        }
-        return 'No Title'
-            
-    }
+    
 
 	const [status, setStatus] = useState({
 		error: false,
@@ -120,7 +108,7 @@ export default function CreateBackjobs(){
                 </div>
                 <div> 
                     <span className="text-gray-500">Position: </span>
-                    <span> {getPosition(emp?.user_employee?.position) }</span>
+                    <span> {emp?.user_employee?.position?.title}</span>
                 </div>
             </div>
             <div className="mt-1">
