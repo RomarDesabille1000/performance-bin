@@ -24,6 +24,12 @@ from .serializers import (
     BackJobsSerializer,
     BackJobs,
     EmployeeEvaluationDetailSerializer,
+    EmployeePositions,
+    EmployeePositionsSerializer,
+    RubricTemplate,
+    RubricTemplateSerializer,
+    RubricCriteria,
+    RubricCriteriaSerializer
 )
 from users.serializers import (
     UserSerializer,
@@ -41,6 +47,7 @@ from utils.query import (
     paginated_data,
     convertTime24,
     extractTimeLate24hrFormat,
+    search_,
 )
 
 
@@ -370,6 +377,105 @@ class Dashboard(GenericViewSet):
             'ratings': customer_rating,
             'total_ratings': total_rating,
         },status=status.HTTP_200_OK)
+
+class EmployeePositionView(GenericViewSet, generics.ListAPIView):
+    serializer_class = EmployeePositionsSerializer
+
+    def get_queryset(self):
+        return search_(self, EmployeePositions, 
+            title__contains=self.request.query_params.get('position')
+        )
+
+    @transaction.atomic
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(status=status.HTTP_201_CREATED)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        data = paginated_data(self, queryset)
+        return Response(data , status=status.HTTP_200_OK)
+    
+    def listAll(self, request, *args, **kwargs):
+        data = EmployeePositions.objects.all()
+        serializer = self.get_serializer(data, many=True)
+        return Response(serializer.data , status=status.HTTP_200_OK)
+   
+    def delete(self, request, *args, **kwargs):
+        EmployeePositions.objects.get(id=kwargs['id']).delete()
+        return Response(status=status.HTTP_200_OK)
+
+    def retrieve(self, request, *args, **kwargs):
+        position = EmployeePositions.objects.get(id=kwargs['id'])
+        serializer = self.serializer_class(position, many=False)
+        return Response(serializer.data ,status=status.HTTP_200_OK)
+    def update(self, request, *args, **kwargs):
+        position = EmployeePositions.objects.get(id=kwargs['id'])
+        serializer = self.serializer_class(position, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)
+
+class RubricTemplateView(GenericViewSet, generics.ListAPIView):
+    serializer_class = RubricTemplateSerializer
+
+    @transaction.atomic
+    def create(self, request, *args, **kwargs):
+        position = EmployeePositions.objects.get(id=kwargs['id'])
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(emplyee_position=position)
+
+        return Response(status=status.HTTP_201_CREATED)
+
+    def list(self, request, *args, **kwargs):
+        data = RubricTemplate.objects.all()
+        data = data.filter(emplyee_position_id=kwargs['id'])
+        serializer = self.get_serializer(data, many=True)
+        return Response(serializer.data , status=status.HTTP_200_OK)
+   
+    def delete(self, request, *args, **kwargs):
+        RubricTemplate.objects.get(id=kwargs['id']).delete()
+        return Response(status=status.HTTP_200_OK)
+
+    def update(self, request, *args, **kwargs):
+        template = RubricTemplate.objects.get(id=kwargs['id'])
+        serializer = self.serializer_class(template, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)
+
+class RubricCriteriaView(GenericViewSet, generics.ListAPIView):
+    serializer_class = RubricCriteriaSerializer
+
+    @transaction.atomic
+    def create(self, request, *args, **kwargs):
+        template = RubricTemplate.objects.get(id=kwargs['id'])
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(rubric_template=template)
+
+        return Response(status=status.HTTP_201_CREATED)
+
+    def list(self, request, *args, **kwargs):
+        data = RubricCriteria.objects.all()
+        data = data.filter(rubric_template_id=kwargs['id'])
+        serializer = self.get_serializer(data, many=True)
+        return Response(serializer.data , status=status.HTTP_200_OK)
+   
+    def delete(self, request, *args, **kwargs):
+        RubricCriteria.objects.get(id=kwargs['id']).delete()
+        return Response(status=status.HTTP_200_OK)
+
+    def update(self, request, *args, **kwargs):
+        criteria = RubricCriteria.objects.get(id=kwargs['id'])
+        serializer = self.serializer_class(criteria, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)
 
 
 

@@ -6,6 +6,9 @@ from .views import (
     SalesView,
     BackJobsView,
     Dashboard,
+    EmployeePositionView,
+    RubricTemplateView,
+    RubricCriteriaView,
     CSV,
 )
 
@@ -58,5 +61,41 @@ urlpatterns = [
         })),
     ])),
     path('dashboard/<int:id>/', Dashboard.as_view({'get': 'list'})),
+    path('positions/', EmployeePositionView.as_view({
+        'get': 'list',
+        'post': 'create',
+    })),
+    path('positions/<int:id>/', EmployeePositionView.as_view({
+        'delete': 'delete',
+        'get': 'retrieve',
+        'put': 'update'
+    })),
+    path('positions/all/', EmployeePositionView.as_view({
+        'get': 'listAll',
+    })),
+    path('templates/<int:id>/', RubricTemplateView.as_view({
+        'get': 'list',
+        'post': 'create',
+        'put': 'update'
+    })),
+    path('templates/delete/<int:id>/', RubricTemplateView.as_view({
+        'delete': 'delete',
+    })),
+    path('templates/<int:id>/', RubricTemplateView.as_view({
+        'get': 'list',
+        'post': 'create',
+        'put': 'update'
+    })),
+    path('templates/delete/<int:id>/', RubricTemplateView.as_view({
+        'delete': 'delete',
+    })),
+    path('criteria/<int:id>/', RubricCriteriaView.as_view({
+        'get': 'list',
+        'post': 'create',
+        'put': 'update'
+    })),
+    path('criteria/delete/<int:id>/', RubricCriteriaView.as_view({
+        'delete': 'delete',
+    })),
     path('import-csv/', CSV.as_view({'post': 'import_file'})),
 ]

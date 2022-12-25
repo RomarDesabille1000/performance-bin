@@ -5,7 +5,10 @@ from .models import (
     EmployeeEvaluation,
     EmployeeEvaluationDetail,
     Sales,
-    BackJobs
+    BackJobs,
+    EmployeePositions,
+    RubricTemplate,
+    RubricCriteria
 )
 
 
@@ -36,4 +39,19 @@ class SalesSerializer(serializers.ModelSerializer):
 class BackJobsSerializer(serializers.ModelSerializer): 
     class Meta:
         model = BackJobs
+        fields = "__all__"
+
+class EmployeePositionsSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = EmployeePositions
+        fields = "__all__"
+
+class RubricTemplateSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = RubricTemplate
+        fields = "__all__"
+
+class RubricCriteriaSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = RubricCriteria
         fields = "__all__"
