@@ -101,7 +101,7 @@ export default function Criteria(props) {
                     <input
                         className='w-[150px] rounded-[12px] pl-2'
                         type='text'
-                        readOnly={isEditable}
+                        //readOnly={isEditable}
                         placeholder='Name'
                         value={rubricValues.name}
                         onChange={(event) =>
