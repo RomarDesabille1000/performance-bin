@@ -42,8 +42,11 @@ class LoginSerializer(Serializer):
 
     def to_representation(self, instance):
         resp = super().to_representation(instance)
+        type_ = self.user.type
+        if self.user.type == 'EMPLOYEE':
+            type_ = self.user.user_employee.designation
         resp.update({
-            'type': self.user.type,
+            'type': type_,
             'token': self.user.get_token().key
         })
 
@@ -60,6 +63,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = '__all__'
+
     
 class UserSerializer(serializers.ModelSerializer):
     user_employee = EmployeeSerializer(many=False)
@@ -82,4 +86,3 @@ class UserSerializer(serializers.ModelSerializer):
             user=user,
         )
         return user
-        

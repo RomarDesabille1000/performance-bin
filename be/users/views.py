@@ -163,6 +163,8 @@ class EmployeesView(GenericViewSet):
 
     def retrieve(self, request, **kwargs):
         user = User.objects.get(id=kwargs['pk'])
+        if user.id == request.user.id:
+            return Response({'err': 'Cannot evaluate your self.'})
         user_serializer = self.serializer_class(user, many=False)
         position = user.user_employee.position
         rubricT_percentage = 0

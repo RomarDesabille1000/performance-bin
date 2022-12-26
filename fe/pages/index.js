@@ -11,8 +11,8 @@ export default function Home() {
 	const { login, statusCode, isLoading, setStatusCode } = useAuth()
 	const { register, handleSubmit, formState: { errors }, } = useForm({
 		defaultValues: {
-			// username: 'hr@gmail.com',
-			// password: 'fdsafdsafffffffffffff432432'
+			username: 'r@gmail.com',
+			password: 'Romar12345!'
 		}
 	});
 
@@ -114,7 +114,7 @@ export function getServerSideProps({ req }) {
 	let redirect = ''
 	if(userRole.HR === userRoleC)
 		redirect = '/hr'
-	else if(userRole.EMPLOYEE === userRoleC)
+	else if(userRole.SUPERVISOR === userRoleC || userRole.STAFF === userRoleC)
 		redirect = '/e'
 
     if (redirect) {

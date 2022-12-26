@@ -173,30 +173,30 @@ export default function Evaluate() {
             return (
                 <div key={r.id} className={`w-full inline-block align-middle mt-5 ${i > 0 ? '!mt-10': ''}`}>
                     <div className="overflow-hidden border rounded-lg">
-                        <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
+                        <table className="divide-y block divide-gray-200 overflow-auto">
                             <thead className="bg-gray-50">
                                 <tr>
                                     <th
                                         scope="col"
-                                        className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[200px]"
+                                        className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase w-[300px] min-w-[300px]"
                                     >
                                         {r.dimension_name} ({r.percentage}%)
                                     </th>
                                     <th
                                         scope="col"
-                                        className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase w-[200px]"
+                                        className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase w-[100%] min-w-[300px]"
                                     >
                                         MEASURABLE INDICATOR
                                     </th>
                                     <th
                                         scope="col"
-                                        className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase w-[170px]"
+                                        className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase w-[100px]"
                                     >
                                         Percentage %
                                     </th>
                                     <th
                                         scope="col"
-                                        className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase w-[50px]"
+                                        className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase w-[100px]"
                                     >
                                         Actual Attainment
                                     </th>
@@ -226,7 +226,7 @@ export default function Evaluate() {
                             <div className="bg-white px-4 py-5 sm:p-6">
                                 <div>
                                     <button className="text-blue-500"
-                                        onClick={() => router.push('/hr/evaluate')}
+                                        onClick={() => router.back()}
                                     >Back</button>
                                 </div>
                                 {data?.err ? (

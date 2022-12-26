@@ -13,6 +13,7 @@ export default function Employee() {
         signatureStore.emtpyImage();
     }, [])
 
+
     return(
         <div className="px-5 py-16 mt-10 max-w-[400px] m-auto  ">
             <div className="flex flex-col justify-center items-center">
@@ -47,7 +48,9 @@ export default function Employee() {
                 <div  className="flex flex-col gap-3 py-3 max-w-[300px]">
                     <Link className="btn btn-primary" href="/e/attendance">Attendance</Link>
                     <Link className="btn btn-primary" href="/e/survey">Customer Survey</Link>
-                    <Link className="btn btn-primary" href="/e/evaluation">Evaluation</Link>
+                    {user?.user_employee?.designation === 'SUPERVISOR' && (
+                        <Link className="btn btn-primary" href="/e/evaluation">Evaluation</Link>
+                    )}
                     <Link className="btn btn-primary" href="/e/change-password">Change Password</Link>
                     <button
                         onClick={logout}

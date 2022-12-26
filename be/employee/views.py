@@ -14,7 +14,8 @@ from .serializers import (
     Attendance,
     CustomerRatingAnswers,
     AbsencesSerializer,
-    Absences
+    Absences,
+    EmployeeListSerializer,
 )
 from users.serializers import (
     UserSerializer,
@@ -24,6 +25,7 @@ from utils.query import (
     convert_datetz,
     search_and_filter,
     paginated_data,
+    search_,
 )
 import datetime
 from users.permissions import EmployeeOnly,HROnly
@@ -225,6 +227,23 @@ class AbsencesView(GenericViewSet, generics.ListAPIView):
         if serializer.is_valid():
             serializer.save()
         return Response(status=status.HTTP_200_OK)
+
+
+
+
+class EmployeesView(GenericViewSet):
+    serializer_class = EmployeeListSerializer
+
+    def get_queryset(self):
+        return search_(self, User, 
+            user_employee__lastname__contains=self.request.query_params.get('lastname')
+        )
+        
+
+    def list(self, request):
+        queryset = self.get_queryset().filter(user_employee__isnull=False)
+        data = paginated_data(self, queryset)
+        return Response(data , status=status.HTTP_200_OK)
 
 
 
