@@ -93,7 +93,7 @@ export default function SelectUserModal(
                                                 scope="col"
                                                 className="px-6 py-2 text-xs font-bold text-left text-gray-500 uppercase "
                                             >
-                                                Position
+                                                Department
                                             </th>
                                             <th
                                                 scope="col"

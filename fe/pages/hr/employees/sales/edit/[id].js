@@ -95,7 +95,7 @@ export default function EditSales(){
                             {e?.user?.user_employee?.lastname}
                         </div>
                         <div>
-                            Position:&nbsp;
+                            Department:&nbsp;
                             {e?.user?.user_employee?.position?.title}&nbsp;
                         </div>
                         <div>

@@ -181,7 +181,7 @@ export default function AddEmployee(){
                                     </div>
                                     <div className="col-span-6 sm:col-span-4">
                                         <label className="block text-sm font-medium text-gray-700">
-                                            Position
+                                            Department
                                         </label>
                                         <select
                                             id='position'

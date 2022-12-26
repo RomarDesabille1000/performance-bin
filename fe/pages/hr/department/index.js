@@ -73,7 +73,7 @@ export default function Positions() {
 
 	return (
         <AdminLayout
-            title="Positions"
+            title="Department"
         >
             <div className="flex flex-col">
                 <div className="overflow-x-auto">
@@ -88,9 +88,9 @@ export default function Positions() {
                     <div className="flex justify-end py-2">
                         <Link 
                             className="mr-3 text-blue-500"
-                            href={`/hr/positions/create/`}
+                            href={`/hr/department/create/`}
                         >
-                            Add Position
+                            Add Department
                         </Link>
                     </div>
                     <AlertMessages
@@ -115,7 +115,7 @@ export default function Positions() {
                                             scope="col"
                                             className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                                         >
-                                            Title
+                                            Department
                                         </th>
                                         <th
                                             scope="col"
@@ -127,7 +127,7 @@ export default function Positions() {
                                             scope="col"
                                             className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                                         >
-                                            Back job
+                                            Quality of Work
                                         </th>
                                         <th
                                             scope="col"
@@ -186,7 +186,7 @@ export default function Positions() {
                                                     <div className="flex gap-5">
                                                         <Link
                                                             className="text-indigo-500 hover:text-indigo-700"
-                                                            href={`/hr/positions/edit/${d.id}`}
+                                                            href={`/hr/department/edit/${d.id}`}
                                                         >
                                                             Update
                                                         </Link>

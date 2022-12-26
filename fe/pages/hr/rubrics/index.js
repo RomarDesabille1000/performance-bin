@@ -61,6 +61,7 @@ export default function Rubric() {
 		<AdminLayout title='Manage Rubrics'>
 			<div className='flex flex-col items-center w-full  px-4'>
 				<div className='w-full p-4'>
+				<label className='pr-2'>Select Department</label>
 					<select
 						id='employee type'
 						className='w-[200px] border rounded-[12px] pl-2 bg-gray-100'
@@ -98,7 +99,7 @@ export default function Rubric() {
 						)
 					) : <></>
 				}
-				<div className={checkTotalPercentage() ? 'block w-full' : 'hidden'}>
+				<div className={checkTotalPercentage() && template != 0 ? 'block w-full' : 'hidden'}>
 					<button
 								className={ 
 									showAdd ? 

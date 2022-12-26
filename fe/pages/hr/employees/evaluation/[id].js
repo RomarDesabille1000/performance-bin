@@ -28,7 +28,7 @@ export default function Evaluation(){
                     <span>{user?.user?.user_employee?.firstname} {user?.user?.user_employee?.mi}. {user?.user?.user_employee?.lastname}</span>
                 </div>
                 <div> 
-                    <span className="text-gray-500">Position: </span>
+                    <span className="text-gray-500">Department: </span>
                     <span> {user?.user?.user_employee?.position?.title}</span>
                 </div>
             </div>

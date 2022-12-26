@@ -79,7 +79,7 @@ export default function HRDashboard() {
 						<span className="text-gray-500">Name: {employeeTarget.name}</span>
 					</div>
 					<div> 
-						<span className="text-gray-500">Position: {employeeTarget.position}</span>
+						<span className="text-gray-500">Department: {employeeTarget.position}</span>
 					</div>
 					<div> 
 						<span className="text-gray-500">Date Hired: {employeeTarget.dateHired}</span>

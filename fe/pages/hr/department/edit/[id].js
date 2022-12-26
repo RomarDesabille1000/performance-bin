@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import useSWR from "swr";
 import AdminLayout from "../../../../components/AdminLayout";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import axiosInstance from "../../../../utils/axiosInstance";
 import AlertMessages from "../../../../components/AlertMessages";
@@ -18,12 +18,46 @@ const PositionSchema = yup.object().shape({
     has_sales: yup.boolean(),
 });
 
-export default function AddEmployee(){
+export default function UpdatePosition(){
+  const router = useRouter();
+  const { id } = router.query
+  const { data: position } = useSWR(id ? `hr/positions/${id}/` : '', {
+    revalidateOnFocus: false,       
+  });
+  const [ticks, setTicks] = useState({
+    has_rating: false, 
+    has_backjob: false, 
+    has_sales: false
+  })
 
-	const { register, handleSubmit, formState: { errors }, reset , setValue } = useForm({
+
+  useEffect(() => {
+    setValue('title', position?.title)
+    setValue('has_rating', position?.has_rating)
+    setValue('has_backjob', position?.has_backjob)
+    setValue('has_sales', position?.has_sales)
+    setTicks({
+      has_rating: position?.has_rating, 
+      has_backjob: position?.has_backjob, 
+      has_sales: position?.has_sales
+    })
+}, [position])
+
+const setChecked = (name, checked) => {
+  if(name == 'has_rating')
+    setTicks({...ticks, has_rating: checked})
+  else if(name == 'has_backjob')
+    setTicks({...ticks, has_backjob: checked})
+  else if(name == 'has_sales')
+    setTicks({...ticks, has_sales: checked})
+  setValue(name, checked)
+}
+
+	const { register, handleSubmit, formState: { errors }, reset , setValue, getValues} = useForm({
 		mode: 'onSubmit',
 		resolver: yupResolver(PositionSchema),
 	})
+
 
 	const [status, setStatus] = useState({
 		error: false,
@@ -33,21 +67,21 @@ export default function AddEmployee(){
 	})
 
     function onClickSubmit(data){
+      console.log(data)
 		setStatus({ 
 			error: false, 
 			success: false, 
 			loading:true, 
-			infoMessage: 'Saving data.' 
+			infoMessage: 'Updating data.' 
 		})
-        axiosInstance.post(`hr/positions/`, data)
+        axiosInstance.put(`hr/positions/${id}/`, data)
         .then((_e) => {
             setStatus({ 
                 error: false, 
                 success: true, 
                 loading: false, 
-                infoMessage: 'Position successfully Added.' 
+                infoMessage: 'Position successfully Updated.' 
             })
-            reset()
         }).catch((_e) => {
             if(400 == _e?.response?.status){
                 setStatus({ 
@@ -69,7 +103,7 @@ export default function AddEmployee(){
 
     return (
         <AdminLayout
-            title="Add Position"
+            title="Update Department"
             hasBack={true}
         >
             <div className="mt-10 sm:mt-0">
@@ -88,7 +122,7 @@ export default function AddEmployee(){
                                 <div className="grid grid-cols-6 gap-6">
                                     <div className="col-span-6 sm:col-span-6">
                                         <label className="block text-sm font-medium text-gray-700">
-                                            Position
+                                            Department
                                         </label>
                                         <input
                                             {...register('title')} 
@@ -102,10 +136,10 @@ export default function AddEmployee(){
                                         <div className="flex flex-row items-center">
                                             <input
                                                 type="checkbox"
-                                                autoComplete="off"
                                                 className="mr-2"
                                                 label="has Rating"
-                                                onChange={(event) => setValue('has_rating', event.target.checked)}
+                                                checked={ticks.has_rating  ?? false}
+                                                onChange={(event) => setChecked('has_rating', event.target.checked)}
                                             />
                                             <label>has Customer Satisfaction Rating</label>
                                         </div>
@@ -115,12 +149,12 @@ export default function AddEmployee(){
                                         <div className="flex flex-row items-center">
                                             <input
                                                 type="checkbox"
-                                                autoComplete="off"
                                                 className="mr-2"
                                                 label="has Backjobs"
-                                                onChange={(event) => setValue('has_backjob', event.target.checked)}
+                                                checked={ticks.has_backjob ?? false}
+                                                onChange={(event) => setChecked('has_backjob', event.target.checked)}
                                             />
-                                            <label>has Back Jobs</label>
+                                            <label>has Quality of Work</label>
                                         </div>
                                         <div className="text-red-500 text-sm pt-1">{errors?.has_backjob && errors?.has_backjob?.message}</div>
                                     </div>
@@ -128,10 +162,10 @@ export default function AddEmployee(){
                                         <div className="flex flex-row items-center">
                                             <input
                                                 type="checkbox"
-                                                autoComplete="off"
                                                 className="mr-2"
                                                 label="has Sales"
-                                                onChange={(event) => setValue('has_sales', event.target.checked)}
+                                                checked={ticks.has_sales  ?? false}
+                                                onChange={(event) => setChecked('has_sales', event.target.checked)}
                                             />
                                             <label>has Sales</label>
                                         </div>
@@ -145,7 +179,7 @@ export default function AddEmployee(){
                                 type="submit"
                                 className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
-                                Save
+                                Update
                             </button>
                             </div>
                         </div>

@@ -73,7 +73,7 @@ export default function Evaluation(){
                                 <span> {e?.user?.user_employee?.mi.toUpperCase()}. </span>
                             </div>
                             <div className="text-md">
-                                Position: {e?.user?.user_employee?.position?.title}
+                                Department: {e?.user?.user_employee?.position?.title}
                             </div>
                             <div className="text-md">
                                 Review Period: {e?.evaluation?.review_period}

@@ -36,9 +36,9 @@ export default function AdminLayout({children, title, hasBack=false}) {
             name: 'Dashboard'
         },
         {
-            href: '/hr/positions', 
-            activeLinks: ['/hr/positions'],
-            name: 'Positions'
+            href: '/hr/department', 
+            activeLinks: ['/hr/department'],
+            name: 'Department'
         },
         {
             href: '/hr/rubrics', 

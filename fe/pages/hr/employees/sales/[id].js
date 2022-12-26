@@ -108,7 +108,7 @@ export default function CreateSales(){
                     <span>{emp?.user_employee?.firstname} {emp?.user_employee?.mi}. {emp?.user_employee?.lastname}</span>
                 </div>
                 <div> 
-                    <span className="text-gray-500">Position: </span>
+                    <span className="text-gray-500">Department: </span>
                     <span> {emp?.user_employee?.position?.title}</span>
                 </div>
             </div>

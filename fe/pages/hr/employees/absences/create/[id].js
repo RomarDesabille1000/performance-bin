@@ -87,7 +87,7 @@ export default function CreateAbsences(){
                             {e?.user_employee?.lastname}
                         </div>
                         <div>
-                            Position:&nbsp;
+                            Department:&nbsp;
                             {e?.user_employee?.position.title}&nbsp;
                         </div>
                         <div>

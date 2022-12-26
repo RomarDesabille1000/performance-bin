@@ -21,6 +21,10 @@ from users.serializers import (
     UserSerializer,
     User,
 )
+from hr.serializers import (
+    BackJobs,
+    BackJobsSerializer
+)
 from utils.query import (
     convert_datetz,
     search_and_filter,
@@ -63,6 +67,14 @@ class AttendanceView(GenericViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=self.request.user)
+        
+        if request.data['completed'] == False:
+            data = {"customer_name": request.data['customer_name'], 
+                    "description" :'Work not done yet.', 
+                    "reason": request.data['reason']}
+            backjob_serializer = BackJobsSerializer(data = data)
+            backjob_serializer.is_valid(raise_exception=True)
+            backjob_serializer.save(user=self.request.user)
 
         return Response(status=status.HTTP_201_CREATED)
 
