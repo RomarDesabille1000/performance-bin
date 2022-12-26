@@ -248,6 +248,7 @@ class EmployeesView(GenericViewSet):
         user_id = kwargs['pk']
         employee_evaluation= EmployeeEvaluation.objects.create(
             employee_id=user_id,
+            evaluated_by=request.user,
             review_period=data['review_period'],
             comment=data['comment'],
         )

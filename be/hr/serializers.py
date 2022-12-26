@@ -31,9 +31,22 @@ class EvaluationRubricSerializer(serializers.ModelSerializer):
 
 
 class EmployeeEvaluationSerializer(serializers.ModelSerializer): 
+    evaluated_by = serializers.SerializerMethodField()
     class Meta:
         model = EmployeeEvaluation
         fields = "__all__"
+
+    def get_evaluated_by(self, obj):
+        name = ''
+        try:
+            if obj.evaluated_by.type == 'EMPLOYEE':
+                name = obj.evaluated_by.user_employee.firstname + ' ' + obj.evaluated_by.user_employee.mi + '. ' + obj.evaluated_by.user_employee.lastname
+            else:
+                name = obj.evaluated_by.name
+        except (Exception,):
+            pass
+            
+        return name
 
 
 class SalesSerializer(serializers.ModelSerializer): 

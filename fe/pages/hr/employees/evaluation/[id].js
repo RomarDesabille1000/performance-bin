@@ -49,6 +49,9 @@ export default function Evaluation(){
                                         <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                             Review Period
                                         </th>
+                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[200px]">
+                                            Evaluated by
+                                        </th>
                                         <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase w-[100%]">
                                             Comment
                                         </th>
@@ -82,6 +85,9 @@ export default function Evaluation(){
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {d.review_period}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-800">
+                                                {d.evaluated_by}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800">
                                                 {d.comment}

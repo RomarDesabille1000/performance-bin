@@ -29,7 +29,7 @@ export function middleware(req) {
           }else{
             redirect = '/e'
           }
-        }else if((userRole.STAFF === userRoleC && path.join('/') === '/e/evaluation') || (path[1] === 'hr')){
+        }else if((userRole.STAFF === userRoleC && path.join('/') === '/e/evaluation') || (userRole.STAFF === userRoleC && path[1] === 'hr')){
           redirect = '/e'
         }
         if (redirect){

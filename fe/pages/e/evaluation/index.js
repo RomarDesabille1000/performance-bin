@@ -4,7 +4,6 @@ import Loader from "../../../components/Loader";
 import SearchBar from "../../../components/SearchBar";
 import { paginationRecordCount, PAGINATION_COUNT } from "../../../helper/paginationRecordCount";
 import {Pagination} from '@mui/material';
-import dayjs from "dayjs";
 import Link from "next/link";
 import { useAuth } from '../../../context/AuthContext';
 
@@ -88,7 +87,7 @@ export default function Evaluation(){
                                     {!employees ? (
                                         <tr>
                                             <td 
-                                                colSpan="6"
+                                                colSpan="4"
                                                 className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
                                                     <Loader/>
                                             </td>
@@ -97,7 +96,7 @@ export default function Evaluation(){
                                         !employees?.results?.length && (
                                             <tr>
                                                 <td 
-                                                    colSpan="7"
+                                                    colSpan="4"
                                                     className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
                                                         No record Found
                                                 </td>

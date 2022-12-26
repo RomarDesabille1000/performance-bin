@@ -15,9 +15,8 @@ export default function Evaluation(){
         revalidateOnFocus: false,    
     });
 
-
     return(
-        <div className="flex flex-col px-2 max-w-[900px] m-auto md:mt-[50px] mt-[20px]">
+        <div className="flex flex-col px-2 max-w-[1200px] m-auto md:mt-[50px] mt-[20px]">
             <Link href="/e/evaluation" className="text-blue-500 mb-2"> 
                 Back
             </Link>
@@ -43,13 +42,19 @@ export default function Evaluation(){
                             <table className="min-w-full block divide-y divide-gray-200 overflow-x-auto">
                                 <thead className="bg-gray-50">
                                     <tr>
-                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[200px]">
+                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[180px] w-[180px]">
                                             Date Created
                                         </th>
-                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[200px] w-[100%]">
+                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[180px] w-[180px]">
                                             Review Period
                                         </th>
-                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[200px]">
+                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[130px] w-[130px]">
+                                            Evaluated by
+                                        </th>
+                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[300px] w-[100%]">
+                                            Comment
+                                        </th>
+                                        <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[180px] w[180px]">
                                             Action
                                         </th>
                                     </tr>
@@ -58,7 +63,7 @@ export default function Evaluation(){
                                     {!user ? (
                                         <tr>
                                             <td 
-                                                colSpan="6"
+                                                colSpan="5"
                                                 className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
                                                     <Loader/>
                                             </td>
@@ -66,7 +71,7 @@ export default function Evaluation(){
                                     ):(
                                         !user?.evaluation?.results?.length && (
                                             <tr>
-                                                <td colSpan="3" className="text-center py-4">
+                                                <td colSpan="5" className="text-center py-4">
                                                     No data
                                                 </td>
                                             </tr>
@@ -74,13 +79,19 @@ export default function Evaluation(){
                                     )}
                                     {user?.evaluation?.results?.map((d) => (
                                         <tr key={d.id}>
-                                            <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-800">
                                                 {dayjs(d.date_created).format('MMMM DD, YYYY')}
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                                            <td className="px-6 py-4 text-sm text-gray-800">
                                                 {d.review_period}
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                                            <td className="px-6 py-4 text-sm text-gray-800">
+                                                {d.evaluated_by}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-800">
+                                                {d.comment}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-800">
                                                 <Link href={`/hr/employees/evaluation/${user?.user?.id}/${d.id}`}
                                                     className="text-indigo-500 hover:text-indigo-700"
                                                 >

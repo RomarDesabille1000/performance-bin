@@ -45,7 +45,6 @@ export default function Evaluation(){
             )
         });
     }
-    console.log(e);
 
     return(
         <div>
@@ -82,6 +81,10 @@ export default function Evaluation(){
                             <div className="text-md">
                                 Date Hired:&nbsp;
                                 {dayjs(e?.user?.user_employee?.date_hired).format('MMMM DD, YYYY')}
+                            </div>
+                            <div className="text-md">
+                                Evaluated by:&nbsp;
+                                {e?.evaluation?.evaluated_by}
                             </div>
                             <div className="text-md mt-4">
                                 Comment:
