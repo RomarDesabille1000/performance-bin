@@ -8,6 +8,9 @@ from .models import (
     User,
     Employee
 )
+from hr.models import (
+    EmployeePositions,
+)
 
 
 class LoginSerializer(Serializer):
@@ -39,24 +42,35 @@ class LoginSerializer(Serializer):
 
     def to_representation(self, instance):
         resp = super().to_representation(instance)
+        type_ = self.user.type
+        if self.user.type == 'EMPLOYEE':
+            type_ = self.user.user_employee.designation
         resp.update({
-            'type': self.user.type,
+            'type': type_,
             'token': self.user.get_token().key
         })
 
         return resp
 
+class PositionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmployeePositions
+        fields = '__all__'
+
 class EmployeeSerializer(serializers.ModelSerializer):
+    position = PositionSerializer(read_only=True ,many=False)
+    position_id = serializers.IntegerField(write_only=True)
     class Meta:
         model = Employee
         fields = '__all__'
+
     
 class UserSerializer(serializers.ModelSerializer):
     user_employee = EmployeeSerializer(many=False)
     password = serializers.CharField(write_only=True)
     class Meta:
         model = User
-        fields = ('id','email', 'name', 'type', 'user_employee', 'password', 'is_active',)
+        fields = ('id','email', 'name', 'type', 'user_employee', 'password', 'is_active', )
 
     @transaction.atomic
     def create(self, validated_data):
@@ -67,6 +81,8 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
 
-        Employee.objects.create(**employee_data, user=user)
+        Employee.objects.create(
+            **employee_data, 
+            user=user,
+        )
         return user
-        

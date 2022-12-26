@@ -5,9 +5,10 @@ from .models import (
     RubricCriteria,
     EvaluationRubric,
     EmployeeEvaluation, 
-    EmployeeEvaluationDetail,
     Sales,
     BackJobs,
+    EvaluationRubricTemplate,
+    EvaluationRubricCriteria,
 )
 
 
@@ -21,20 +22,24 @@ class SalesAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'date', 'item_deal', 'date',)
 
 
-@admin.register(EvaluationRubric)
-class EvaluationRubricAdmin(admin.ModelAdmin):
-    list_display = ('type', 'employee_type', 'name', 'description', 'percentage', 'editable',)
 
-class EmployeeEvaluationDetailInline(admin.TabularInline):
-    model = EmployeeEvaluationDetail
+@admin.register(EvaluationRubricCriteria)
+class EvaluationRubricCriteriaAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    
+
+class EvaluationRubricTemplateInline(admin.TabularInline):
+    model = EvaluationRubricTemplate
+
 
 @admin.register(EmployeeEvaluation)
 class EmployeeEvaluationAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'date_created', 'review_period',)
 
     inlines = [
-        EmployeeEvaluationDetailInline
+        EvaluationRubricTemplateInline,
     ]
+
 @admin.register(EmployeePositions)
 class EmployeePositionsAdmin(admin.ModelAdmin):
     list_display = ('title', 'has_rating', 'has_backjob','has_sales')

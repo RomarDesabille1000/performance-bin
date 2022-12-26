@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { DoubleType } from "../../../../../helper/numbers";
 import Loader from '../../../../../components/Loader'
+import { setRequestMeta } from "next/dist/server/request-meta";
 
 export default function Evaluation(){
     const router = useRouter();
@@ -14,33 +15,14 @@ export default function Evaluation(){
 	const { data: e } = useSWR(id ? `hr/evaluation/${id}/${eId}/` : '', {
         revalidateOnFocus: false,    
     });
-    const [core, setCore] = useState({
-        data: [],
-        total: 0,
-    })
-    const [kpi, setKPI] = useState({
-        data: [],
-        total: 0,
-    })
     const [overall, setOverall] = useState(0);
 
     useEffect(() => {
-        let coreData = [];
-        let kpiData = [];
-        let coreTotal = 0;
-        let kpiTotal = 0;
+        let score = 0;
         e?.evaluation_detail?.map((d) => {
-            if(d.type === EVALUATIONTYPE.CORE){
-                coreData.push(d);
-                coreTotal += DoubleType(+d.score)
-            }else{
-                kpiData.push(d);
-                kpiTotal += DoubleType(+d.score)
-            }
+            score += DoubleType(score + (+d.score * DoubleType(+d.percentage/100)));
         })
-        setCore({data: coreData, total: coreTotal})
-        setKPI({data: kpiData, total: kpiTotal})
-        setOverall(DoubleType((coreTotal*0.40) + (kpiTotal*0.60)))
+        setOverall(score);
     }, [e])
 
     function display(data) {
@@ -91,7 +73,7 @@ export default function Evaluation(){
                                 <span> {e?.user?.user_employee?.mi.toUpperCase()}. </span>
                             </div>
                             <div className="text-md">
-                                Position: {e?.user?.user_employee?.type == 'TECHNICIAN' ? 'Technician' : 'Sales Executive' }
+                                Position: {e?.user?.user_employee?.position?.title}
                             </div>
                             <div className="text-md">
                                 Review Period: {e?.evaluation?.review_period}
@@ -100,96 +82,62 @@ export default function Evaluation(){
                                 Date Hired:&nbsp;
                                 {dayjs(e?.user?.user_employee?.date_hired).format('MMMM DD, YYYY')}
                             </div>
-
-                            <div className="w-full inline-block align-middle mt-5">
-                                <div className="overflow-hidden border rounded-lg">
-                                    <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
-                                        <thead className="bg-gray-50">
-                                            <tr>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
-                                                >
-                                                    Core Competencies (40%)
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
-                                                >
-                                                    MEASURABLE INDICATOR
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-bold text-center text-gray-500 uppercase "
-                                                >
-                                                    Percentage %
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-bold text-gray-500 uppercase text-center"
-                                                    style={{width: '150px'}}
-                                                >
-                                                    Actual Attainment
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-gray-200">
-                                            {display(core.data)}
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td className="text-center py-4">Total</td>
-                                                <td className="text-center">{core.total}%</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                            <div className="text-md">
+                                Evaluated by:&nbsp;
+                                {e?.evaluation?.evaluated_by}
+                            </div>
+                            <div className="text-md mt-4">
+                                Comment:
+                                <div className="max-w-[900px]">
+                                    {e?.evaluation?.comment}
                                 </div>
                             </div>
-
-                            <div className="w-full inline-block align-middle mt-10">
-                                <div className="overflow-hidden border rounded-lg">
-                                    <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
-                                        <thead className="bg-gray-50">
-                                            <tr>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
-                                                >
-                                                    Key Performance Indicators (60%)
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
-                                                >
-                                                    Measurable Indicator
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-bold text-center text-gray-500 uppercase"
-                                                >
-                                                    Percentage %
-                                                </th>
-                                                <th
-                                                    scope="col"
-                                                    className="px-6 py-3 text-xs font-bold text-gray-500 uppercase text-center"
-                                                    style={{width: '150px'}}
-                                                >
-                                                    Actual Attainment
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-gray-200">
-                                            {display(kpi.data)}
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td className="text-center py-4">Total</td>
-                                                <td className="text-center">{kpi.total}%</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                            {e?.evaluation_detail.map((r, i) => (
+                                <div key={r.id} className={`w-full inline-block align-middle mt-5 ${i > 0 ? '!mt-10': ''}`}>
+                                    <div className="overflow-hidden border rounded-lg">
+                                        <table className="divide-y block divide-gray-200 overflow-auto">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                    <th
+                                                        scope="col"
+                                                        className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase w-[300px] min-w-[300px]"
+                                                    >
+                                                        {r.name} ({r.percentage}%)
+                                                    </th>
+                                                    <th
+                                                        scope="col"
+                                                        className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase w-[100%] min-w-[300px]"
+                                                    >
+                                                        MEASURABLE INDICATOR
+                                                    </th>
+                                                    <th
+                                                        scope="col"
+                                                        className="px-6 py-3 text-xs font-bold text-center text-gray-500 uppercase w-[100px]"
+                                                    >
+                                                        Percentage %
+                                                    </th>
+                                                    <th
+                                                        scope="col"
+                                                        className="px-6 py-3 text-xs font-bold text-gray-500 uppercase text-center w-[100px]"
+                                                    >
+                                                        Actual Attainment
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gray-200">
+                                                {display(r.evaluation_criteria)}
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td className="text-center py-4">Total</td>
+                                                    <td className="text-center">{r.score}%</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
+                            ))}
+
                             <div className="text-right pr-10 py-3">Overall Total: {overall}%</div>
 
                         </div>

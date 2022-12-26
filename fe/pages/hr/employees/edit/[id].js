@@ -40,7 +40,7 @@ export default function EditEmployee(){
         setValue('lastname', emp?.user_employee?.lastname)
         setValue('mi', emp?.user_employee?.mi)
         setValue('designation', emp?.user_employee?.designation)
-        setValue('position', emp?.user_employee?.position)
+        setValue('position', emp?.user_employee?.position?.id)
         setValue('date_hired', dayjs(emp?.user_employee?.date_hired).format('YYYY-MM-DD'))
         setValue('email', emp?.email)
     }, [emp])
@@ -72,7 +72,7 @@ export default function EditEmployee(){
                 firstname: data.firstname,
                 lastname: data.lastname,
                 mi: data.mi,
-                position: data.position,
+                position_id: data.position,
                 designation: data.designation,
                 date_hired: dateString,
                 
@@ -221,7 +221,7 @@ export default function EditEmployee(){
                                         className="input !w-[200px]" />
                                     <div className="text-red-500 text-sm pt-1">{errors?.date_hired && errors?.date_hired?.message}</div>
                                 </div>
-                                <div className="col-span-6 sm:col-span-6">
+                                <div className="col-span-6 sm:col-span-6 mt-3">
                                         <label className="block text-sm font-medium text-gray-700">
                                             Email
                                         </label>

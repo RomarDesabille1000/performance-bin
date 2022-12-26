@@ -21,83 +21,48 @@ export default function Evaluate() {
 		infoMessage: '',
 	})
 
-    const [e, setE] = useState([]);
-    const [coreTotal, setCoreTotal] = useState(0);
-    const [kpiTotal, setKpiTotal] = useState(0);
+    const [rubric, setRubric] = useState([]);
     const [overall, setOverall] = useState(0);
+    const [comment, setComment] = useState('')
 
     const TYPE = {
-        CORE: 'CORE',
-        KPI: 'KPI'
+        ATTENDANCE: 'Attendance',
+        CUSTOMER_SATISFACTION: 'Customer Satisfaction'
     }
-    const attendanceTitle = 'Punctuality and Attendance'
-    const customerService = 'Customer Service'
-    const [percentage, setPercentage] = useState({
-        core: 0,
-        kpi: 0,
-    })
+
 
     useEffect(() => {
-        if(data){
-            let coreTotal = 0;
-            let kpiTotal = 0;
-            let kpiPercentTotal = 0;
-            let corePercentTotal = 0;
-            const newRubric =  [...data?.rubric]
-                .map((d) => {
-                    if(d.type === TYPE.CORE){
-                        corePercentTotal += d.percentage
-                    }else{
-                        kpiPercentTotal += d.percentage
+        if(data && !data?.err){
+            const total = Array(data?.rubric?.length).fill(0)
+            const newRubric =  [...data?.rubric].map((r, rI) => ({
+                ...r, 
+                total: 0,
+                rubric_criteria: r.rubric_criteria.map((rc) => {
+                    if(rc.template_name === TYPE.ATTENDANCE){
+                        let score = DoubleType((data?.attendance?.total_attendance / data?.attendance?.days_count) * rc?.percentage);
+                        score = isNaN(score)? rc.percentage : score
+                        total[rI] = DoubleType(total[rI] + score)
+                        return {...rc, score: score}
                     }
-                    if(attendanceTitle == d.name){
-                        let score = DoubleType((data?.attendance?.total_attendance / data?.attendance?.days_count) * d?.percentage);
-                        score = isNaN(score)?d.percentage:score
-                        setCoreTotal(score)
-                        coreTotal += score;
-                        return {...d, score: score}
-                    }else if(customerService == d.name){
+                    else if(rc.template_name === TYPE.CUSTOMER_SATISFACTION){
                         let score = DoubleType((data?.customer_service_rating?.customer_rating?.result /
-                                        data?.customer_service_rating?.total) * d.percentage)
-                        score = isNaN(score)?d.percentage:score
-                        setKpiTotal(score)
-                        kpiTotal += score;
-                        return {...d, score: score}
+                                        data?.customer_service_rating?.total) * rc.percentage)
+                        score = isNaN(score)? rc?.percentage : score
+                        total[rI] = DoubleType(total[rI] + score)
+                        return {...rc, score: score}
                     }
 
-                    return {...d, score: 0}
+                    return {...rc, score: 0}
                 })
-            setE({
-                ...data, 
-                rubric: newRubric
-            });
-            setPercentage({ kpi: kpiPercentTotal, core: corePercentTotal})
-            setOverall(DoubleType((coreTotal*0.40)+(kpiTotal*0.60)));
+            }))
+            for(let i = 0; i < total.length; i++){
+                newRubric[i].total = total[i];
+            }
+            setRubric(newRubric);
         }
     }, [data])
 
 
-    function handleRubricScoreChange(event, i){
-        const rubric = {...e}
-        
-        rubric.rubric[i].score = event.target.value
-        if(+event.target.value > +rubric.rubric[i].percentage)
-            rubric.rubric[i].score = rubric.rubric[i].percentage
-
-        setE(rubric);
-
-        let core = 0;
-        let kpi = 0;
-        for(let j = 0; j < rubric?.rubric?.length; j++){
-            if(rubric.rubric[j].type === TYPE.CORE)
-                core += DoubleType(+rubric.rubric[j].score);
-            else
-                kpi += DoubleType(+rubric.rubric[j].score);
-        }
-        setCoreTotal(core)
-        setKpiTotal(kpi)
-        setOverall(DoubleType((core*0.40) + (kpi*0.60)));
-    }
 
     function handleSave(){
         setStatus({ 
@@ -106,10 +71,10 @@ export default function Evaluate() {
             loading:true, 
             infoMessage: 'Saving Evaluation.' 
         })
-        window.location.href = "#"
         axiosInstance.post(`users/employees/${id}/`, {
-            review_period: e?.review_period,
-            rubric: e?.rubric,
+            review_period: data?.review_period,
+            rubric: rubric,
+            comment: comment,
         })
         .then((_e) => {
             setStatus({ 
@@ -120,94 +85,131 @@ export default function Evaluate() {
             })
         }).catch((_e) => {
             setStatus({ 
-                error: false, 
-                success: true, 
+                error: true, 
+                success: false, 
                 loading:false, 
                 infoMessage: 'Error: Something went wrong.' 
             })
         })
     }
 
-	function renderCore () {
-		if(e?.rubric?.length == 0)
-			return (<>No data</>)
-		else{
-		return e?.rubric?.map((d, i) => {
-            if(d.type === TYPE.CORE){
-                return (
-                    <tr key={d.id}>
-                        <td className="px-6 py-2">
-                            {d.name}
-						</td>
-                        <td className="px-6 py-2">
-                            {d.description}
-                        </td>
-                        <td className="px-6 py-2">
-                            {d.percentage}
-                        </td>
-                        <td className="px-6 py-2">
-                            {attendanceTitle !== d.name ? (
-                                <input 
-                                    value={d.score}
-                                    onChange={(event) => handleRubricScoreChange(event, i)}
-                                    type="number" 
-                                    className="input" />
-                            ): (
-                                <div className="">
-                                     {e?.attendance.total_attendance} / {e?.attendance?.days_count} * {d?.percentage}
-                                     <span> = </span>
-                                    {DoubleType((e?.attendance.total_attendance / e?.attendance.days_count) * d?.percentage, d.percentage)}%
-                                </div>
-                            )}
-                        </td>
-					</tr>
-                )
-            }
-        })
-		}
-	}
+    function handleRubricScoreChange(event, rubricIndex, i){
+        const newRubric = [...rubric]
+        newRubric[rubricIndex].rubric_criteria[i].score = event.target.value
+        if(+event.target.value > +newRubric[rubricIndex].rubric_criteria[i].percentage)
+            newRubric[rubricIndex].rubric_criteria[i].score = newRubric[rubricIndex].rubric_criteria[i].percentage
+        
+        let dScore = newRubric[rubricIndex].rubric_criteria.reduce(function (sum, r) {
+            return DoubleType(sum + (+r.score));
+        }, 0);
+        newRubric[rubricIndex].total = dScore;
 
+        let overallScore = 0;
+        for(let i = 0; i < newRubric.length; i++){
+            let dScore = newRubric[i].rubric_criteria.reduce(function (sum, r) {
+                return DoubleType(sum + (+r.score));
+            }, 0);
+            overallScore = DoubleType(overallScore + (dScore * DoubleType(+newRubric[i].percentage/100)));
+        }
+        setOverall(overallScore);
 
-	function renderKPI () {
-		if(e?.rubric?.length == 0)
-			return (<>No data</>)
-		else{
-		return e?.rubric?.map((d, i) => {
-            if(d.type === TYPE.KPI){
-                return (
-                    <tr key={d.id} className='bg-white border-b text-gray-800'>
-                        <td className="px-6 py-2">
-                            {d.name}
-						</td>
-                        <td className="px-6 py-2">
-                            {d.description}
-                        </td>
-                        <td className="px-6 py-2">
-                            {d.percentage}
-                        </td>
-                        <td className="px-6 py-2">
-                            {customerService !== d.name ? (
-                                <input 
-                                    value={d.score}
-                                    type="number" 
-                                    onChange={(event) => handleRubricScoreChange(event, i)}
-                                    className="input" />
-                            ): (
-                                <div className="">
-                                    {handleNoValue(e?.customer_service_rating?.customer_rating.result, 0)} / 
-                                    {e?.customer_service_rating?.total} * 0.{d.percentage}
-                                    &nbsp;=&nbsp;
-                                    {DoubleType((e?.customer_service_rating?.customer_rating.result /
-                                    e?.customer_service_rating?.total) * d.percentage, d.percentage)}%
-                                </div>
-                            )}
-                        </td>
-					</tr>
-                )
-            }
+        setRubric(newRubric);
+    }
+
+    function tableData(td, rubricIndex, total){
+        return(
+            <tbody className="divide-y divide-gray-200">
+                {td.map((d, i) => {
+                    return (
+                        <tr key={d.id} className='bg-white border-b text-gray-800'>
+                            <td className="px-6 py-2">
+                                {d.name}
+                            </td>
+                            <td className="px-6 py-2">
+                                {d.description}
+                            </td>
+                            <td className="px-6 py-2">
+                                {d.percentage}
+                            </td>
+                            <td className="px-6 py-2">
+                                {d.template_name == 'none' && ( 
+                                    <input 
+                                        value={d.score}
+                                        onChange={(event) => handleRubricScoreChange(event, rubricIndex, i)}
+                                        type="number" 
+                                        className="input text-center !min-w-[90px] !mt-0"/>
+                                )}
+                                {d.template_name == TYPE.ATTENDANCE && ( 
+                                    <div className="text-center">
+                                        {data?.attendance?.total_attendance} / {data?.attendance?.days_count} * {d?.percentage}
+                                        <span> = </span>
+                                        {DoubleType(d.score)}%
+                                    </div>
+                                )}
+                                {d.template_name == TYPE.CUSTOMER_SATISFACTION && ( 
+                                    <div className="text-center">
+                                        {handleNoValue(data?.customer_service_rating?.customer_rating.result, 0)} / 
+                                        {data?.customer_service_rating?.total} * 0.{d.percentage}
+                                        &nbsp;=&nbsp;
+                                        {DoubleType(d.score)}%
+                                    </div>
+                                )}
+                            </td>
+                        </tr>
+                    )
+                })}
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td className="px-6 py-2">Total</td>
+                    <td className="px-6 py-2 text-center">{total}%</td>
+                </tr>
+            </tbody>
+        )
+    }
+
+    function table(){
+        return rubric?.map((r, i) => {
+            return (
+                <div key={r.id} className={`w-full inline-block align-middle mt-5 ${i > 0 ? '!mt-10': ''}`}>
+                    <div className="overflow-hidden border rounded-lg">
+                        <table className="divide-y block divide-gray-200 overflow-auto">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase w-[300px] min-w-[300px]"
+                                    >
+                                        {r.dimension_name} ({r.percentage}%)
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase w-[100%] min-w-[300px]"
+                                    >
+                                        MEASURABLE INDICATOR
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase w-[100px]"
+                                    >
+                                        Percentage %
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase w-[100px]"
+                                    >
+                                        Actual Attainment
+                                    </th>
+                                </tr>
+                            </thead>
+                            {tableData(r.rubric_criteria, i, r.total)}
+                        </table>
+                    </div>
+                </div>
+            )
         })
-		}
-	}
+    }
+
 
     return (
         <div>
@@ -224,17 +226,17 @@ export default function Evaluate() {
                             <div className="bg-white px-4 py-5 sm:p-6">
                                 <div>
                                     <button className="text-blue-500"
-                                        onClick={() => router.push('/hr/evaluate')}
+                                        onClick={() => router.back()}
                                     >Back</button>
                                 </div>
-                                {percentage.kpi !== 100 || percentage.core !== 100 ? (
+                                {data?.err ? (
                                     <div className="mt-5">
-                                        The rubric did not reach 100%. Please set in the rubric menu
+                                        {data?.err}
                                     </div>
                                 ):(
                                     <Fragment>
                                         <div className="text-md text-center font-medium text-red-500" aria-hidden="true">
-                                            {e?.is_evaluated > 0 && (
+                                            {data?.is_evaluated > 0 && (
                                                 'This user is already evaluated for this year.'
                                             )}
                                         </div>
@@ -243,19 +245,35 @@ export default function Evaluate() {
                                         </div>
                                         <div className="text-md mt-4">
                                             Name: 
-                                            <span> {e?.user?.user_employee?.lastname.toUpperCase()}, </span>
-                                            <span> {e?.user?.user_employee?.firstname.toUpperCase()} </span>
-                                            <span> {e?.user?.user_employee?.mi.toUpperCase()}. </span>
+                                            <span> {data?.user?.user_employee?.lastname.toUpperCase()}, </span>
+                                            <span> {data?.user?.user_employee?.firstname.toUpperCase()} </span>
+                                            <span> {data?.user?.user_employee?.mi.toUpperCase()}. </span>
                                         </div>
                                         <div className="text-md">
-                                            Position: {e?.user?.user_employee?.type == 'TECHNICIAN' ? 'Technician' : 'Sales Executive' }
+                                            Position: {data?.position}
                                         </div>
                                         <div className="text-md">
-                                            Review Period: {e?.review_period}
+                                            Review Period: {data?.review_period}
                                         </div>
                                         <div className="text-md">
                                             Date Hired:&nbsp;
-                                            {dayjs(e?.user?.user_employee?.date_hired).format('MMMM DD, YYYY')}
+                                            {dayjs(data?.user?.user_employee?.date_hired).format('MMMM DD, YYYY')}
+                                        </div>
+
+                                        {table()}
+                                        <div className="text-right pr-10 py-3">Overall Total: {overall}%</div>
+
+                                        <div className="mt-3">
+                                            <label className="block text-sm font-medium text-gray-700">
+                                                Comment
+                                            </label>
+                                            <textarea
+                                                cols="30" 
+                                                rows="3" 
+                                                value={comment}
+                                                onChange={(e) => setComment(e.target.value)}
+                                                className="input !p-2 !h-auto !min-w-min">
+                                            </textarea>
                                         </div>
 
                                         <AlertMessages
@@ -265,98 +283,6 @@ export default function Evaluate() {
                                             message={status.infoMessage}
                                             className="py-3"
                                         />
-
-                                        <div className="w-full inline-block align-middle mt-5">
-                                            <div className="overflow-hidden border rounded-lg">
-                                                <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
-                                                    <thead className="bg-gray-50">
-                                                        <tr>
-                                                            <th
-                                                                scope="col"
-                                                                className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
-                                                            >
-                                                                Core Competencies (40%)
-                                                            </th>
-                                                            <th
-                                                                scope="col"
-                                                                className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
-                                                            >
-                                                                MEASURABLE INDICATOR
-                                                            </th>
-                                                            <th
-                                                                scope="col"
-                                                                className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
-                                                            >
-                                                                Percentage %
-                                                            </th>
-                                                            <th
-                                                                scope="col"
-                                                                className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
-                                                                style={{width: '150px'}}
-                                                            >
-                                                                Actual Attainment
-                                                            </th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody className="divide-y divide-gray-200">
-                                                        {renderCore()}
-                                                        <tr>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td className="px-6 py-2">Total</td>
-                                                            <td className="px-6 py-2">{coreTotal}%</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-
-                                        <div className="w-full inline-block align-middle mt-10">
-                                            <div className="overflow-hidden border rounded-lg">
-                                                <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
-                                                    <thead className="bg-gray-50">
-                                                        <tr>
-                                                            <th
-                                                                scope="col"
-                                                                className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
-                                                            >
-                                                                Key Performance Indicators (60%)
-                                                            </th>
-                                                            <th
-                                                                scope="col"
-                                                                className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
-                                                            >
-                                                                Measurable Indicator
-                                                            </th>
-                                                            <th
-                                                                scope="col"
-                                                                className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
-                                                            >
-                                                                Percentage %
-                                                            </th>
-                                                            <th
-                                                                scope="col"
-                                                                className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
-                                                                style={{width: '150px'}}
-                                                            >
-                                                                Actual Attainment
-                                                            </th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody className="divide-y divide-gray-200">
-                                                        {renderKPI()}
-                                                        <tr>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td className="px-6 py-2">Total</td>
-                                                            <td className="px-6 py-2">{kpiTotal}%</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-
-                                        <div className="text-right pr-10 py-3">Overall Total: {overall}%</div>
 
                                         <div className="flex justify-end mt-10">
                                             <button 

@@ -83,7 +83,7 @@ export default function Positions() {
                         text={searchText}
                         setText={setSearchText}
                         hasQuery={false}
-                        placeholder="Search employee lastname"
+                        placeholder="Search Title"
                     />
                     <div className="flex justify-end py-2">
                         <Link 
@@ -174,22 +174,22 @@ export default function Positions() {
                                                     {d.title}
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                                    {d.has_rating ? <span className="text-green-500">True</span> : <span className="text-red-500">False</span>}
+                                                    {d.has_rating ? 'Yes' : 'No'}
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                                    {d.has_backjob ? <span className="text-green-500">True</span> : <span className="text-red-500">False</span>}
+                                                    {d.has_backjob ? 'Yes' : 'No'}
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                                    {d.has_sales ? <span className="text-green-500">True</span> : <span className="text-red-500">False</span>}
+                                                    {d.has_sales ? 'Yes' : 'No'}
                                                 </td>
                                                 <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                                                     <div className="flex gap-5">
-                                                        <a
+                                                        <Link
                                                             className="text-indigo-500 hover:text-indigo-700"
                                                             href={`/hr/positions/edit/${d.id}`}
                                                         >
                                                             Update
-                                                        </a>
+                                                        </Link>
                                                         <button
                                                             className="text-red-500 hover:text-red-700"
                                                             onClick = {()=>handleDelete(d.id)}

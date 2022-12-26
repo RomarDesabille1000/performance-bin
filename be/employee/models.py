@@ -18,7 +18,6 @@ class Attendance(models.Model):
     signature = models.TextField(null=True)
     location = models.CharField(max_length=255, null=True)
     date = models.DateTimeField(default=now, null=True)
-    late = models.BooleanField(default=False)
     time_in = models.TimeField(null=True, blank=True)
     time_out = models.TimeField(null=True, blank=True)
     reason = models.TextField(null=True)

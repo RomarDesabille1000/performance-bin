@@ -18,10 +18,13 @@ from .serializers import (
     User,
 )
 from hr.serializers import (
-    EvaluationRubricSerializer,
     EvaluationRubric,
     EmployeeEvaluation,
-    EmployeeEvaluationDetail
+    EvaluationRubricTemplate,
+    EvaluationRubricCriteria,
+    RubricTemplate,
+    RubricCriteria,
+    RubricTemplateCriteriaSerializer,
 )
 from employee.serializers import (
     CustomerRatingAnswers,
@@ -160,23 +163,46 @@ class EmployeesView(GenericViewSet):
 
     def retrieve(self, request, **kwargs):
         user = User.objects.get(id=kwargs['pk'])
+        if user.id == request.user.id:
+            return Response({'err': 'Cannot evaluate your self.'})
         user_serializer = self.serializer_class(user, many=False)
+        position = user.user_employee.position
+        rubricT_percentage = 0
+        rubricT = RubricTemplate.objects.filter(emplyee_position=position)
+        if rubricT.count() == 0:
+            return Response({'err': 'Please set rubric for position ' + position.title})
+        for rT in rubricT:
+            rubricT_percentage += rT.percentage
+
+            rubricC = RubricCriteria.objects.filter(rubric_template=rT)
+            rubricC_percentage = 0
+            for rC in rubricC:
+                rubricC_percentage += rC.percentage
+
+            if rubricC_percentage != 100:
+                return Response({'err': position.title + ' rubric not reach 100%'})
+        
+        if rubricT_percentage != 100:
+            return Response({'err': position.title + ' rubric not reach 100%'})
 
 
-        rubric_serializer = EvaluationRubricSerializer(
-            EvaluationRubric.objects.filter(employee_type=user.user_employee.type), 
-            many=True)
+        rubric_serializer = RubricTemplateCriteriaSerializer(rubricT, many=True)
 
         date_hired = str(user.user_employee.date_hired.date()).split('-')
         date_hired_y = date_hired[0]
         date_hired_m = int(date_hired[1])
         current_year = str(datetime.now().year)
         # this means newly hired
-        total_attendance = Attendance.objects.filter(user=user, date__year=current_year, late=False)\
+        total_attendance = Attendance.objects.filter(
+            user=user, 
+            date__year=current_year, 
+            completed=True, 
+            minutes_late__lte=0
+        )\
             .annotate(month=TruncMonth('date__date'))\
-                .values('month')\
-                .annotate(c=Count('id'))\
-                .order_by('date__date')
+            .values('month')\
+            .annotate(c=Count('id'))\
+            .order_by('date__date')
         total_attendance = len(total_attendance)
         days_count = 0
         review_period = ''
@@ -190,6 +216,13 @@ class EmployeesView(GenericViewSet):
             review_period = "January - " + datetime.now().strftime('%B') + ' ' + current_year
         if total_attendance > days_count:
             total_attendance = days_count
+
+        sunday_count = Attendance.objects.filter(
+            user=user, 
+            date__year=current_year, 
+            is_sunday=True
+        ).count()
+        days_count += sunday_count
 
         is_evaluated = EmployeeEvaluation.objects.filter(
             date_created__year=datetime.now().year,
@@ -205,6 +238,7 @@ class EmployeesView(GenericViewSet):
                 'total_attendance': total_attendance,
             },
             'review_period': review_period,
+            'position': position.title,
             'is_evaluated': is_evaluated.count()
         }, status=status.HTTP_200_OK)
 
@@ -212,20 +246,27 @@ class EmployeesView(GenericViewSet):
     def evaluation(self, request, **kwargs):
         data = request.data
         user_id = kwargs['pk']
-
         employee_evaluation= EmployeeEvaluation.objects.create(
             employee_id=user_id,
-            review_period=data['review_period']
+            evaluated_by=request.user,
+            review_period=data['review_period'],
+            comment=data['comment'],
         )
         for d in data['rubric']:
-            EmployeeEvaluationDetail.objects.create(
+            evaluation_rubric = EvaluationRubricTemplate.objects.create(
                 employee_evaluation=employee_evaluation,
-                name=d['name'],
-                type=d['type'],
-                description=d['description'],
+                name=d['dimension_name'],
                 percentage=d['percentage'],
-                score=d['score'],
+                score=d['total'],
             )
+            for e in d['rubric_criteria']:
+                EvaluationRubricCriteria.objects.create(
+                    evaluation_rubric=evaluation_rubric,
+                    name=e['name'],
+                    description=e['description'],
+                    percentage=e['percentage'],
+                    score=e['score'],
+                )
 
         return Response(status=status.HTTP_200_OK)
 

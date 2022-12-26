@@ -16,35 +16,8 @@ export default function Employee() {
     const { data: employees,mutate } = useSWR(`users/employees/?lastname=${searchText}&page=${pageIndex}`, {
         revalidateOnFocus: false,
     });
-    const { data: positions,} = useSWR(
-		`hr/positions/all/`,
-		{
-			revalidateOnFocus: false,
-		}
-	);
-    function getPosition (id) {
-        if(positions == undefined)
-            return ''
-        for(let pos of positions){
-            if(pos.id == id) return pos.title
-        }
-        return 'No Title'
-    }
-    function showType (id, type) {
-        if(positions == undefined)
-            return false
-        for(let pos of positions){
-            if(pos.id != id) 
-                continue
-            if(type == 'rating')
-                return pos.has_rating
-            if(type == 'backjob')
-                return pos.has_backjob
-            if(type == 'sales')
-                return pos.has_sales
-        }
-        return false
-    }
+    
+    
     const [status, setStatus] = useState({
 		error: false,
 		loading: false,
@@ -196,7 +169,7 @@ export default function Employee() {
                                                     {d.user_employee?.lastname}
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                                    {getPosition(d.user_employee?.position)}
+                                                    {d.user_employee?.position?.title}
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                     {d.user_employee?.designation == 'SUPERVISOR' ? 'Supervisor' : 'Staff' }
@@ -206,12 +179,12 @@ export default function Employee() {
                                                 </td>
                                                 <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                                                     <div className="flex gap-5">
-                                                        <a
+                                                        <Link
                                                             className="text-indigo-500 hover:text-indigo-700"
                                                             href={`/hr/employees/edit/${d.id}`}
                                                         >
                                                             Edit
-                                                        </a>
+                                                        </Link>
                                                         <button
                                                             className="text-red-500 hover:text-red-700"
                                                             onClick = {()=>handleDelete(d.id)}
@@ -223,7 +196,7 @@ export default function Employee() {
                                             </tr>
                                             <tr>
                                                 <td 
-                                                colSpan="5"
+                                                colSpan="6"
                                                 className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
                                                     <div className="flex gap-5 text-sm font-medium justify-end">
                                                         <Link href={`/hr/employees/absences/${d.id}`}
@@ -237,21 +210,21 @@ export default function Employee() {
                                                             Attendance
                                                         </Link>
                                                         <Link href={`/hr/employees/ratings/${d.id}`}
-                                                            className={showType(d.user_employee?.position, 'rating') ? 
+                                                            className={d.user_employee?.position?.has_rating ? 
                                                             "text-indigo-500 hover:text-indigo-700" : 
                                                             "hidden"}
                                                         >
                                                             Ratings
                                                         </Link>
                                                         <Link href={`/hr/employees/backjobs/${d.id}`}
-                                                            className={showType(d.user_employee?.position, 'backjob') ? 
+                                                            className={d.user_employee?.position?.has_backjob ? 
                                                                 "text-indigo-500 hover:text-indigo-700" : 
                                                                 "hidden"}
                                                         >
                                                             Back Jobs
                                                         </Link>
                                                         <Link href={`/hr/employees/sales/${d.id}`}
-                                                            className={showType(d.user_employee?.position, 'sales') ? 
+                                                            className={d.user_employee?.position?.has_sales ? 
                                                             "text-indigo-500 hover:text-indigo-700" : 
                                                             "hidden"}
                                                         >

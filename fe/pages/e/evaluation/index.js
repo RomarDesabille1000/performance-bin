@@ -4,16 +4,18 @@ import Loader from "../../../components/Loader";
 import SearchBar from "../../../components/SearchBar";
 import { paginationRecordCount, PAGINATION_COUNT } from "../../../helper/paginationRecordCount";
 import {Pagination} from '@mui/material';
-import dayjs from "dayjs";
 import Link from "next/link";
+import { useAuth } from '../../../context/AuthContext';
 
 
 export default function Evaluation(){
     const [pageIndex, setPageIndex] = useState(1);
-    const [searchText, setSearchText] = useState('')
-    const { data: employees } = useSWR(`users/employees/?lastname=${searchText}&page=${pageIndex}`, {
+    const [searchText, setSearchText] = useState('');
+    const { data: employees } = useSWR(`employee/list/?lastname=${searchText}&page=${pageIndex}`, {
         revalidateOnFocus: false,
     });
+    const { user } = useAuth();
+    
 
     const onKeyUpSearch = (e) => {
         if(e.code === 'Enter')
@@ -32,15 +34,24 @@ export default function Evaluation(){
                     <Link href="/e" className="text-blue-500 mb-2 px-2"> 
                         Back
                     </Link>
-                    <SearchBar
-                        onChange={onChangeSearch}
-                        onKeyUp={onKeyUpSearch}
-                        text={searchText}
-                        setText={setSearchText}
-                        hasQuery={false}
-                        placeholder="Search employee lastname"
-                        className="px-2 mt-4"
-                    />
+                    <div className="flex flex-col">
+                        <SearchBar
+                            onChange={onChangeSearch}
+                            onKeyUp={onKeyUpSearch}
+                            text={searchText}
+                            setText={setSearchText}
+                            hasQuery={false}
+                            placeholder="Search employee lastname"
+                            className="px-2 mt-4 !min-w-[300px]"
+                        />
+                        {/* <div className="flex items-center gap-3 px-3 mt-4">
+                            <input
+                                style={{width: '15px', height: '15px'}}
+                                type="checkbox"
+                            />
+                            <div>Evaluated</div>
+                        </div> */}
+                    </div>
                     <div className="p-1.5 w-full inline-block align-middle">
                         <div className="overflow-hidden border rounded-lg">
                             <table className="min-w-full divide-y block divide-gray-200 overflow-x-auto">
@@ -54,7 +65,7 @@ export default function Evaluation(){
                                         </th>
                                         <th
                                             scope="col"
-                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[200px]"
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[200px] w-[100%]"
                                         >
                                             Name
                                         </th>
@@ -63,12 +74,6 @@ export default function Evaluation(){
                                             className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[200px]"
                                         >
                                             Position
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[200px]"
-                                        >
-                                            Date Hired
                                         </th>
                                         <th
                                             scope="col"
@@ -82,7 +87,7 @@ export default function Evaluation(){
                                     {!employees ? (
                                         <tr>
                                             <td 
-                                                colSpan="6"
+                                                colSpan="4"
                                                 className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
                                                     <Loader/>
                                             </td>
@@ -91,7 +96,7 @@ export default function Evaluation(){
                                         !employees?.results?.length && (
                                             <tr>
                                                 <td 
-                                                    colSpan="7"
+                                                    colSpan="4"
                                                     className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
                                                         No record Found
                                                 </td>
@@ -110,19 +115,19 @@ export default function Evaluation(){
                                                     {d.user_employee?.lastname}
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                                    {d.user_employee?.type == 'TECHNICIAN' ? 'Technician' : 'Sales Executive' }
-                                                </td>
-                                                <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                                    {dayjs(d.user_employee?.date_hired).format('MMMM DD, YYYY')}
+                                                    {d.user_employee?.position?.title}
                                                 </td>
                                                 <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                                                     <div className="flex gap-5">
                                                         <Link href={`/e/evaluation/v/${d.id}`} className="text-indigo-500 hover:text-indigo-700">
                                                             View Evaluations
                                                         </Link>
-                                                        <Link href="" className="text-indigo-500 hover:text-indigo-700">
-                                                            Evalutate
-                                                        </Link>
+                                                        {!d.is_evaluated && d.id !== user?.id && (
+                                                            <Link className='text-indigo-500 hover:text-indigo-700' 
+                                                                href={`/hr/evaluate/${d.id}`}>
+                                                                Evaluate
+                                                            </Link>
+                                                        )}
                                                     </div>
                                                 </td>
                                             </tr>

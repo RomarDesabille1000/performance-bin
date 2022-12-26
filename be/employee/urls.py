@@ -2,7 +2,8 @@ from django.urls import path, include
 from .views import (
     AttendanceView,
     CustomerRatingView,
-    AbsencesView
+    AbsencesView,
+    EmployeesView,
 )
 
 urlpatterns = [
@@ -40,4 +41,7 @@ urlpatterns = [
             'delete': 'delete',
         })),
     ])),
+    path('list/', EmployeesView.as_view({
+        'get': 'list',
+    })),
 ]

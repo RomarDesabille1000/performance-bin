@@ -14,19 +14,6 @@ export default function Evaluate() {
     const { data: employees } = useSWR(`users/employees/selection/?lastname=${searchText}&page=${pageIndex}`, {
         revalidateOnFocus: false,
     });
-    const { data: positions,} = useSWR(
-		`hr/positions/all/`,
-		{
-			revalidateOnFocus: false,
-		}
-	);
-    function getPosition (id) {
-        for(let pos of positions){
-            if(pos.id == id) return pos.title
-        }
-        return 'No Title'
-            
-    }
 
     const onKeyUpSearch = (e) => {
         if(e.code === 'Enter')
@@ -117,7 +104,7 @@ export default function Evaluate() {
                                                 {d.user_employee?.lastname}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                                {getPosition(d?.user_employee?.position)}
+                                                {d?.user_employee?.position?.title}
                                             </td>
 											<td>
 												<Link className='text-blue-600 text-sm' 

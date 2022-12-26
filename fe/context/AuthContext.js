@@ -27,13 +27,12 @@ const AuthContextProvider = props => {
                 const token = data?.token;
                 Cookies.set('token', token, { secure: true });
                 Cookies.set(process.env.userRole, getRole(data?.type), { secure: true });
-            
 
                 axiosInstance.defaults.headers['Authorization'] = `Token ${token}`
 
                 setStatusCode(200)
 
-                if(data.type == USERTYPE.EMPLOYEE){
+                if(data.type == USERTYPE.SUPERVISOR || data.type == USERTYPE.STAFF){
                     router.push('/e');
                 }else if(data.type == USERTYPE.HR){
                     router.push('/hr')
