@@ -31,7 +31,7 @@ export default function SelectUserModal(
         setEmployeeSelected({
             id: d?.id,
             name: `${d?.user_employee?.firstname} ${d?.user_employee?.mi} ${d?.user_employee?.lastname}`,
-            position: d?.user_employee?.position?.title,
+            position: d?.user_employee?.position,
             dateHired: dayjs(d?.user_employee?.date_hired).format('MMMM DD, YYYY'),
         })
     }

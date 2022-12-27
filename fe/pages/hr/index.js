@@ -6,9 +6,10 @@ import TotalCard from "../../components/dashboard/TotalCard";
 import CustomerSatisfactionGraph from "../../components/dashboard/CustomerSatisfactionGraph";
 import dayjs from "dayjs";
 import { useRef } from "react";
-import { currencyDisplay } from "../../helper/numbers";
+import { currencyDisplay, DoubleType } from "../../helper/numbers";
 import Loader from "../../components/Loader";
 import LineGraph from "../../components/dashboard/LineGraph";
+import BarGraphN from "../../components/dashboard/BarGraph";
 
 export default function HRDashboard() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,6 +40,11 @@ export default function HRDashboard() {
 		`hr/dashboard/${employeeTarget.id}/?year=${year}` : '', {
         revalidateOnFocus: false,
     });
+	const [ratings, setRatings] = useState({
+		current_year: new Array(12).fill(0),
+		previous_year: new Array(12).fill(0),
+		current_year_total: 0,
+	})
 
 	function years(){
 		let year = []
@@ -48,10 +54,28 @@ export default function HRDashboard() {
 		return year;
 	}
 
+	useEffect(() => {
+		if(data){
+			let rating_current_year = new Array(12).fill(0)
+			let rating_previous_year = new Array(12).fill(0)
+			data?.ratings?.current_year.map((d) => {
+				rating_current_year[d.month-1] = DoubleType((d.total/(d.count*3*5))*100)
+			})
+			data?.ratings?.previous_year.map((d) => {
+				rating_previous_year[d.month-1] = DoubleType((d.total/(d.count*3*5))*100)
+			})
+			setRatings({
+				current_year: rating_current_year,
+				previous_year: rating_previous_year,
+			})
+		}
+	}, [data])
+
 
 	useEffect(() => {
 		setEmployeeTarget(employeeSelected)
 	}, [confirmSelection])
+
 
 	return(
 		<AdminLayout 
@@ -79,7 +103,7 @@ export default function HRDashboard() {
 						<span className="text-gray-500">Name: {employeeTarget.name}</span>
 					</div>
 					<div> 
-						<span className="text-gray-500">Department: {employeeTarget.position}</span>
+						<span className="text-gray-500">Department: {employeeTarget.position?.title}</span>
 					</div>
 					<div> 
 						<span className="text-gray-500">Date Hired: {employeeTarget.dateHired}</span>
@@ -128,7 +152,44 @@ export default function HRDashboard() {
 					lates={data?.lates}
 				/>
 			</div> */}
-			<LineGraph/>
+
+			{employeeTarget.id > 0 && (
+				<div>
+					<LineGraph
+						title="Attendance (Percentage)"
+						yearSelected={year}
+						previousYear={data?.attendance?.previous_year}
+						currentYear={data?.attendance?.current_year}
+						className="mt-[40px]"
+					/>
+					{employeeTarget?.position?.has_rating && (
+						<LineGraph
+							title="Customer Service (Percentage)"
+							yearSelected={year}
+							previousYear={ratings.previous_year}
+							currentYear={ratings.current_year}
+						/>
+					)}
+					{employeeTarget?.position?.has_sales && (
+						<LineGraph
+							title="Sales"
+							yearSelected={year}
+							previousYear={data?.sales?.previous_year}
+							currentYear={data?.sales?.current_year}
+							className="mt-[40px]"
+						/>
+					)}
+					{employeeTarget?.position?.has_backjob && (
+						<LineGraph
+							title="Quality of Work"
+							yearSelected={year}
+							previousYear={data?.backjobs?.previous_year}
+							currentYear={data?.backjobs?.current_year}
+							className="mt-[40px] pb-[50px]"
+						/>
+					)}
+				</div>
+			)}
 		</AdminLayout>
 	)
 }

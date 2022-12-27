@@ -49,6 +49,7 @@ from utils.query import (
     convertTime24,
     extractTimeLate24hrFormat,
     search_,
+    month_vals_array,
 )
 
 
@@ -273,23 +274,19 @@ class BackJobsView(GenericViewSet, generics.ListAPIView):
 class Dashboard(GenericViewSet):
     def list(self, request, *args, **kwargs):
         year = self.request.query_params.get('year')
-
+        prev_year = int(year) - 1
         today = datetime.now()
         id = kwargs['id']
-        attendance = Attendance.objects.filter(user_id=id, date__year=year)\
+
+
+
+        attendance = Attendance.objects.filter(user_id=id, date__year=year, minutes_late__lte=0)\
             .annotate(month=ExtractMonth('date')) \
             .values('month').annotate(c=Count('id'))\
                 .annotate(c=Count('id'))\
                 .order_by('date__date')
 
-        lates = Attendance.objects.filter(user_id=id, date__year=year, late=True)\
-            .annotate(month=ExtractMonth('date')) \
-            .values('month').annotate(c=Count('id'))\
-                .order_by('date__date')
-        
-
-        #key represents month
-        months_count = {
+        attendance_current = {
             '1': 0,
             '2': 0,
             '3': 0,
@@ -304,9 +301,19 @@ class Dashboard(GenericViewSet):
             '12': 0,
         }
         for a in attendance:
-            months_count[str(a['month'])] += 1  
+            attendance_current[str(a['month'])] += 1  
 
-        lates_count = {
+        attendance_current_ = []
+        for key, value in attendance_current.items():
+            attendance_current_.append(value)
+
+        attendance_prev = Attendance.objects.filter(user_id=id, date__year=prev_year, minutes_late__lte=0)\
+            .annotate(month=ExtractMonth('date')) \
+            .values('month').annotate(c=Count('id'))\
+                .annotate(c=Count('id'))\
+                .order_by('date__date')
+        
+        attendance_previous = {
             '1': 0,
             '2': 0,
             '3': 0,
@@ -320,15 +327,107 @@ class Dashboard(GenericViewSet):
             '11': 0,
             '12': 0,
         }
-        for l in lates:
-            lates_count[str(l['month'])] += 1  
+        for a in attendance_prev:
+            attendance_previous[str(a['month'])] += 1  
 
-        now = datetime.now()
-        current = datetime(int(year)+1, 1, 1)
+        attendance_previous_ = []
+        for key, value in attendance_previous.items():
+            attendance_previous_.append(value)
 
-        start = current.replace(day=1)
+        # lates = Attendance.objects.filter(user_id=id, date__year=year)\
+        #     .annotate(month=ExtractMonth('date')) \
+        #     .values('month').annotate(c=Count('id'))\
+        #         .order_by('date__date')
+        
 
-        workdays = {
+        #key represents month
+
+        # lates_count = {
+        #     '1': 0,
+        #     '2': 0,
+        #     '3': 0,
+        #     '4': 0,
+        #     '5': 0,
+        #     '6': 0,
+        #     '7': 0,
+        #     '8': 0,
+        #     '9': 0,
+        #     '10': 0,
+        #     '11': 0,
+        #     '12': 0,
+        # }
+        # for l in lates:
+        #     lates_count[str(l['month'])] += 1  
+
+        sunday_attendance = Attendance.objects.filter(user_id=id, date__year=year, is_sunday=True, minutes_late__lte=0)\
+            .annotate(month=ExtractMonth('date')) \
+            .values('month').annotate(c=Count('id'))\
+                .annotate(c=Count('id'))\
+                .order_by('date__date')
+
+        sunday_attendance_current = {
+            '1': 0,
+            '2': 0,
+            '3': 0,
+            '4': 0,
+            '5': 0,
+            '6': 0,
+            '7': 0,
+            '8': 0,
+            '9': 0,
+            '10': 0,
+            '11': 0,
+            '12': 0,
+        }
+        for a in sunday_attendance:
+            sunday_attendance_current[str(a['month'])] += 1  
+
+        sunday_attendance_current_ = []
+        for key, value in sunday_attendance_current.items():
+            sunday_attendance_current_.append(value)
+
+        sunday_attendance_prev = Attendance.objects.filter(user_id=id, date__year=prev_year, is_sunday=True, minutes_late__lte=0)\
+            .annotate(month=ExtractMonth('date')) \
+            .values('month').annotate(c=Count('id'))\
+                .annotate(c=Count('id'))\
+                .order_by('date__date')
+
+        sunday_attendance_previous = {
+            '1': 0,
+            '2': 0,
+            '3': 0,
+            '4': 0,
+            '5': 0,
+            '6': 0,
+            '7': 0,
+            '8': 0,
+            '9': 0,
+            '10': 0,
+            '11': 0,
+            '12': 0,
+        }
+        for a in sunday_attendance_prev:
+            sunday_attendance_previous[str(a['month'])] += 1  
+
+        sunday_attendance_prev_ = []
+        for key, value in sunday_attendance_previous.items():
+            sunday_attendance_prev_.append(value)
+
+        workdays_current = {
+            '01': 0,
+            '02': 0,
+            '03': 0,
+            '04': 0,
+            '05': 0,
+            '06': 0,
+            '07': 0,
+            '08': 0,
+            '09': 0,
+            '10': 0,
+            '11': 0,
+            '12': 0,
+        }
+        workdays_prev = {
             '01': 0,
             '02': 0,
             '03': 0,
@@ -343,40 +442,111 @@ class Dashboard(GenericViewSet):
             '12': 0,
         }
 
-        for x in range(1, 13):
-            end   = start - timedelta(days=1)
-            start = end.replace(day=1)
-            key = str(start.date()).split('-')[1]
-            workdays[key] = np.busday_count(str(start.date()), str(end.date()), weekmask='1111110') + 1
+        now = datetime.now()
+        current = datetime(int(year), 1, 1)
+        start = current.replace(day=1)
 
-        workdays_ = []
-        months_count_ = []
-        lates_count_ = []
-        for key, value in workdays.items():
-            workdays_.append(value)
-        for key, value in months_count.items():
-            months_count_.append(value)
-        for key, value in lates_count.items():
-            lates_count_.append(value)
+        prev = datetime(int(year)-1, 1, 1)
+        prev_start = prev.replace(day=1)
+
+        for x in range(1, 13):
+            end  = start - timedelta(days=1)
+            start = end.replace(day=1)
+            end = end + timedelta(days=1)
+            key = str(start.date()).split('-')[1]
+            workdays_current[key] = np.busday_count(str(start.date()), str(end.date()), weekmask='1111110')
+
+            end = prev_start - timedelta(days=1)
+            prev_start = end.replace(day=1)
+            end = end + timedelta(days=1)
+            key = str(prev_start.date()).split('-')[1]
+            workdays_prev[key] = np.busday_count(str(prev_start.date()), str(end.date()), weekmask='1111110')
+
+
+        workdays_current_ = []
+        for key, value in workdays_current.items():
+            workdays_current_.append(value)
+
+        workdays_prev_ = []
+        for key, value in workdays_prev.items():
+            workdays_prev_.append(value)
+
+        for i in range(0, 12):
+            workdays_current_[i] += sunday_attendance_current_[i]
+
+        for i in range(0, 12):
+            workdays_prev_[i] += sunday_attendance_prev_[i]
+        
+        attendance_current_total = 0
+        attendance_previous_total = 0
+        for i in range(0, 12):
+            attendance_current_[i] = ((attendance_current_[i] / workdays_current_[i]) * 100)
+            attendance_current_total += attendance_current_[i]
+
+        for i in range(0, 12):
+            attendance_previous_[i] = ((attendance_previous_[i] / workdays_prev_[i]) * 100)
+            attendance_previous_total += attendance_previous_[i]
+        
+
+
+        # lates_count_ = []
+        # for key, value in lates_count.items():
+        #     lates_count_.append(value)
 
         #sales
-        total_sales = Sales.objects.filter(user_id=id, date__year=year).\
-            aggregate(total_sales=Sum('amount'))
+        # total_sales = Sales.objects.filter(user_id=id, date__year=year).\
+        #     aggregate(total_sales=Sum('amount'))
         #backjobs
-        total_backjobs = BackJobs.objects.filter(user_id=id, date__year=year).count()
+        # total_backjobs = BackJobs.objects.filter(user_id=id, date__year=year).count()
         #ratings
-        ratings = CustomerRatingAnswers.objects.filter(user_id=id, date__year=year)
-        customer_rating = ratings.aggregate(result=Sum('q1_score')+Sum('q2_score')+Sum('q3_score'))
-        total_rating = ratings.count() * 3 * 5
+        # ratings = CustomerRatingAnswers.objects.filter(user_id=id, date__year=year)
+        # customer_rating = ratings.aggregate(result=Sum('q1_score')+Sum('q2_score')+Sum('q3_score'))
+        # total_rating = ratings.count() * 3 * 5
+
+        #rating
+        customer_rating_current_year = CustomerRatingAnswers.objects.filter(user_id=id, date__year=year)\
+            .annotate(month=ExtractMonth('date')).values('month').\
+                annotate(total=Sum('q1_score')+Sum('q2_score')+Sum('q3_score'), count=Count('id'))
+        customer_rating_previous_year = CustomerRatingAnswers.objects.filter(user_id=id, date__year=prev_year)\
+            .annotate(month=ExtractMonth('date')).values('month').\
+                annotate(total=Sum('q1_score')+Sum('q2_score')+Sum('q3_score'), count=Count('id'))
+
+        #sales
+        sales_current_year = Sales.objects.filter(user_id=id, date__year=year)\
+            .annotate(month=ExtractMonth('date')).values('month').annotate(total=Sum('amount'))
+        sales_previous_year = Sales.objects.filter(user_id=id, date__year=prev_year)\
+            .annotate(month=ExtractMonth('date')).values('month').annotate(total=Sum('amount'))
+        sales_previous_year = month_vals_array(sales_previous_year, 'total')
+        sales_current_year = month_vals_array(sales_current_year, 'total')
+
+        #backjob
+        backjob_current_year = BackJobs.objects.filter(user_id=id, date__year=year)\
+            .annotate(month=ExtractMonth('date')).values('month').annotate(total=Count('id'))
+        backjob_previous_year = BackJobs.objects.filter(user_id=id, date__year=prev_year)\
+            .annotate(month=ExtractMonth('date')).values('month').annotate(total=Count('id'))
+        backjob_previous_year = month_vals_array(backjob_previous_year, 'total')
+        backjob_current_year = month_vals_array(backjob_current_year, 'total')
+
 
         return Response({
-            'lates': lates_count_,
-            'attendance': months_count_,
-            'workdays': workdays_,
-            'sales': total_sales,
-            'backjobs': total_backjobs,
-            'ratings': customer_rating,
-            'total_ratings': total_rating,
+            'attendance': {
+                'current_year': attendance_current_,
+                'previous_year': attendance_previous_,
+                'current_total': attendance_previous_total,
+                'previous_total': attendance_current_total,
+            },
+            'sales': {
+                'current_year': sales_current_year,
+                'previous_year': sales_previous_year,
+            },
+            'backjobs': {
+                'current_year': backjob_current_year, 
+                'previous_year': backjob_previous_year,
+            },
+            'ratings': {
+                'current_year': customer_rating_current_year,
+                'previous_year': customer_rating_previous_year
+            },
         },status=status.HTTP_200_OK)
 
 class EmployeePositionView(GenericViewSet, generics.ListAPIView):

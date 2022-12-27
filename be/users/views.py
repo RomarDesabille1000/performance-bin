@@ -196,7 +196,6 @@ class EmployeesView(GenericViewSet):
         total_attendance = Attendance.objects.filter(
             user=user, 
             date__year=current_year, 
-            completed=True, 
             minutes_late__lte=0
         )\
             .annotate(month=TruncMonth('date__date'))\

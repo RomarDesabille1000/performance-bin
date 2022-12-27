@@ -64,7 +64,7 @@ export default function Evaluation(){
                                     {!user ? (
                                         <tr>
                                             <td 
-                                                colSpan="6"
+                                                colSpan="5"
                                                 className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
                                                     <Loader/>
                                             </td>
@@ -72,7 +72,7 @@ export default function Evaluation(){
                                     ):(
                                         !user?.evaluation?.results?.length && (
                                             <tr>
-                                                <td colSpan="3" className="text-center py-4">
+                                                <td colSpan="5" className="text-center py-4">
                                                     No data
                                                 </td>
                                             </tr>

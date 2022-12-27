@@ -85,3 +85,30 @@ def extractTimeLate24hrFormat(time):
     if hr > 8:
         totalMinutesLate += (abs(hr - 8) * 60)
     return totalMinutesLate
+
+
+def month_vals_array(dic, value_key):
+    init_month = {
+        '1': 0,
+        '2': 0,
+        '3': 0,
+        '4': 0,
+        '5': 0,
+        '6': 0,
+        '7': 0,
+        '8': 0,
+        '9': 0,
+        '10': 0,
+        '11': 0,
+        '12': 0,
+    }
+    for d in dic:
+        init_month[str(d['month'])] = d[value_key]
+    arr = []
+    i = 1
+    today = datetime.now()
+    for key, value in init_month.items():
+
+        arr.append(value)
+        i += 1
+    return arr

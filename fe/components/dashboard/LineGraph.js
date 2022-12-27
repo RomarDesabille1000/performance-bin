@@ -20,21 +20,21 @@ ChartJS.register(
 );
 
 
-export default function LineGraph() {
+export default function LineGraph({ currentYear, previousYear, yearSelected, title, className='' }) {
     const data = {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         datasets: [
             {
-                label: 'Dataset 1',
+                label: yearSelected - 1,
                 borderColor: '#155E75',
                 backgroundColor: '#155E75',
-                data: [100, 200, 300, 100],
+                data: previousYear,
             },
             {
-                label: 'Dataset 2',
+                label: yearSelected,
                 borderColor: '#9D174D',
                 backgroundColor: '#9D174D',
-                data: [500, 2400, 100, 100, 100],
+                data: currentYear,
             },
         ],
     };
@@ -109,9 +109,9 @@ export default function LineGraph() {
     };
 
     return (
-        <div>
+        <div className={className}>
             <div className="h-[300px]">
-				<div className="mb-3">Customer Satisfaction</div>
+				<div className="mb-3">{title}</div>
                 <Line
                     options={options}
                     data={data} />
