@@ -20,9 +20,10 @@ export default function Evaluation(){
     useEffect(() => {
         let score = 0;
         e?.evaluation_detail?.map((d) => {
-            score += DoubleType(score + (+d.score * DoubleType(+d.percentage/100)));
+            score += (+d.score * DoubleType(+d.percentage/100));
+            console.log(d.score * DoubleType(+d.percentage/100));
         })
-        setOverall(score);
+        setOverall(DoubleType(score));
     }, [e])
 
     function display(data) {

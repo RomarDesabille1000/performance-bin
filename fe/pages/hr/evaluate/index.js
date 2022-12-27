@@ -100,7 +100,7 @@ export default function Evaluate() {
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {d.user_employee?.firstname}&nbsp;
-                                                {d.user_employee?.mi}&nbsp;
+                                                {d.user_employee?.mi}.&nbsp;
                                                 {d.user_employee?.lastname}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
