@@ -532,16 +532,20 @@ class Dashboard(GenericViewSet):
             'attendance': {
                 'current_year': attendance_current_,
                 'previous_year': attendance_previous_,
-                'current_total': attendance_previous_total,
-                'previous_total': attendance_current_total,
+                'current_total': attendance_current_total,
+                'previous_total': attendance_previous_total,
             },
             'sales': {
                 'current_year': sales_current_year,
                 'previous_year': sales_previous_year,
+                'current_total': sum(sales_current_year),
+                'previous_total': sum(sales_previous_year),
             },
             'backjobs': {
                 'current_year': backjob_current_year, 
                 'previous_year': backjob_previous_year,
+                'current_total': sum(backjob_current_year),
+                'previous_total': sum(backjob_previous_year),
             },
             'ratings': {
                 'current_year': customer_rating_current_year,

@@ -10,6 +10,7 @@ import { currencyDisplay, DoubleType } from "../../helper/numbers";
 import Loader from "../../components/Loader";
 import LineGraph from "../../components/dashboard/LineGraph";
 import BarGraphN from "../../components/dashboard/BarGraph";
+import Pie from "../../components/dashboard/PieGraph";
 
 export default function HRDashboard() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,6 +45,7 @@ export default function HRDashboard() {
 		current_year: new Array(12).fill(0),
 		previous_year: new Array(12).fill(0),
 		current_year_total: 0,
+		previous_year_total: 0,
 	})
 
 	function years(){
@@ -58,15 +60,23 @@ export default function HRDashboard() {
 		if(data){
 			let rating_current_year = new Array(12).fill(0)
 			let rating_previous_year = new Array(12).fill(0)
+			let current_year_total = 0;
+			let previous_year_total = 0;
 			data?.ratings?.current_year.map((d) => {
-				rating_current_year[d.month-1] = DoubleType((d.total/(d.count*3*5))*100)
+				const result = DoubleType((d.total/(d.count*3*5))*100)
+				rating_current_year[d.month-1] = result;
+				current_year_total += result;
 			})
 			data?.ratings?.previous_year.map((d) => {
-				rating_previous_year[d.month-1] = DoubleType((d.total/(d.count*3*5))*100)
+				const result = DoubleType((d.total/(d.count*3*5))*100)
+				rating_previous_year[d.month-1] = result;
+				previous_year_total += result;
 			})
 			setRatings({
 				current_year: rating_current_year,
 				previous_year: rating_previous_year,
+				current_year_total: current_year_total,
+				previous_year_total: previous_year_total,
 			})
 		}
 	}, [data])
@@ -162,31 +172,59 @@ export default function HRDashboard() {
 						currentYear={data?.attendance?.current_year}
 						className="mt-[40px]"
 					/>
+					<Pie
+						currentTotal={DoubleType(data?.attendance?.current_total * 0.50)}
+						previousTotal={DoubleType(data?.attendance?.previous_total * 0.50)}
+						selectedYear={year}
+						percentage={true}
+					/>
 					{employeeTarget?.position?.has_rating && (
-						<LineGraph
-							title="Customer Service (Percentage)"
-							yearSelected={year}
-							previousYear={ratings.previous_year}
-							currentYear={ratings.current_year}
-						/>
+						<div>
+							<LineGraph
+								title="Customer Service (Percentage)"
+								yearSelected={year}
+								previousYear={ratings.previous_year}
+								currentYear={ratings.current_year}
+							/>
+							<Pie
+								currentTotal={DoubleType(ratings.current_year_total * 0.50)}
+								previousTotal={DoubleType(ratings.previous_year_total * 0.50)}
+								selectedYear={year}
+								percentage={true}
+							/>
+						</div>
 					)}
 					{employeeTarget?.position?.has_sales && (
-						<LineGraph
-							title="Sales"
-							yearSelected={year}
-							previousYear={data?.sales?.previous_year}
-							currentYear={data?.sales?.current_year}
-							className="mt-[40px]"
-						/>
+						<div>
+							<LineGraph
+								title="Sales"
+								yearSelected={year}
+								previousYear={data?.sales?.previous_year}
+								currentYear={data?.sales?.current_year}
+								className="mt-[40px]"
+							/>
+							<Pie
+								currentTotal={data?.sales?.current_total}
+								previousTotal={data?.sales?.previous_total}
+								selectedYear={year}
+							/>
+						</div>
 					)}
 					{employeeTarget?.position?.has_backjob && (
-						<LineGraph
-							title="Quality of Work"
-							yearSelected={year}
-							previousYear={data?.backjobs?.previous_year}
-							currentYear={data?.backjobs?.current_year}
-							className="mt-[40px] pb-[50px]"
-						/>
+						<div>
+							<LineGraph
+								title="Quality of Work"
+								yearSelected={year}
+								previousYear={data?.backjobs?.previous_year}
+								currentYear={data?.backjobs?.current_year}
+								className="mt-[40px] pb-[50px]"
+							/>
+							<Pie
+								currentTotal={data?.backjobs?.current_total}
+								previousTotal={data?.backjobs?.previous_total}
+								selectedYear={year}
+							/>
+						</div>
 					)}
 				</div>
 			)}
