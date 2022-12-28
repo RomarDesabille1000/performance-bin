@@ -69,7 +69,7 @@ export default function AdminLayout({children, title, hasBack=false}) {
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 items-center justify-between">
                         <div className="flex items-center">
-                            <div className="flex-shrink-0">
+                            {/* <div className="flex-shrink-0">
 								<Image
 									src={logoWhite}
 									alt="logo"
@@ -79,7 +79,7 @@ export default function AdminLayout({children, title, hasBack=false}) {
                                     priority={true}
                                     className="rounded-sm w-[80px] h-[40px]"
 									/>
-                            </div>
+                            </div> */}
                             <div className="hidden md:block">
                                 <div className="ml-10 flex items-baseline space-x-4">
                                     {routes.map((d) => (
