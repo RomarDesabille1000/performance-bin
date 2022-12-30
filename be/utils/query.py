@@ -76,15 +76,18 @@ def convertTime24(str1):
         return str(int(str1[:2]) + 12) + str1[2:5]
 
 def extractTimeLate24hrFormat(time):
-    time = time.split(':')
-    totalMinutesLate = 0
-    hr = int(time[0])
-    minutes = int(time[1])
-    if hr >= 8:
-        totalMinutesLate += minutes
-    if hr > 8:
-        totalMinutesLate += (abs(hr - 8) * 60)
-    return totalMinutesLate
+    try: 
+        time = time.split(':')
+        totalMinutesLate = 0
+        hr = int(time[0])
+        minutes = int(time[1])
+        if hr >= 8:
+            totalMinutesLate += minutes
+        if hr > 8:
+            totalMinutesLate += (abs(hr - 8) * 60)
+        return totalMinutesLate
+    except (Exception,):
+        return 0
 
 
 def month_vals_array(dic, value_key):

@@ -213,8 +213,6 @@ class EmployeesView(GenericViewSet):
             #all year count
             days_count = np.busday_count(f"{current_year}-01-01", str(datetime.now().date()), weekmask=[1,1,1,1,1,1,0]) + 1
             review_period = "January - " + datetime.now().strftime('%B') + ' ' + current_year
-        if total_attendance > days_count:
-            total_attendance = days_count
 
         sunday_count = Attendance.objects.filter(
             user=user, 
@@ -222,6 +220,10 @@ class EmployeesView(GenericViewSet):
             is_sunday=True
         ).count()
         days_count += sunday_count
+        total_attendance += sunday_count
+
+        if total_attendance > days_count:
+            total_attendance = days_count
 
         is_evaluated = EmployeeEvaluation.objects.filter(
             date_created__year=datetime.now().year,

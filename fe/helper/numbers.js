@@ -9,6 +9,10 @@ const DoubleType = (value, handleNan=false) => {
     return res
 }
 
+function handleNaN(value){
+    return isNaN(value) ? 0 : value;
+}
+
 const handleNoValue = (value, return_value) => {
     return value ? value : return_value;
 }
@@ -21,4 +25,5 @@ export{
     DoubleType,
     handleNoValue,
     currencyDisplay,
+    handleNaN,
 }

@@ -6,7 +6,7 @@ import TotalCard from "../../components/dashboard/TotalCard";
 import CustomerSatisfactionGraph from "../../components/dashboard/CustomerSatisfactionGraph";
 import dayjs from "dayjs";
 import { useRef } from "react";
-import { currencyDisplay, DoubleType } from "../../helper/numbers";
+import { currencyDisplay, DoubleType, handleNaN } from "../../helper/numbers";
 import Loader from "../../components/Loader";
 import LineGraph from "../../components/dashboard/LineGraph";
 import BarGraphN from "../../components/dashboard/BarGraph";
@@ -75,8 +75,8 @@ export default function HRDashboard() {
 			setRatings({
 				current_year: rating_current_year,
 				previous_year: rating_previous_year,
-				current_year_total: current_year_total,
-				previous_year_total: previous_year_total,
+				current_year_total: handleNaN(current_year_total/data?.ratings?.current_year?.length),
+				previous_year_total: handleNaN(previous_year_total/data?.ratings?.previous_year?.length),
 			})
 		}
 	}, [data])
@@ -85,6 +85,26 @@ export default function HRDashboard() {
 	useEffect(() => {
 		setEmployeeTarget(employeeSelected)
 	}, [confirmSelection])
+
+	function currentAttendance(){
+		if(year > parseInt(data?.current_year))
+			return 'No data'
+		if(year < parseInt(data?.hired_y))
+			return 'Not hired on this year'
+
+		return `${data?.attendance?.current_total} / ${data?.attendance?.days_count_curr} * 100 =
+		${handleNaN(DoubleType((data?.attendance?.current_total / data?.attendance?.days_count_curr)*100))} %`
+	}
+
+	function prevAttendance(){
+		if(year-1 > parseInt(data?.current_year))
+			return 'No data'
+		if (parseInt(data?.hired_y) > year-1)
+			return 'Not hired on this year'
+
+		return `${data?.attendance?.previous_total} / ${data?.attendance?.days_count_prev} * 100
+			= ${handleNaN(DoubleType((data?.attendance?.previous_total / data?.attendance?.days_count_prev)*100))} %`
+	}
 
 
 	return(
@@ -175,8 +195,10 @@ export default function HRDashboard() {
 					<Pie
 						currentTotal={DoubleType(data?.attendance?.current_total)}
 						previousTotal={DoubleType(data?.attendance?.previous_total)}
+						displayCurrTotal={currentAttendance}
+						displayPrevTotal={prevAttendance}
 						selectedYear={year}
-						percentage={true}
+						percentage={false}
 					/>
 					{employeeTarget?.position?.has_rating && (
 						<div>

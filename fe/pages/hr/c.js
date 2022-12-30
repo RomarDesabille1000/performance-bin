@@ -84,7 +84,7 @@ export default function C(){
                 error: true, 
                 success:false, 
                 loading:false, 
-                infoMessage: 'Something went wrong.' 
+                infoMessage: 'Something went wrong please check your csv file.' 
             })
         })
     }

@@ -8,7 +8,7 @@ from django.db.models import Sum, Count, Func, F
 from django.db.models.functions import ExtractMonth, TruncMonth, Cast
 import numpy as np
 import pandas as pd
-from django.utils.dateparse import parse_datetime
+from django.utils.dateparse import parse_datetime, parse_date
 from dateutil import parser
 
 
@@ -50,6 +50,7 @@ from utils.query import (
     extractTimeLate24hrFormat,
     search_,
     month_vals_array,
+    get_object_or_none,
 )
 
 
@@ -274,9 +275,60 @@ class BackJobsView(GenericViewSet, generics.ListAPIView):
 class Dashboard(GenericViewSet):
     def list(self, request, *args, **kwargs):
         year = self.request.query_params.get('year')
+        year = int(year)
         prev_year = int(year) - 1
         today = datetime.now()
         id = kwargs['id']
+
+        user = User.objects.get(id=id)
+        date_hired = str(user.user_employee.date_hired.date()).split('-')
+        date_hired_y = int(date_hired[0])
+        date_hired_m = int(date_hired[1])
+
+        #total current year
+        total_attendance_curr = Attendance.objects.filter(
+            user=user, 
+            date__year=year, 
+            minutes_late__lte=0
+        )\
+            .annotate(month=TruncMonth('date__date'))\
+            .values('month')\
+            .annotate(c=Count('id'))\
+            .order_by('date__date')
+        total_attendance_curr = len(total_attendance_curr)
+        days_count_curr = 0
+        if today.year > date_hired_y and year != date_hired_y: 
+            days_count_curr = np.busday_count(f"{year}-01-01", f"{year}-12-31", weekmask=[1,1,1,1,1,1,0]) + 1
+        elif today.year > date_hired_y and year == date_hired_y:
+            days_count_curr = np.busday_count('-'.join(date_hired), f"{year}-12-31", weekmask=[1,1,1,1,1,1,0]) + 1
+        elif year == date_hired_y:
+            days_count_curr = np.busday_count('-'.join(date_hired), str(datetime.now().date()), weekmask=[1,1,1,1,1,1,0]) + 1
+        else:
+            days_count_curr = np.busday_count(f"{year}-01-01", f"{year}-12-31", weekmask=[1,1,1,1,1,1,0]) + 1
+
+        if total_attendance_curr > days_count_curr:
+            total_attendance_curr = days_count_curr
+
+        #total previous year
+        total_attendance_prev = Attendance.objects.filter(
+            user=user, 
+            date__year=prev_year, 
+            minutes_late__lte=0
+        )\
+            .annotate(month=TruncMonth('date__date'))\
+            .values('month')\
+            .annotate(c=Count('id'))\
+            .order_by('date__date')
+        total_attendance_prev = len(total_attendance_prev)
+        days_count_prev = 0
+        if today.year > date_hired_y and prev_year != date_hired_y: 
+            days_count_prev = np.busday_count(f"{prev_year}-01-01", f"{prev_year}-12-31", weekmask=[1,1,1,1,1,1,0]) + 1
+        elif prev_year == date_hired_y:
+            days_count_prev = np.busday_count('-'.join(date_hired), f"{prev_year}-12-31", weekmask=[1,1,1,1,1,1,0]) + 1
+        else:
+            days_count_prev = np.busday_count(f"{year}-01-01", f"{prev_year}-12-31", weekmask=[1,1,1,1,1,1,0]) + 1
+        if total_attendance_prev > days_count_prev:
+            total_attendance_prev = days_count_prev
 
 
 
@@ -471,21 +523,29 @@ class Dashboard(GenericViewSet):
         for key, value in workdays_prev.items():
             workdays_prev_.append(value)
 
+        total_sunday_current = 0
         for i in range(0, 12):
             workdays_current_[i] += sunday_attendance_current_[i]
+            total_sunday_current += sunday_attendance_current_[i]
 
+        total_sunday_prev = 0
         for i in range(0, 12):
             workdays_prev_[i] += sunday_attendance_prev_[i]
+            total_sunday_prev += sunday_attendance_prev_[i]
         
-        attendance_current_total = 0
-        attendance_previous_total = 0
+        
+        attendance_current_total = total_attendance_curr + total_sunday_current
+        attendance_previous_total = total_attendance_prev + total_sunday_prev
+        days_count_curr += total_sunday_current
+        days_count_prev += total_sunday_prev
+
         for i in range(0, 12):
             attendance_current_[i] = ((attendance_current_[i] / workdays_current_[i]) * 100)
-            attendance_current_total += attendance_current_[i]
+            # attendance_current_total += attendance_current_[i]
 
         for i in range(0, 12):
             attendance_previous_[i] = ((attendance_previous_[i] / workdays_prev_[i]) * 100)
-            attendance_previous_total += attendance_previous_[i]
+            # attendance_previous_total += attendance_previous_[i]
         
 
 
@@ -527,13 +587,16 @@ class Dashboard(GenericViewSet):
         backjob_previous_year = month_vals_array(backjob_previous_year, 'total')
         backjob_current_year = month_vals_array(backjob_current_year, 'total')
 
-
         return Response({
+            'current_year': now.year,
+            'hired_y': date_hired_y,
             'attendance': {
                 'current_year': attendance_current_,
                 'previous_year': attendance_previous_,
                 'current_total': attendance_current_total,
                 'previous_total': attendance_previous_total,
+                'days_count_curr': days_count_curr,
+                'days_count_prev': days_count_prev,
             },
             'sales': {
                 'current_year': sales_current_year,
@@ -663,52 +726,58 @@ class CSV(GenericViewSet):
             file = request.FILES['csv']
             csv = pd.read_csv(file)
             for i, row in csv.iterrows():
-                try:
+                employee = get_object_or_none(Employee, emp_id=int(row['IDNo']))
+                # try:
+                if row['IDNo'] == row['IDNo'] and employee != None:
                     date = parser.parse(row['Date']).isoformat().split('T')[0]
-                    time = '06:00:00'
-                    datetime = date+'T'+time
+                    time = '00:00:00'
+                    datetime_ = date+'T'+time
+
+                    if datetime.strptime(date, '%Y-%m-%d').date() > employee.date_hired.date():
                     
-                    time_in = row['Login Time']
-                    time_out = row['Logout Time']
-                    minutes_late = extractTimeLate24hrFormat(time_in)
+                        time_in = row['Login Time']
+                        time_out = row['Logout Time']
+                        minutes_late = extractTimeLate24hrFormat(time_in)
+                        attendance = Attendance.objects.filter(user=employee.user)
 
-                    employee = Employee.objects.get(emp_id=row['IDNo'])
-                    attendance = Attendance.objects.filter(user=employee.user)
-
-                    if attendance.filter(date__date=date).exists():
-                        attendance = attendance.filter(date__date=date)
-                        attendance.update(time_in=time_in)
-                        attendance.update(time_out=time_out)
-                        attendance.update(minutes_late=minutes_late)
-                    else:
-                        if row['Punctuality'] != 'not logged in':
-                            employee = Employee.objects.get(emp_id=row['IDNo'])
-                            attendance = Attendance.objects.create(
-                                user=employee.user,
-                                date=datetime,
-                                time_in=time_in,
-                                time_out=time_out,
-                                minutes_late=minutes_late,
-                                completed=True,
-                                reason="from csv",
-                            )
-                            if row['Punctuality'] == 'logged in late':
-                                attendance.save()
-                        
-
-                        if Absences.objects.filter(user=employee.user)\
-                            .filter(date__date=date).exists():
-                            pass
+                        if attendance.filter(date__date=date).exists():
+                            attendance = attendance.filter(date__date=date)
+                            attendance.update(time_in=time_in)
+                            attendance.update(time_out=time_out)
+                            attendance.update(minutes_late=minutes_late)
                         else:
-                            if row['Punctuality'] == 'not logged in':
-                                Absences.objects.create(
+                            if row['Punctuality'] != 'not logged in':
+                                employee = Employee.objects.get(emp_id=int(row['IDNo']))
+                                attendance = Attendance.objects.create(
                                     user=employee.user,
+                                    date=datetime_,
+                                    time_in=time_in,
+                                    time_out=time_out,
+                                    minutes_late=minutes_late,
+                                    completed=True,
                                     reason="from csv",
-                                    date=datetime,
                                 )
-                except (Exception,):
-                    if row['IDNo'] not in not_exist_ids:
-                        not_exist_ids.append(row['IDNo']) 
+                                if row['Punctuality'] == 'logged in late':
+                                    attendance.save()
+                            
+
+                            if Absences.objects.filter(user=employee.user)\
+                                .filter(date__date=date).exists():
+                                pass
+                            else:
+                                if row['Punctuality'] == 'not logged in':
+                                    Absences.objects.create(
+                                        user=employee.user,
+                                        reason="from csv",
+                                        date=datetime_,
+                                    )
+                else:
+                    if int(row['IDNo']) not in not_exist_ids:
+                        not_exist_ids.append(int(row['IDNo'])) 
+
+                # except (Exception,):
+                #     if int(row['IDNo']) not in not_exist_ids:
+                #         not_exist_ids.append(int(row['IDNo'])) 
 
         return Response({ 
             'not_exist_ids': not_exist_ids

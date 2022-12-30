@@ -2,7 +2,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function Pie({ previousTotal, currentTotal, selectedYear, className="", percentage=false }){
+export default function Pie({ previousTotal, currentTotal, selectedYear, displayCurrTotal ='', displayPrevTotal='', className="", percentage=false }){
     let bgColors = [
         '#285973', '#9D174D'
     ]
@@ -58,10 +58,10 @@ export default function Pie({ previousTotal, currentTotal, selectedYear, classNa
 				/>
                 <div className="flex justify-center flex-col items-center mt-5">
                     <div>
-                        {selectedYear-1}: {previousTotal} {percentage? '%': ''}
+                        {selectedYear-1}: {displayPrevTotal ? displayPrevTotal() : previousTotal} {percentage? '%': ''}
                     </div>
                     <div>
-                        {selectedYear}: {currentTotal} {percentage? '%': ''}
+                        {selectedYear}: {displayCurrTotal ? displayCurrTotal() : currentTotal} {percentage? '%': ''}
                     </div>
                 </div>
 			</div>
