@@ -173,8 +173,8 @@ export default function HRDashboard() {
 						className="mt-[40px]"
 					/>
 					<Pie
-						currentTotal={DoubleType(data?.attendance?.current_total * 0.50)}
-						previousTotal={DoubleType(data?.attendance?.previous_total * 0.50)}
+						currentTotal={DoubleType(data?.attendance?.current_total)}
+						previousTotal={DoubleType(data?.attendance?.previous_total)}
 						selectedYear={year}
 						percentage={true}
 					/>
@@ -187,8 +187,8 @@ export default function HRDashboard() {
 								currentYear={ratings.current_year}
 							/>
 							<Pie
-								currentTotal={DoubleType(ratings.current_year_total * 0.50)}
-								previousTotal={DoubleType(ratings.previous_year_total * 0.50)}
+								currentTotal={DoubleType(ratings.current_year_total)}
+								previousTotal={DoubleType(ratings.previous_year_total)}
 								selectedYear={year}
 								percentage={true}
 							/>

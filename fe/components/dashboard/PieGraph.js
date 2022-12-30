@@ -11,7 +11,8 @@ export default function Pie({ previousTotal, currentTotal, selectedYear, classNa
         labels: [selectedYear-1, selectedYear],
         datasets: [
             {
-                data: previousTotal == 0 && currentTotal == 0 ? [0, 1] : [previousTotal, currentTotal],
+                data: previousTotal == 0 && currentTotal == 0 ? [0, 1] : 
+                    [percentage ? previousTotal * 0.50: previousTotal, percentage ? currentTotal * 0.50: currentTotal],
                 backgroundColor: bgColors,
                 borderColor: bgColors,
                 borderWidth: 1,
