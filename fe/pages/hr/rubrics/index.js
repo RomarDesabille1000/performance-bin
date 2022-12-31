@@ -38,6 +38,15 @@ export default function Rubric() {
   const changeEmployeeType = (type) => {
 			setTemplate(type)
 	};
+	useEffect(()=>{
+		if(!showAdd) return
+		setStatus({
+				error: false,
+				loading: false,
+				success: false,
+				infoMessage: '',
+		})
+	},[showAdd])
 	const checkTotalPercentage = () => {
 		if(template == undefined) return false
 		let total = 0;
@@ -111,7 +120,7 @@ export default function Rubric() {
 							{showAdd ? 'CANCEL' : 'ADD DIMENSION'}
 					</button>
 					<div className={showAdd ? 'block' : 'hidden'}>
-						<AddDimension id={template} maxPercent = {getTotalPercentage() ?? 0} mutate = {mutate} setShow = {setShowAdd}/>
+						<AddDimension id={template} maxPercent = {getTotalPercentage() ?? 0} mutate = {mutate} setShow = {setShowAdd} setStatus = {setStatus}/>
 					</div>
 				</div>
 			</div>

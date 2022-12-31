@@ -35,10 +35,17 @@ export default function AddDimension(props) {
         setError('')
         return true
     }
+    const clearAllValues = () => {
+		setData({
+			dimension_name: '',
+			percentage: '',
+		});
+	};
+
     async function onClickSubmit(data){
         if(!validateData(data))
             return 
-		setStatus({ 
+		props.setStatus({ 
 			error: false, 
 			success: false, 
 			loading:true, 
@@ -46,24 +53,25 @@ export default function AddDimension(props) {
 		})
         axiosInstance.post(`hr/templates/${props.id}/`, data)
         .then((_e) => {
-            setStatus({ 
+            props.setStatus({ 
                 error: false, 
                 success: true, 
                 loading: false, 
-                infoMessage: 'Template successfully Added.' 
+                infoMessage: 'Dimension successfully Added.' 
             })
             props.mutate()
             props.setShow(false)
+            clearAllValues()
         }).catch((_e) => {
             if(400 == _e?.response?.status){
-                setStatus({ 
+                props.setStatus({ 
                     error: true, 
                     success: false, 
                     loading: false, 
                     infoMessage: _e?.response?.data ?? ''
                 })
             }else{
-                setStatus({ 
+                props.setStatus({ 
                     error: true, 
                     success: false, 
                     loading: false, 

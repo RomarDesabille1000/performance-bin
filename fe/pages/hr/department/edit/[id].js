@@ -80,7 +80,7 @@ const setChecked = (name, checked) => {
                 error: false, 
                 success: true, 
                 loading: false, 
-                infoMessage: 'Position successfully Updated.' 
+                infoMessage: 'Record successfully Updated' 
             })
         }).catch((_e) => {
             if(400 == _e?.response?.status){
@@ -112,13 +112,6 @@ const setChecked = (name, checked) => {
                     <form onSubmit={handleSubmit(onClickSubmit)} noValidate>
                         <div className="overflow-hidden shadow sm:rounded-md">
                             <div className="bg-white px-4 py-5 sm:p-6">
-                                <AlertMessages
-                                    className="mb-3"
-                                    error={status.error}
-                                    success={status.success}
-                                    loading={status.loading}
-                                    message={status.infoMessage}
-                                />
                                 <div className="grid grid-cols-6 gap-6">
                                     <div className="col-span-6 sm:col-span-6">
                                         <label className="block text-sm font-medium text-gray-700">
@@ -182,6 +175,13 @@ const setChecked = (name, checked) => {
                                 Update
                             </button>
                             </div>
+                            <AlertMessages
+                                className="mb-3"
+                                error={status.error}
+                                success={status.success}
+                                loading={status.loading}
+                                message={status.infoMessage}
+                            />
                         </div>
                     </form>
                 </div>

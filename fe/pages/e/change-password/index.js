@@ -12,7 +12,10 @@ import axios from "axios";
 import IconEye from "../../../components/icons/IconEye";
 
 const EmployeeSchema = yup.object().shape({
-    new_password: yup.string().required("This field is required.").min(8,"Password must be 8 characters long"),
+    new_password: yup.string().required("This field is required.").matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+        "Must be eight characters with at least 1 uppercase letter, at least 1 lowercase letter, at least 1 digit, and at least 1 special character."
+      ),
     confirm_password: yup.string().oneOf([yup.ref('new_password'), null], 'Passwords must match'),
     old_password: yup.string().required("This field is required."),
 });

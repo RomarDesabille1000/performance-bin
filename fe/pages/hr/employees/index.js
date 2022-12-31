@@ -216,12 +216,12 @@ export default function Employee() {
                                                         >
                                                             Ratings
                                                         </Link>
-                                                        <Link href={`/hr/employees/backjobs/${d.id}`}
+                                                        <Link href={`/hr/employees/quality_of_work/${d.id}`}
                                                             className={d.user_employee?.position?.has_backjob ? 
                                                                 "text-indigo-500 hover:text-indigo-700" : 
                                                                 "hidden"}
                                                         >
-                                                            Back Jobs
+                                                            Quality of Work
                                                         </Link>
                                                         <Link href={`/hr/employees/sales/${d.id}`}
                                                             className={d.user_employee?.position?.has_sales ? 

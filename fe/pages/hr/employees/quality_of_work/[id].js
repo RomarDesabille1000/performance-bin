@@ -35,12 +35,12 @@ export default function CreateBackjobs(){
 		infoMessage: '',
 	})
     function handleDelete(id){
-        if (confirm(`Are you sure you want to delete id ${id}`)) {
+        if (confirm(`Are you sure you want to delete this record`)) {
             setStatus({ 
                 error: false, 
                 success: false, 
                 loading:true, 
-                infoMessage: 'Deleting Back Job' 
+                infoMessage: 'Deleting Record' 
             })
             axiosInstance.delete(`hr/backjobs/${id}/`)
             .then((_e) => {
@@ -50,7 +50,7 @@ export default function CreateBackjobs(){
                     error: false, 
                     success: true, 
                     loading: false, 
-                    infoMessage: 'BackJob deleted' 
+                    infoMessage: 'Record deleted' 
                 })
             }).catch((_e) => {
                 setStatus({ 
@@ -98,7 +98,7 @@ export default function CreateBackjobs(){
 
     return (
         <AdminLayout
-            title="Back Jobs"
+            title="Quality of Work"
             hasBack={true}
         >
             <div className="flex gap-[50px]">
@@ -116,15 +116,15 @@ export default function CreateBackjobs(){
                 <span> {dayjs(emp?.user_employee?.date_hired).format('MMMM DD, YYYY')} </span>
             </div>
             <div className="mt-1">
-                <span className="text-gray-500">Backjobs: </span>
+                <span className="text-gray-500">Total Records: </span>
                 {backjob?.backjob_count ? backjob?.backjob_count: 0}
             </div>
             <div className="flex justify-end py-2">
                 <Link 
                     className="ml-3 text-blue-500"
-                    href={`/hr/employees/backjobs/create/${id}`}
+                    href={`/hr/employees/quality_of_work/create/${id}`}
                 >
-                    Add BackJob
+                    Add Record
                 </Link>
             </div>
             <div className="flex justify-between items-center">
@@ -178,10 +178,10 @@ export default function CreateBackjobs(){
                                             Customer Name
                                         </th>
                                         <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
-                                            Description of Service Performed
+                                            Reason of Failure
                                         </th>
                                         <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
-                                            Reason of Failure
+                                            Description of Service Performed
                                         </th>
                                         <th 
                                             style={{width: '200px'}}
@@ -205,7 +205,7 @@ export default function CreateBackjobs(){
                                                 <td 
                                                     colSpan="6"
                                                     className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
-                                                        No record Found
+                                                        No Record Found
                                                 </td>
                                             </tr>
                                         )
@@ -222,15 +222,15 @@ export default function CreateBackjobs(){
                                                 {d.customer_name}
                                             </td>
                                             <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                                                {d.description}
+                                                {d.reason}
                                             </td>
                                             <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                                                {d.reason}
+                                                {d.description}
                                             </td>
                                             <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
                                                 <div className="flex gap-5">
                                                     <Link
-                                                        href={`/hr/employees/backjobs/edit/${d.id}`}
+                                                        href={`/hr/employees/quality_of_work/edit/${d.id}`}
                                                         className="text-indigo-500 hover:text-indigo-700"
                                                     >
                                                         Edit

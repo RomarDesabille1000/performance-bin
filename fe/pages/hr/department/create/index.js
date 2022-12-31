@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import useSWR from "swr";
 import AdminLayout from "../../../../components/AdminLayout";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import axiosInstance from "../../../../utils/axiosInstance";
 import AlertMessages from "../../../../components/AlertMessages";
@@ -19,18 +19,27 @@ const PositionSchema = yup.object().shape({
 });
 
 export default function AddEmployee(){
-
+    const router = useRouter()
 	const { register, handleSubmit, formState: { errors }, reset , setValue } = useForm({
 		mode: 'onSubmit',
 		resolver: yupResolver(PositionSchema),
 	})
-
+    const [addNew, setAddNew] = useState(true)
 	const [status, setStatus] = useState({
 		error: false,
 		loading: false,
 		success: false,
 		infoMessage: '',
 	})
+    useEffect(()=>{
+        if(!addNew) return
+        setStatus({
+            error: false,
+            loading: false,
+            success: false,
+            infoMessage: '',
+        })
+    },[addNew])
 
     function onClickSubmit(data){
 		setStatus({ 
@@ -45,9 +54,10 @@ export default function AddEmployee(){
                 error: false, 
                 success: true, 
                 loading: false, 
-                infoMessage: 'Position successfully Added.' 
+                infoMessage: 'New Department successfully created.' 
             })
             reset()
+            setAddNew(false)
         }).catch((_e) => {
             if(400 == _e?.response?.status){
                 setStatus({ 
@@ -69,7 +79,7 @@ export default function AddEmployee(){
 
     return (
         <AdminLayout
-            title="Add Department"
+            title="Add New Department"
             hasBack={true}
         >
             <div className="mt-10 sm:mt-0">
@@ -78,13 +88,6 @@ export default function AddEmployee(){
                     <form onSubmit={handleSubmit(onClickSubmit)} noValidate>
                         <div className="overflow-hidden shadow sm:rounded-md">
                             <div className="bg-white px-4 py-5 sm:p-6">
-                                <AlertMessages
-                                    className="mb-3"
-                                    error={status.error}
-                                    success={status.success}
-                                    loading={status.loading}
-                                    message={status.infoMessage}
-                                />
                                 <div className="grid grid-cols-6 gap-6">
                                     <div className="col-span-6 sm:col-span-6">
                                         <label className="block text-sm font-medium text-gray-700">
@@ -139,17 +142,45 @@ export default function AddEmployee(){
                                     </div>
                                 </div>
                             </div>
-                            <div className="bg-gray-50 px-4 py-3 text-right sm:px-6">
-                            <button
-                                disabled={status.loading}
-                                type="submit"
-                                className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                            >
-                                Save
-                            </button>
+                            <div className={addNew ? "bg-gray-50 px-4 py-3 text-right sm:px-6" : 'hidden'}>
+                                <button
+                                    disabled={status.loading}
+                                    type="submit"
+                                    className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                >
+                                    Save
+                                </button>
                             </div>
                         </div>
                     </form>
+                    <div className={addNew ? 
+                        'hidden'
+                        :
+                        "bg-gray-50 px-4 py-3 text-right sm:px-6"
+                        }
+                    >
+                        <div className={addNew ? "hidden" : ""}>
+                            <button
+                            onClick={()=>router.back()}
+                                className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mr-2"
+                            >
+                                Back
+                            </button>
+                            <button
+                                onClick={()=> setAddNew(true)}
+                                className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            >
+                                Add New Department
+                            </button>
+                        </div>
+                    </div>
+                    <AlertMessages
+                        className="mb-3"
+                        error={status.error}
+                        success={status.success}
+                        loading={status.loading}
+                        message={status.infoMessage}
+                    />
                 </div>
                 </div>
             </div>

@@ -113,13 +113,6 @@ export default function EditEmployee(){
                     <form onSubmit={handleSubmit(onClickSubmit)} noValidate>
                         <div className="overflow-hidden shadow sm:rounded-md">
                             <div className="bg-white px-4 py-5 sm:p-6">
-                                <AlertMessages
-                                    className="mb-3"
-                                    error={status.error}
-                                    success={status.success}
-                                    loading={status.loading}
-                                    message={status.infoMessage}
-                                />
                                 <div className="grid grid-cols-6 gap-6">
                                     <div className="col-span-6 sm:col-span-6">
                                         <label className="block text-sm font-medium text-gray-700">
@@ -244,6 +237,13 @@ export default function EditEmployee(){
                                 Update
                             </button>
                             </div>
+                            <AlertMessages
+                                className="mb-3"
+                                error={status.error}
+                                success={status.success}
+                                loading={status.loading}
+                                message={status.infoMessage}
+                            />
                         </div>
                     </form>
                 </div>

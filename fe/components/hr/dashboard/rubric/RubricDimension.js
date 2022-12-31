@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 import axiosInstance from "../../../../utils/axiosInstance";
 import AddCriteria from "./cirteria/AddCriteria";
@@ -29,6 +29,15 @@ export default function RubricDimension(props) {
 		success: false,
 		infoMessage: '',
 	});
+    useEffect(()=>{
+        if(!addCriteria) return
+        setStatus({
+            error: false,
+            loading: false,
+            success: false,
+            infoMessage: '',
+        })
+    },[addCriteria])
 
     const validateData = (data) => {
         if(updateData.dimension_name == ''){
@@ -70,7 +79,7 @@ export default function RubricDimension(props) {
                 error: false, 
                 success: true, 
                 loading: false, 
-                infoMessage: 'Template successfully Updated.' 
+                infoMessage: 'Dimension successfully Updated.' 
             })
             props.mutate()
             setUpdate(false)

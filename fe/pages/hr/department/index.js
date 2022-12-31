@@ -90,7 +90,7 @@ export default function Positions() {
                             className="mr-3 text-blue-500"
                             href={`/hr/department/create/`}
                         >
-                            Add Department
+                            Add New Department
                         </Link>
                     </div>
                     <AlertMessages
