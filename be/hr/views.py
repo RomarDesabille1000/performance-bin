@@ -281,7 +281,7 @@ class Dashboard(GenericViewSet):
         id = kwargs['id']
 
         user = User.objects.get(id=id)
-        date_hired = str(user.user_employee.date_hired.date()).split('-')
+        date_hired = str(user.user_employee.date_hired.date() + timedelta(days=1)).split('-')
         date_hired_y = int(date_hired[0])
         date_hired_m = int(date_hired[1])
 
@@ -525,12 +525,12 @@ class Dashboard(GenericViewSet):
 
         total_sunday_current = 0
         for i in range(0, 12):
-            workdays_current_[i] += sunday_attendance_current_[i]
+            workdays_current_[i] = (workdays_current_[i] + sunday_attendance_current_[i]) * -1
             total_sunday_current += sunday_attendance_current_[i]
 
         total_sunday_prev = 0
         for i in range(0, 12):
-            workdays_prev_[i] += sunday_attendance_prev_[i]
+            workdays_prev_[i] = (workdays_prev_[i] + sunday_attendance_prev_[i]) * -1
             total_sunday_prev += sunday_attendance_prev_[i]
         
         
@@ -601,14 +601,14 @@ class Dashboard(GenericViewSet):
             'sales': {
                 'current_year': sales_current_year,
                 'previous_year': sales_previous_year,
-                'current_total': sum(sales_current_year),
-                'previous_total': sum(sales_previous_year),
+                'current_total': sum(sales_current_year) * -1,
+                'previous_total': sum(sales_previous_year) * -1,
             },
             'backjobs': {
                 'current_year': backjob_current_year, 
                 'previous_year': backjob_previous_year,
-                'current_total': sum(backjob_current_year),
-                'previous_total': sum(backjob_previous_year),
+                'current_total': sum(backjob_current_year) * -1,
+                'previous_total': sum(backjob_previous_year) * -1,
             },
             'ratings': {
                 'current_year': customer_rating_current_year,

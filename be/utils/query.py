@@ -112,6 +112,6 @@ def month_vals_array(dic, value_key):
     today = datetime.now()
     for key, value in init_month.items():
 
-        arr.append(value)
+        arr.append(value * -1)
         i += 1
     return arr

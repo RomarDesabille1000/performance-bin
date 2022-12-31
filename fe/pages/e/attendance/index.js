@@ -12,6 +12,7 @@ import utc from 'dayjs/plugin/utc'
 import tz from 'dayjs/plugin/timezone'
 import { useAuth } from '../../../context/AuthContext'
 import useSWR from "swr";
+import { timeFormat } from "../../../helper/datetime";
 
 dayjs.extend(utc)
 dayjs.extend(tz)
@@ -23,7 +24,26 @@ const AttendanceSchema = yup.object().shape({
 	contact_no: yup.string().required('This field is required')
 		.max(100, "Only 100 characters is allowed."),
     time_in: yup.string().required("This field is required."),
-    time_out: yup.string().required("This field is required."),
+    time_out: yup.string().required("This field is required.")
+	.test(
+		"start_time_test",
+		"Time out must be greater than time in",
+		function(value) {
+			const { time_in } = this.parent;
+			if(time_in && value){
+				const ft = dayjs(`2000-01-01 ${time_in}`);
+				const tt = dayjs(`2000-01-01 ${value}`);
+				const mins = tt.diff(ft, "minutes", true);
+				const totalHours = parseInt(mins / 60);
+				const totalMins = dayjs().minute(mins).$m
+
+				if(totalHours < 0 || mins <= 0){
+					return false;
+				}
+			}
+			return value
+		}
+	),
 	location: yup.string().required('This field is required')
 		.max(255, "Only 255 characters is allowed."),
     reason: yup.string().required("This field is required."),

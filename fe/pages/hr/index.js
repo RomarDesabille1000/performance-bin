@@ -64,12 +64,12 @@ export default function HRDashboard() {
 			let previous_year_total = 0;
 			data?.ratings?.current_year.map((d) => {
 				const result = DoubleType((d.total/(d.count*3*5))*100)
-				rating_current_year[d.month-1] = result;
+				rating_current_year[d.month-1] = result * -1;
 				current_year_total += result;
 			})
 			data?.ratings?.previous_year.map((d) => {
 				const result = DoubleType((d.total/(d.count*3*5))*100)
-				rating_previous_year[d.month-1] = result;
+				rating_previous_year[d.month-1] = result * -1;
 				previous_year_total += result;
 			})
 			setRatings({
@@ -104,6 +104,55 @@ export default function HRDashboard() {
 
 		return `${data?.attendance?.previous_total} / ${data?.attendance?.days_count_prev} * 100
 			= ${handleNaN(DoubleType((data?.attendance?.previous_total / data?.attendance?.days_count_prev)*100))} %`
+	}
+
+	function currentCustomerService(){
+		if(year > parseInt(data?.current_year))
+			return 'No data'
+		if(year < parseInt(data?.hired_y))
+			return 'Not hired on this year'
+		return `${ratings.current_year_total}%`
+	}
+
+	function previousCustomerService(){
+		if(year-1 > parseInt(data?.current_year))
+			return 'No data'
+		if (parseInt(data?.hired_y) > year-1)
+			return 'Not hired on this year'
+		return `${ratings.previous_year_total}%`
+	}
+
+	function currSales(){
+		if(year > parseInt(data?.current_year))
+			return 'No data'
+		if(year < parseInt(data?.hired_y))
+			return 'Not hired on this year'
+
+		return `₱ ${currencyDisplay(data?.sales?.current_total)}`
+	}
+
+	function prevSales(){
+		if(year-1 > parseInt(data?.current_year))
+			return 'No data'
+		if (parseInt(data?.hired_y) > year-1)
+			return 'Not hired on this year'
+		return `₱ ${currencyDisplay(data?.sales?.previous_total)}`
+	}
+
+	function currentWork(){
+		if(year > parseInt(data?.current_year))
+			return 'No data'
+		if(year < parseInt(data?.hired_y))
+			return 'Not hired on this year'
+		return data?.backjobs?.current_total
+	}
+
+	function prevWork(){
+		if(year-1 > parseInt(data?.current_year))
+			return 'No data'
+		if (parseInt(data?.hired_y) > year-1)
+			return 'Not hired on this year'
+		return data?.backjobs?.previous_total
 	}
 
 
@@ -198,7 +247,6 @@ export default function HRDashboard() {
 						displayCurrTotal={currentAttendance}
 						displayPrevTotal={prevAttendance}
 						selectedYear={year}
-						percentage={false}
 					/>
 					{employeeTarget?.position?.has_rating && (
 						<div>
@@ -211,8 +259,9 @@ export default function HRDashboard() {
 							<Pie
 								currentTotal={DoubleType(ratings.current_year_total)}
 								previousTotal={DoubleType(ratings.previous_year_total)}
+								displayCurrTotal={currentCustomerService}
+								displayPrevTotal={previousCustomerService}
 								selectedYear={year}
-								percentage={true}
 							/>
 						</div>
 					)}
@@ -228,6 +277,8 @@ export default function HRDashboard() {
 							<Pie
 								currentTotal={data?.sales?.current_total}
 								previousTotal={data?.sales?.previous_total}
+								displayCurrTotal={currSales}
+								displayPrevTotal={prevSales}
 								selectedYear={year}
 							/>
 						</div>
@@ -244,6 +295,8 @@ export default function HRDashboard() {
 							<Pie
 								currentTotal={data?.backjobs?.current_total}
 								previousTotal={data?.backjobs?.previous_total}
+								displayCurrTotal={currentWork}
+								displayPrevTotal={prevWork}
 								selectedYear={year}
 							/>
 						</div>
