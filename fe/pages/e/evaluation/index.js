@@ -6,12 +6,14 @@ import { paginationRecordCount, PAGINATION_COUNT } from "../../../helper/paginat
 import {Pagination} from '@mui/material';
 import Link from "next/link";
 import { useAuth } from '../../../context/AuthContext';
+import dayjs from "dayjs";
 
 
 export default function Evaluation(){
     const [pageIndex, setPageIndex] = useState(1);
     const [searchText, setSearchText] = useState('');
-    const { data: employees } = useSWR(`employee/list/?lastname=${searchText}&page=${pageIndex}`, {
+	const [year, setYear] = useState(dayjs().year())
+    const { data: employees } = useSWR(`employee/list/${year}/?lastname=${searchText}&page=${pageIndex}`, {
         revalidateOnFocus: false,
     });
     const { user } = useAuth();
@@ -27,6 +29,16 @@ export default function Evaluation(){
             setSearchText('')
         }
     }
+
+	function years(){
+		let year = []
+		for(let i = 2015; i <= dayjs().year(); i++){
+			year.push(i)
+		}
+		return year;
+	}
+    console.log(employees);
+    
     return (
         <div>
             <div className="flex flex-col px-2 max-w-[900px] m-auto md:mt-[50px] mt-[20px]">
@@ -35,15 +47,26 @@ export default function Evaluation(){
                         Back
                     </Link>
                     <div className="flex flex-col">
-                        <SearchBar
-                            onChange={onChangeSearch}
-                            onKeyUp={onKeyUpSearch}
-                            text={searchText}
-                            setText={setSearchText}
-                            hasQuery={false}
-                            placeholder="Search employee lastname"
-                            className="px-2 mt-4 !min-w-[300px]"
-                        />
+                        <div className="flex justify-between items-center">
+                            <SearchBar
+                                onChange={onChangeSearch}
+                                onKeyUp={onKeyUpSearch}
+                                text={searchText}
+                                setText={setSearchText}
+                                hasQuery={false}
+                                placeholder="Search employee lastname"
+                                className="px-2 mt-4 !min-w-[300px]"
+                            />
+                            <select
+                                className="border rounded-[5px] px-2 py-1 bg-white !w-[200px] mt-2"
+                                value={year}
+                                onChange={(e) => setYear(e.target.value)}
+                            >
+                                {years()?.map((d) => (
+                                    <option key={d} value={d}>{d}</option>
+                                ))}
+                            </select>
+                        </div>
                         {/* <div className="flex items-center gap-3 px-3 mt-4">
                             <input
                                 style={{width: '15px', height: '15px'}}
@@ -124,7 +147,7 @@ export default function Evaluation(){
                                                         </Link>
                                                         {!d.is_evaluated && d.id !== user?.id && (
                                                             <Link className='text-indigo-500 hover:text-indigo-700' 
-                                                                href={`/hr/evaluate/${d.id}`}>
+                                                                href={`/hr/evaluate/${year}/${d.id}/`}>
                                                                 Evaluate
                                                             </Link>
                                                         )}

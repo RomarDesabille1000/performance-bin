@@ -50,7 +50,7 @@ export default function HRDashboard() {
 
 	function years(){
 		let year = []
-		for(let i = 2015; i <= 2040; i++){
+		for(let i = 2015; i <= dayjs().year(); i++){
 			year.push(i)
 		}
 		return year;
@@ -64,12 +64,12 @@ export default function HRDashboard() {
 			let previous_year_total = 0;
 			data?.ratings?.current_year.map((d) => {
 				const result = DoubleType((d.total/(d.count*3*5))*100)
-				rating_current_year[d.month-1] = result * -1;
+				rating_current_year[d.month-1] = result;
 				current_year_total += result;
 			})
 			data?.ratings?.previous_year.map((d) => {
 				const result = DoubleType((d.total/(d.count*3*5))*100)
-				rating_previous_year[d.month-1] = result * -1;
+				rating_previous_year[d.month-1] = result;
 				previous_year_total += result;
 			})
 			setRatings({
@@ -87,6 +87,7 @@ export default function HRDashboard() {
 	}, [confirmSelection])
 
 	function currentAttendance(){
+		if(!data) return '-'
 		if(year > parseInt(data?.current_year))
 			return 'No data'
 		if(year < parseInt(data?.hired_y))
@@ -97,6 +98,7 @@ export default function HRDashboard() {
 	}
 
 	function prevAttendance(){
+		if(!data) return '-'
 		if(year-1 > parseInt(data?.current_year))
 			return 'No data'
 		if (parseInt(data?.hired_y) > year-1)

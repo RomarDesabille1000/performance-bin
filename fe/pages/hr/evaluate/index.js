@@ -6,12 +6,14 @@ import SearchBar from '../../../components/SearchBar';
 import {Pagination} from '@mui/material';
 import { paginationRecordCount, PAGINATION_COUNT } from "../../../helper/paginationRecordCount";
 import Loader from '../../../components/Loader';
+import dayjs from 'dayjs';
 
 
 export default function Evaluate() {
     const [pageIndex, setPageIndex] = useState(1);
     const [searchText, setSearchText] = useState('')
-    const { data: employees } = useSWR(`users/employees/selection/?lastname=${searchText}&page=${pageIndex}`, {
+	const [year, setYear] = useState(dayjs().year())
+    const { data: employees } = useSWR(`users/employees/selection/${year}/?lastname=${searchText}&page=${pageIndex}`, {
         revalidateOnFocus: false,
     });
 
@@ -26,6 +28,14 @@ export default function Evaluate() {
         }
     }
 
+	function years(){
+		let year = []
+		for(let i = 2015; i <= dayjs().year(); i++){
+			year.push(i)
+		}
+		return year;
+	}
+
 	return (
 		<AdminLayout
 			title="Evaluate Employee"
@@ -33,14 +43,26 @@ export default function Evaluate() {
             <div className="flex flex-col max-w-[600px] m-auto">
 				<div className="mb-2">Select Employee to Evaluate</div>
                 <div className="overflow-x-auto">
-                    <SearchBar
-                        onChange={onChangeSearch}
-                        onKeyUp={onKeyUpSearch}
-                        text={searchText}
-                        setText={setSearchText}
-                        hasQuery={false}
-                        placeholder="Search employee lastname"
-                    />
+                    <div className="flex justify-between items-center">
+                        <SearchBar
+                            onChange={onChangeSearch}
+                            onKeyUp={onKeyUpSearch}
+                            text={searchText}
+                            setText={setSearchText}
+                            hasQuery={false}
+                            placeholder="Search employee lastname"
+                            className="min-w-[270px]"
+                        />
+                        <select
+                            className="border rounded-[5px] px-2 py-1 bg-white !w-[200px] mt-2"
+                            value={year}
+                            onChange={(e) => setYear(e.target.value)}
+                        >
+                            {years()?.map((d) => (
+                                <option key={d} value={d}>{d}</option>
+                            ))}
+                        </select>
+                    </div>
                     <div className="p-1.5 w-full inline-block align-middle">
                         <div className="overflow-hidden border rounded-lg">
                             <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
@@ -108,7 +130,7 @@ export default function Evaluate() {
                                             </td>
 											<td>
 												<Link className='text-blue-600 text-sm' 
-													href={`/hr/evaluate/${d.id}`}>
+													href={`/hr/evaluate/${year}/${d.id}/`}>
 													Select Employee
 												</Link>
 											</td>

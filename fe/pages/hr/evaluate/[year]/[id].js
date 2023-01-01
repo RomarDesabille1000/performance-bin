@@ -1,16 +1,16 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
-import axiosInstance from "../../../utils/axiosInstance";
+import axiosInstance from "../../../../utils/axiosInstance";
 import dayjs from "dayjs";
-import { DoubleType, handleNoValue } from "../../../helper/numbers";
-import AlertMessages from "../../../components/AlertMessages";
+import { DoubleType, handleNoValue } from "../../../../helper/numbers";
+import AlertMessages from "../../../../components/AlertMessages";
 import { Fragment } from "react";
 
 export default function Evaluate() {
     const router = useRouter();
-    const { id } = router.query
-	const { data } = useSWR(id ? `users/employees/${id}/` : '', {
+    const { id, year } = router.query
+	const { data } = useSWR(id ? `users/employees/${year}/${id}/` : '', {
         revalidateOnFocus: false,       
     });
 
@@ -71,7 +71,7 @@ export default function Evaluate() {
             loading:true, 
             infoMessage: 'Saving Evaluation.' 
         })
-        axiosInstance.post(`users/employees/${id}/`, {
+        axiosInstance.post(`users/employees/${year}/${id}/`, {
             review_period: data?.review_period,
             rubric: rubric,
             comment: comment,
