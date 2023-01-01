@@ -72,7 +72,7 @@ export default function Evaluate() {
                                             scope="col"
                                             className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                                         >
-                                            ID
+                                            EMP ID
                                         </th>
                                         <th
                                             scope="col"
@@ -118,7 +118,7 @@ export default function Evaluate() {
                                     {employees?.results?.map((d) => (
                                         <tr key={d.id}>
                                             <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                                                {d.id}
+                                                {d.user_employee.emp_id}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {d.user_employee?.firstname}&nbsp;
