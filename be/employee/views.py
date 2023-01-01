@@ -252,10 +252,15 @@ class EmployeesView(GenericViewSet):
         )
         
 
-    def list(self, request):
-        queryset = self.get_queryset().filter(user_employee__isnull=False)
-        data = paginated_data(self, queryset)
-        return Response(data , status=status.HTTP_200_OK)
+    def list(self, request, **kwargs):
+        year = kwargs['year']
+        queryset = self.get_queryset().filter(
+            user_employee__isnull=False,
+            user_employee__date_hired__year__lte=year
+        )
+        page = self.paginate_queryset(queryset)
+        serializer = self.serializer_class(page, many=True, context = {"year": year})
+        return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
 
 
 

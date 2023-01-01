@@ -55,7 +55,8 @@ class EmployeeListSerializer(serializers.ModelSerializer):
     def get_is_evaluated(self, obj):
         count = EmployeeEvaluation.objects.filter(
                 employee=obj.id,
-                date_created__year=datetime.now().year
-            ).count()
+                year=self.context['year']
+            )
+        print(count.count())
 
-        return count > 0
+        return count.count() > 0

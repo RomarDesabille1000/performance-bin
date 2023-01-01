@@ -41,7 +41,7 @@ urlpatterns = [
             'delete': 'delete',
         })),
     ])),
-    path('list/', EmployeesView.as_view({
+    path('list/<int:year>/', EmployeesView.as_view({
         'get': 'list',
     })),
 ]

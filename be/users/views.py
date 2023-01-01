@@ -141,9 +141,10 @@ class EmployeesView(GenericViewSet):
             employee.save()
         return Response(status=status.HTTP_200_OK)
 
-    def evaluation_user_selection(self, request):
-        queryset = self.get_queryset().filter(user_employee__isnull=False)\
-            .exclude(employee_evaluation__date_created__year=datetime.now().year)
+    def evaluation_user_selection(self, request, **kwargs):
+        year = kwargs['year']
+        queryset = self.get_queryset().filter(user_employee__isnull=False, user_employee__date_hired__year__lte=year)\
+            .exclude(employee_evaluation__year=year)
         data = paginated_data(self, queryset)
         return Response(data, status=status.HTTP_200_OK)
 
@@ -189,14 +190,14 @@ class EmployeesView(GenericViewSet):
         rubric_serializer = RubricTemplateCriteriaSerializer(rubricT, many=True)
 
         date_hired = str(user.user_employee.date_hired.date() + timedelta(days=1)).split('-')
-        date_hired_y = date_hired[0]
+        date_hired_y = int(date_hired[0])
         date_hired_m = int(date_hired[1])
-        current_year = str(datetime.now().year)
+        current_year = int(kwargs['year'])
         # this means newly hired
         total_attendance = Attendance.objects.filter(
             user=user, 
             date__year=current_year, 
-            minutes_late__lte=0
+            minutes_late__lte=0,
         )\
             .annotate(month=TruncMonth('date__date'))\
             .values('month')\
@@ -205,14 +206,37 @@ class EmployeesView(GenericViewSet):
         total_attendance = len(total_attendance)
         days_count = 0
         review_period = ''
-        if current_year == date_hired_y:
+        today = today = datetime.now()
+        if current_year > today.year:
+            return Response({'err': 'Invalid year.'})
+
+        if current_year < date_hired_y:
+            return Response({'err': 'Not hired on this year.'})
+
+        if current_year > date_hired_y and today.year == current_year: 
+            days_count = np.busday_count(f"{current_year}-01-01", str(datetime.now().date()), weekmask=[1,1,1,1,1,1,0]) + 1
+            review_period = "January - " + datetime.now().strftime('%B') + ' ' + str(current_year)
+
+        elif current_year > date_hired_y and today.year != current_year:
+            days_count = np.busday_count(f"{current_year}-01-01", f"{current_year}-12-31", weekmask=[1,1,1,1,1,1,0]) + 1
+            review_period = "January - December " + str(current_year)
+
+        elif current_year == date_hired_y and today.year == current_year:
             #hired count
             days_count = np.busday_count('-'.join(date_hired), str(datetime.now().date()), weekmask=[1,1,1,1,1,1,0]) + 1
-            review_period = parse_date('-'.join(date_hired)).strftime('%B') + ' - ' + datetime.now().strftime('%B') + ' ' + current_year
+            review_period = parse_date('-'.join(date_hired)).strftime('%B') + ' - ' + datetime.now().strftime('%B') + ' ' + str(current_year)
+
+        elif current_year == date_hired_y and today.year != current_year:
+            days_count = np.busday_count('-'.join(date_hired), f"{current_year}-12-31", weekmask=[1,1,1,1,1,1,0]) + 1
+            review_period = parse_date('-'.join(date_hired)).strftime('%B') + ' - December ' + str(current_year)
+
         else:
-            #all year count
-            days_count = np.busday_count(f"{current_year}-01-01", str(datetime.now().date()), weekmask=[1,1,1,1,1,1,0]) + 1
-            review_period = "January - " + datetime.now().strftime('%B') + ' ' + current_year
+            days_count = np.busday_count(f"{current_year}-01-01", f"{current_year}-12-31", weekmask=[1,1,1,1,1,1,0]) + 1
+            review_period = "January - December " + str(current_year)
+        # else:
+        #     #all year count
+        #     days_count = np.busday_count(f"{current_year}-01-01", str(datetime.now().date()), weekmask=[1,1,1,1,1,1,0]) + 1
+        #     review_period = "January - " + datetime.now().strftime('%B') + ' ' + str(current_year)
 
         sunday_count = Attendance.objects.filter(
             user=user, 
@@ -220,20 +244,19 @@ class EmployeesView(GenericViewSet):
             is_sunday=True
         ).count()
         days_count += sunday_count
-        total_attendance += sunday_count
 
         if total_attendance > days_count:
             total_attendance = days_count
 
         is_evaluated = EmployeeEvaluation.objects.filter(
-            date_created__year=datetime.now().year,
+            year=current_year,
             employee=user
         )
 
         return Response({
             'user': user_serializer.data,
             'rubric': rubric_serializer.data,
-            'customer_service_rating': CustomerRatingAnswers.customer_rating_percentage(pk=kwargs['pk']),
+            'customer_service_rating': CustomerRatingAnswers.customer_rating_percentage(pk=kwargs['pk'], year=current_year),
             'attendance': {
                 'days_count': days_count,
                 'total_attendance': total_attendance,
@@ -252,6 +275,7 @@ class EmployeesView(GenericViewSet):
             evaluated_by=request.user,
             review_period=data['review_period'],
             comment=data['comment'],
+            year=kwargs['year']
         )
         for d in data['rubric']:
             evaluation_rubric = EvaluationRubricTemplate.objects.create(

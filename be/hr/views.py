@@ -297,12 +297,24 @@ class Dashboard(GenericViewSet):
             .order_by('date__date')
         total_attendance_curr = len(total_attendance_curr)
         days_count_curr = 0
-        if today.year > date_hired_y and year != date_hired_y: 
+        # if today.year > date_hired_y and year != date_hired_y: 
+        #     days_count_curr = np.busday_count(f"{year}-01-01", f"{year}-12-31", weekmask=[1,1,1,1,1,1,0]) + 1
+        # elif today.year > date_hired_y and year == date_hired_y:
+        #     days_count_curr = np.busday_count('-'.join(date_hired), f"{year}-12-31", weekmask=[1,1,1,1,1,1,0]) + 1
+
+        # elif year == date_hired_y:
+        #     days_count_curr = np.busday_count('-'.join(date_hired), str(datetime.now().date()), weekmask=[1,1,1,1,1,1,0]) + 1
+        # else:
+        #     days_count_curr = np.busday_count(f"{year}-01-01", f"{year}-12-31", weekmask=[1,1,1,1,1,1,0]) + 1
+
+        if year > date_hired_y and today.year == year: 
+            days_count_curr = np.busday_count(f"{year}-01-01", str(datetime.now().date()), weekmask=[1,1,1,1,1,1,0]) + 1
+        elif year > date_hired_y and today.year != year:
             days_count_curr = np.busday_count(f"{year}-01-01", f"{year}-12-31", weekmask=[1,1,1,1,1,1,0]) + 1
-        elif today.year > date_hired_y and year == date_hired_y:
-            days_count_curr = np.busday_count('-'.join(date_hired), f"{year}-12-31", weekmask=[1,1,1,1,1,1,0]) + 1
-        elif year == date_hired_y:
+        elif year == date_hired_y and today.year == year:
             days_count_curr = np.busday_count('-'.join(date_hired), str(datetime.now().date()), weekmask=[1,1,1,1,1,1,0]) + 1
+        elif year == date_hired_y and today.year != year:
+            days_count_curr = np.busday_count('-'.join(date_hired), f"{year}-12-31", weekmask=[1,1,1,1,1,1,0]) + 1
         else:
             days_count_curr = np.busday_count(f"{year}-01-01", f"{year}-12-31", weekmask=[1,1,1,1,1,1,0]) + 1
 
@@ -525,17 +537,17 @@ class Dashboard(GenericViewSet):
 
         total_sunday_current = 0
         for i in range(0, 12):
-            workdays_current_[i] = (workdays_current_[i] + sunday_attendance_current_[i]) * -1
+            workdays_current_[i] = (workdays_current_[i] + sunday_attendance_current_[i])
             total_sunday_current += sunday_attendance_current_[i]
 
         total_sunday_prev = 0
         for i in range(0, 12):
-            workdays_prev_[i] = (workdays_prev_[i] + sunday_attendance_prev_[i]) * -1
+            workdays_prev_[i] = (workdays_prev_[i] + sunday_attendance_prev_[i])
             total_sunday_prev += sunday_attendance_prev_[i]
         
         
-        attendance_current_total = total_attendance_curr + total_sunday_current
-        attendance_previous_total = total_attendance_prev + total_sunday_prev
+        attendance_current_total = total_attendance_curr
+        attendance_previous_total = total_attendance_prev
         days_count_curr += total_sunday_current
         days_count_prev += total_sunday_prev
 
@@ -584,8 +596,8 @@ class Dashboard(GenericViewSet):
             .annotate(month=ExtractMonth('date')).values('month').annotate(total=Count('id'))
         backjob_previous_year = BackJobs.objects.filter(user_id=id, date__year=prev_year)\
             .annotate(month=ExtractMonth('date')).values('month').annotate(total=Count('id'))
-        backjob_previous_year = month_vals_array(backjob_previous_year, 'total')
-        backjob_current_year = month_vals_array(backjob_current_year, 'total')
+        backjob_previous_year = month_vals_array(backjob_previous_year, 'total', -1)
+        backjob_current_year = month_vals_array(backjob_current_year, 'total', -1)
 
         return Response({
             'current_year': now.year,
@@ -601,8 +613,8 @@ class Dashboard(GenericViewSet):
             'sales': {
                 'current_year': sales_current_year,
                 'previous_year': sales_previous_year,
-                'current_total': sum(sales_current_year) * -1,
-                'previous_total': sum(sales_previous_year) * -1,
+                'current_total': sum(sales_current_year),
+                'previous_total': sum(sales_previous_year),
             },
             'backjobs': {
                 'current_year': backjob_current_year, 
@@ -726,9 +738,11 @@ class CSV(GenericViewSet):
             file = request.FILES['csv']
             csv = pd.read_csv(file)
             for i, row in csv.iterrows():
-                employee = get_object_or_none(Employee, emp_id=int(row['IDNo']))
+                employee = None
+                if row['IDNo'] == row['IDNo']:
+                    employee = get_object_or_none(Employee, emp_id=int(row['IDNo']))
                 # try:
-                if row['IDNo'] == row['IDNo'] and employee != None:
+                if employee != None:
                     date = parser.parse(row['Date']).isoformat().split('T')[0]
                     time = '00:00:00'
                     datetime_ = date+'T'+time
@@ -772,8 +786,9 @@ class CSV(GenericViewSet):
                                         date=datetime_,
                                     )
                 else:
-                    if int(row['IDNo']) not in not_exist_ids:
-                        not_exist_ids.append(int(row['IDNo'])) 
+                    if row['IDNo'] == row['IDNo']:
+                        if int(row['IDNo']) not in not_exist_ids:
+                            not_exist_ids.append(int(row['IDNo'])) 
 
                 # except (Exception,):
                 #     if int(row['IDNo']) not in not_exist_ids:

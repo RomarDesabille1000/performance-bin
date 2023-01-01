@@ -90,7 +90,7 @@ def extractTimeLate24hrFormat(time):
         return 0
 
 
-def month_vals_array(dic, value_key):
+def month_vals_array(dic, value_key, multipy=1):
     init_month = {
         '1': 0,
         '2': 0,
@@ -112,6 +112,6 @@ def month_vals_array(dic, value_key):
     today = datetime.now()
     for key, value in init_month.items():
 
-        arr.append(value * -1)
+        arr.append(value * multipy)
         i += 1
     return arr

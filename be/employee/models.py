@@ -30,9 +30,11 @@ class Attendance(models.Model):
         verbose_name_plural = 'Attendance'
 
     def save(self, *args, **kwargs):
-        weekname = date.today().strftime("%A")
+        weekname = self.date.date().strftime("%A")
         if weekname == 'Sunday':
             self.is_sunday = True
+        else:
+            self.is_sunday = False
         super(Attendance, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -99,9 +101,9 @@ class CustomerRatingAnswers(models.Model):
     date = models.DateTimeField(default=now)
     signature = models.TextField(null=True)
 
-    def customer_rating_percentage(pk):
+    def customer_rating_percentage(pk, year=datetime.now().year):
         ratings = CustomerRatingAnswers.objects.filter(
-            date__year=datetime.now().year,
+            date__year=year,
             user_id=pk
         )
         data = dict()

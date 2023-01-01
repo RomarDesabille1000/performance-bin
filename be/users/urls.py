@@ -21,10 +21,10 @@ urlpatterns = [
             'get': 'list',
             'post': 'create',
         })),
-        path('selection/', EmployeesView.as_view({
+        path('selection/<int:year>/', EmployeesView.as_view({
             'get': 'evaluation_user_selection',
         })),
-        path('<int:pk>/', EmployeesView.as_view({
+        path('<int:year>/<int:pk>/', EmployeesView.as_view({
             'get': 'retrieve',
             'post': 'evaluation'
         })),

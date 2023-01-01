@@ -68,6 +68,7 @@ class EmployeeEvaluation(models.Model):
         on_delete=models.SET_NULL, blank=True, null=True, related_name='user_evaluation')
     date_created = models.DateTimeField(default=now)
     review_period = models.CharField(max_length=255, null=True)
+    year = models.IntegerField(null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
 
     def __str__(self):
