@@ -30,7 +30,12 @@ class Attendance(models.Model):
         verbose_name_plural = 'Attendance'
 
     def save(self, *args, **kwargs):
-        weekname = self.date.date().strftime("%A")
+        weekname = ''
+        try:
+            weekname = datetime.strptime(self.date.split('T')[0], '%Y-%m-%d').date()
+        except (Exception,):
+            weekname = self.date.date().strftime("%A")
+            
         if weekname == 'Sunday':
             self.is_sunday = True
         else:
@@ -100,6 +105,7 @@ class CustomerRatingAnswers(models.Model):
         help_text="Do you know the name of the person who assisted you")
     date = models.DateTimeField(default=now)
     signature = models.TextField(null=True)
+    customer_name = models.CharField(max_length=100, null=True)
 
     def customer_rating_percentage(pk, year=datetime.now().year):
         ratings = CustomerRatingAnswers.objects.filter(

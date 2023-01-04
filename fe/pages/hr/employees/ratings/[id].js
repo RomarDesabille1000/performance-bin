@@ -165,6 +165,9 @@ export default function Attendance(){
                                         <th className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                             Total
                                         </th>
+                                        <th style={{minWidth: '300px'}} className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
+                                            Customer name
+                                        </th>
                                         <th
                                             scope="col"
                                             className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
@@ -219,6 +222,9 @@ export default function Attendance(){
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {calculateTotal(d)}/15
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                                                {d.customer_name}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 {d.signature

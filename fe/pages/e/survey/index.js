@@ -44,6 +44,8 @@ const CustomerSurveySchema = yup.object().shape({
 	q4: yup.number().typeError('This field is required and must be a number')
                 .min(0, "Must be greater than 0")
                 .max(5, "Must be less than or equal to 5"),
+	customer_name: yup.string().required('This field is required')
+		.max(100, "Only 100 characters is allowed."),
 });
 
 export default function CustomerSurvey() {
@@ -273,6 +275,17 @@ export default function CustomerSurvey() {
                                             {...register('q6')}
                                             className="input" />
                                     </div>
+                                </div>
+                                <div className="mt-5">
+                                    <div className="pl-5">Customer name</div>
+                                    <div className="px-5">
+                                        <input 
+											autoComplete="off"
+                                            type="text" 
+                                            {...register('customer_name')}
+                                            className="input" />
+                                    </div>
+                                    <div className="text-red-500 pl-5">{errors?.customer_name && errors?.customer_name?.message}</div>
                                 </div>
                                 <div className="px-6">
                                     <div className={`border border-indigo-600 rounded-lg max-w-[600px] mt-10 ${!signatureStore.image? 'p-4': ''}`}>
