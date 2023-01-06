@@ -507,10 +507,10 @@ class Dashboard(GenericViewSet):
         }
 
         now = datetime.now()
-        current = datetime(int(year), 1, 1)
+        current = datetime(int(year+1), 1, 1)
         start = current.replace(day=1)
 
-        prev = datetime(int(year)-1, 1, 1)
+        prev = datetime(int(year), 1, 1)
         prev_start = prev.replace(day=1)
 
         for x in range(1, 13):
@@ -518,13 +518,17 @@ class Dashboard(GenericViewSet):
             start = end.replace(day=1)
             end = end + timedelta(days=1)
             key = str(start.date()).split('-')[1]
-            workdays_current[key] = np.busday_count(str(start.date()), str(end.date()), weekmask='1111110')
+            if year == today.year and start.month == today.month:
+                workdays_current[key] = np.busday_count(f"{year}-01-01", str((today.date() + timedelta(days=1))), weekmask='1111110')
+            else:
+                workdays_current[key] = np.busday_count(str(start.date()), str(end.date()), weekmask='1111110')
 
             end = prev_start - timedelta(days=1)
             prev_start = end.replace(day=1)
             end = end + timedelta(days=1)
             key = str(prev_start.date()).split('-')[1]
             workdays_prev[key] = np.busday_count(str(prev_start.date()), str(end.date()), weekmask='1111110')
+
 
 
         workdays_current_ = []
@@ -552,12 +556,10 @@ class Dashboard(GenericViewSet):
         days_count_prev += total_sunday_prev
 
         for i in range(0, 12):
-            attendance_current_[i] = ((attendance_current_[i] / workdays_current_[i]) * 100)
-            # attendance_current_total += attendance_current_[i]
+            attendance_current_[i] = (((attendance_current_[i] + sunday_attendance_current_[i]) / workdays_current_[i]) * 100)
 
         for i in range(0, 12):
-            attendance_previous_[i] = ((attendance_previous_[i] / workdays_prev_[i]) * 100)
-            # attendance_previous_total += attendance_previous_[i]
+            attendance_previous_[i] = (((attendance_previous_[i] + sunday_attendance_prev_[i]) / workdays_prev_[i]) * 100)
         
 
 
@@ -602,6 +604,7 @@ class Dashboard(GenericViewSet):
         return Response({
             'current_year': now.year,
             'hired_y': date_hired_y,
+            'hired_m': date_hired_m,
             'attendance': {
                 'current_year': attendance_current_,
                 'previous_year': attendance_previous_,
@@ -740,7 +743,13 @@ class CSV(GenericViewSet):
             for i, row in csv.iterrows():
                 employee = None
                 if row['IDNo'] == row['IDNo']:
-                    employee = get_object_or_none(Employee, emp_id=int(row['IDNo']))
+                    try:
+                        int(row['IDNo'])
+                        row['IDNo'] = int(row['IDNo'])
+                    except (Exception,):
+                        row['IDNo'] = row['IDNo']
+
+                    employee = get_object_or_none(Employee, emp_id=row['IDNo'])
                 # try:
                 if employee != None:
                     date = parser.parse(row['Date']).isoformat().split('T')[0]
@@ -761,7 +770,7 @@ class CSV(GenericViewSet):
                             attendance.update(minutes_late=minutes_late)
                         else:
                             if row['Punctuality'] != 'not logged in':
-                                employee = Employee.objects.get(emp_id=int(row['IDNo']))
+                                employee = Employee.objects.get(emp_id=row['IDNo'])
                                 attendance = Attendance.objects.create(
                                     user=employee.user,
                                     date=datetime_,
@@ -787,8 +796,8 @@ class CSV(GenericViewSet):
                                     )
                 else:
                     if row['IDNo'] == row['IDNo']:
-                        if int(row['IDNo']) not in not_exist_ids:
-                            not_exist_ids.append(int(row['IDNo'])) 
+                        if row['IDNo'] not in not_exist_ids:
+                            not_exist_ids.append(row['IDNo']) 
 
                 # except (Exception,):
                 #     if int(row['IDNo']) not in not_exist_ids:

@@ -9,6 +9,8 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
+import { useEffect } from 'react';
+import { useState } from 'react';
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -18,9 +20,52 @@ ChartJS.register(
     Tooltip,
     Legend
 );
+import dayjs from 'dayjs';
 
 
-export default function LineGraph({ currentYear, previousYear, yearSelected, title, className='' }) {
+export default function LineGraph({ currentYear, previousYear, yearSelected, title, className='', monthHired, yearHired, }) {
+    const [currYear, setCurrYear] = useState(currentYear);
+    const [prevYear, setPrevYear] = useState(previousYear);
+    const curr = dayjs().year()
+    const currMonth = dayjs().month()
+
+    useEffect(() => {
+        if(curr === yearSelected){
+            const d = currentYear?.map((d, i) => {
+                if(i <= currMonth){
+                    return d;
+                }
+                return null;
+            })
+            setCurrYear(d)
+        }else if(yearSelected > yearHired){
+            setCurrYear(currentYear)
+        }else if(yearSelected == yearHired){
+            curerntDateHired(setCurrYear, currentYear)
+        }else{
+            setCurrYear([null, null, null, null, null, null, null, null, null, null, null, null]);
+        }
+        if(yearSelected-1 > yearHired){
+            setPrevYear(previousYear)
+        }else if(yearSelected-1 == yearHired){
+            curerntDateHired(setPrevYear, previousYear)
+        }else{
+            setPrevYear([null, null, null, null, null, null, null, null, null, null, null, null]);
+        }
+    }, [currentYear, previousYear, monthHired, yearHired, yearSelected])
+
+    function curerntDateHired(set, data){
+        if(data){
+            const d = data?.map((d, i) => {
+                if(i+1 >= monthHired){
+                    return d;
+                }
+                return null;
+            })
+            set(d);
+        }
+    }
+
     const data = {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         datasets: [
@@ -28,13 +73,13 @@ export default function LineGraph({ currentYear, previousYear, yearSelected, tit
                 label: yearSelected - 1,
                 borderColor: '#155E75',
                 backgroundColor: '#155E75',
-                data: previousYear,
+                data: prevYear,
             },
             {
                 label: yearSelected,
                 borderColor: '#9D174D',
                 backgroundColor: '#9D174D',
-                data: currentYear,
+                data: currYear,
             },
         ],
     };

@@ -81,6 +81,9 @@ export default function HRDashboard() {
 		}
 	}, [data])
 
+	const [atCurrent, setAtCurrent] = useState();
+	const [atPrev, setAtPrev] = useState();
+
 
 	useEffect(() => {
 		setEmployeeTarget(employeeSelected)
@@ -200,7 +203,7 @@ export default function HRDashboard() {
 					<select
 						className="border rounded-[5px] px-2 py-1 bg-white !w-[200px] mt-2"
 						value={year}
-						onChange={(e) => setYear(e.target.value)}
+						onChange={(e) => setYear(+e.target.value)}
 					>
 						{years()?.map((d) => (
 							<option key={d} value={d}>{d}</option>
@@ -241,11 +244,13 @@ export default function HRDashboard() {
 						yearSelected={year}
 						previousYear={data?.attendance?.previous_year}
 						currentYear={data?.attendance?.current_year}
+						monthHired={data?.hired_m}
+						yearHired={data?.hired_y}
 						className="mt-[40px]"
 					/>
 					<Pie
-						currentTotal={DoubleType(data?.attendance?.current_total)}
-						previousTotal={DoubleType(data?.attendance?.previous_total)}
+						currentTotal={handleNaN(DoubleType((data?.attendance?.current_total / data?.attendance?.days_count_curr)*100))}
+						previousTotal={handleNaN(DoubleType((data?.attendance?.previous_total / data?.attendance?.days_count_prev)*100))}
 						displayCurrTotal={currentAttendance}
 						displayPrevTotal={prevAttendance}
 						selectedYear={year}
@@ -257,6 +262,8 @@ export default function HRDashboard() {
 								yearSelected={year}
 								previousYear={ratings.previous_year}
 								currentYear={ratings.current_year}
+								monthHired={data?.hired_m}
+								yearHired={data?.hired_y}
 							/>
 							<Pie
 								currentTotal={DoubleType(ratings.current_year_total)}
@@ -274,6 +281,8 @@ export default function HRDashboard() {
 								yearSelected={year}
 								previousYear={data?.sales?.previous_year}
 								currentYear={data?.sales?.current_year}
+								monthHired={data?.hired_m}
+								yearHired={data?.hired_y}
 								className="mt-[40px]"
 							/>
 							<Pie
@@ -293,6 +302,8 @@ export default function HRDashboard() {
 								previousYear={data?.backjobs?.previous_year}
 								currentYear={data?.backjobs?.current_year}
 								className="mt-[40px] pb-[50px]"
+								monthHired={data?.hired_m}
+								yearHired={data?.hired_y}
 							/>
 							<Pie
 								currentTotal={data?.backjobs?.current_total}
