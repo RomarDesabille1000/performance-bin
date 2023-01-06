@@ -281,7 +281,8 @@ class Dashboard(GenericViewSet):
         id = kwargs['id']
 
         user = User.objects.get(id=id)
-        date_hired = str(user.user_employee.date_hired.date() + timedelta(days=1)).split('-')
+        # date_hired = str(user.user_employee.date_hired.date() + timedelta(days=1)).split('-')
+        date_hired = str(user.user_employee.date_hired.date()).split('-')
         date_hired_y = int(date_hired[0])
         date_hired_m = int(date_hired[1])
 
@@ -306,7 +307,6 @@ class Dashboard(GenericViewSet):
         #     days_count_curr = np.busday_count('-'.join(date_hired), str(datetime.now().date()), weekmask=[1,1,1,1,1,1,0]) + 1
         # else:
         #     days_count_curr = np.busday_count(f"{year}-01-01", f"{year}-12-31", weekmask=[1,1,1,1,1,1,0]) + 1
-
         if year > date_hired_y and today.year == year: 
             days_count_curr = np.busday_count(f"{year}-01-01", str(datetime.now().date()), weekmask=[1,1,1,1,1,1,0]) + 1
         elif year > date_hired_y and today.year != year:

@@ -189,7 +189,7 @@ class EmployeesView(GenericViewSet):
 
         rubric_serializer = RubricTemplateCriteriaSerializer(rubricT, many=True)
 
-        date_hired = str(user.user_employee.date_hired.date() + timedelta(days=1)).split('-')
+        date_hired = str(user.user_employee.date_hired.date()).split('-')
         date_hired_y = int(date_hired[0])
         date_hired_m = int(date_hired[1])
         current_year = int(kwargs['year'])
