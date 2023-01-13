@@ -234,7 +234,7 @@ export default function Employee() {
 
 									<div className="mt-3">
 										<label className="block text-gray-700">
-											Reason
+											Completion Report
 										</label>
 										<textarea
 											{...register('reason')} 
