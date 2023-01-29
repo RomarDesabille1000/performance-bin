@@ -316,9 +316,9 @@ export default function Attendance(){
                                         </th>
                                         <th
                                             scope="col"
-                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[100px]"
+                                            className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase min-w-[150px]"
                                         >
-                                            Completed
+                                            Status
                                         </th>
                                         <th
                                             scope="col"
@@ -384,7 +384,8 @@ export default function Attendance(){
                                                 {d.location}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 text-center">
-                                                {d.completed ? 'Yes': 'No'}
+                                                {d.completed ? 'Completed': (d?.completionReport == 'backjob' ? 'Back Job' : (d?.completionReport == 'followup' ? 'For Follow Up' : ''))}
+
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800">
                                                 {d.signature

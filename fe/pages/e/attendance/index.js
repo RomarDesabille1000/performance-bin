@@ -46,7 +46,12 @@ const AttendanceSchema = yup.object().shape({
 	),
 	location: yup.string().required('This field is required')
 		.max(255, "Only 255 characters is allowed."),
-    reason: yup.string().required("This field is required."),
+	completionReport: yup.string().required("Please Select One of the following Check Boxes"),
+  reason: yup.string().when('completionReport',{
+			is: (completionReport) => completionReport != null && completionReport != 'completed',
+			then: yup.string().required('This field is required'),
+		}
+	),
 });
 
 export default function Employee() {
@@ -60,6 +65,8 @@ export default function Employee() {
 	const signatureStore = useSignatureStore();
 	const [isAddingSignature, setIsAddingSignature] = useState(false);
 	const [isImageEmpty, setIsImageEmpty] = useState(false);
+	const [hasTimeIn, setHasTimeIn] = useState(false);
+	const [completionReport, setCompletionReport] = useState('');
 	const [status, setStatus] = useState({
 		error: false,
 		loading: false,
@@ -67,7 +74,7 @@ export default function Employee() {
 		infoMessage: 'Attendance Saved.',
 	})
 
-	const { register, handleSubmit, formState: { errors }, reset } = useForm({
+	const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm({
 		mode: 'onBlur',
 		resolver: yupResolver(AttendanceSchema)
 	})
@@ -78,7 +85,7 @@ export default function Employee() {
 		}
 	}, [signatureStore.image])
 
-	const onSubmit = (data) => {
+	const onSubmit = async (data) => {
 		if(!signatureStore.image){
 			setIsImageEmpty(true);
 		}else{
@@ -96,10 +103,18 @@ export default function Employee() {
 					error: false, 
 					success: true, 
 					loading: false, 
-					infoMessage: 'Attendance Saved.' 
+					infoMessage: 'Attendance Saved. redirecting to survey page in 5 seconds.' 
 				})
 				reset();
 				signatureStore.emtpyImage();
+				setHasTimeIn(false)
+				if(typeof window !== 'undefined' && localStorage.getItem(user?.name) != null){
+					localStorage.removeItem(user?.name);
+				}
+				window.setTimeout(function() {
+					window.location.replace('/e/survey');
+				}, 5000);
+				
 			}).catch((_e) => {
 				if(400 == _e?.response?.status){
 					setStatus({ 
@@ -130,6 +145,58 @@ export default function Employee() {
 		return is_sunday;
 	}
 
+
+	useState(()=>{
+		function checkLocalStorage(){
+			if(typeof window !== 'undefined' && localStorage.getItem(user?.name) != null){
+				var data = localStorage.getItem(user?.name)
+				setHasTimeIn(true)
+				setValue('time_in', data)
+			}else{
+				console.log('no data')
+			}
+		}
+		checkLocalStorage()
+	},[user])
+
+
+	function Time_In(){
+		var time = new Date();
+		//setValue('time_in', time.toLocaleTimeString());
+		var FormattedTime = 
+			(time.getHours() < 10 ? `0${time.getHours()}` : time.getHours())
+				+ ":" + 
+			(time.getMinutes() < 10 ? `0${time.getMinutes()}` : time.getMinutes()) 
+				+ ":" + 
+			(time.getSeconds() < 10 ? `0${time.getSeconds()}` : time.getSeconds());
+		setValue('time_in', FormattedTime);
+		setHasTimeIn(true)
+		localStorage.setItem(user?.name,  FormattedTime);
+	}
+
+	function Time_Out(){
+		var time = new Date();
+		var FormattedTime = 
+			(time.getHours() < 10 ? `0${time.getHours()}` : time.getHours())
+				+ ":" + 
+			(time.getMinutes() < 10 ? `0${time.getMinutes()}` : time.getMinutes()) 
+				+ ":" + 
+			(time.getSeconds() < 10 ? `0${time.getSeconds()}` : time.getSeconds());
+		setValue('time_out', FormattedTime);
+	}
+
+	function setCompletion(c){
+		setCompletionReport(c)
+		setValue('completionReport', c)
+		if(c === 'completed'){
+			setValue('completed', true)
+			setValue('reason', '--')
+		}else{
+			setValue('completed', false)
+			setValue('reason', '')
+		}
+	}
+
 	return (
 		<div>
 			{!e ? (
@@ -138,7 +205,7 @@ export default function Employee() {
 				</div>
 			):(
 				<>
-					{isSunday() && (
+					{!isSunday() && (
 						<div className="max-w-lg w-[90%] py-5 mt-5 m-auto">
 							<div className="mb-3 text-lg font-bold">No attendance for this sunday</div>
 							<button 
@@ -147,7 +214,7 @@ export default function Employee() {
 								className="btn btn-secondary mt-3 mr-3">Back</button>
 						</div>
 					)}
-					{!isSunday() && (
+					{isSunday() && (
 						<div>
 							{isAddingSignature ? (
 								<Signature setIsAddingSignature={setIsAddingSignature}/>
@@ -181,6 +248,13 @@ export default function Employee() {
 										/>
 										<small className="text-red-500">{errors?.contact_no && errors?.contact_no?.message}</small>
 									</div>
+									<label className="block text-gray-700 mt-5">Location</label>
+									<input type="text" 
+											autoComplete="off"
+											{...register('location')}
+											className="input"
+									/>
+									<small className="text-red-500">{errors?.location && errors?.location?.message}</small>
 
 									<div className={`border border-indigo-600 rounded-lg max-w-[600px] mt-5 ${!signatureStore.image? 'p-4': ''}`}>
 										{signatureStore.image ? (
@@ -207,6 +281,7 @@ export default function Employee() {
 											<input 
 												{...register('time_in')} 
 												type="time" 
+												disabled = {true}
 												className="input"/>
 											<small className="text-red-500 pt-1">{errors?.time_in && errors?.time_out?.message}</small>
 										</div>
@@ -218,43 +293,82 @@ export default function Employee() {
 											<input 
 												{...register('time_out')} 
 												type="time" 
+												disabled = {true}
 												className="input"/>
 											<small className="text-red-500 pt-1">{errors?.time_out && errors?.time_out?.message}</small>
 										</div>
 									</div>
+									<div className="mt-5 flex gap-5 items-start">
+										<div className="w-[50%]">
+											<button 
+													type="button"
+													disabled = {hasTimeIn}
+													className={hasTimeIn ? "btn btn w-[100%]" : "btn btn-primary w-[100%]" }
+													onClick={() => Time_In()}> 
+												Login
+											</button>
+										</div>
 
-
-									<label className="block text-gray-700 mt-5">Location</label>
-									<input type="text" 
-											autoComplete="off"
-											{...register('location')}
-											className="input"
-									/>
-									<small className="text-red-500">{errors?.location && errors?.location?.message}</small>
-
-									<div className="mt-3">
-										<label className="block text-gray-700">
-											Completion Report
-										</label>
-										<textarea
-											{...register('reason')} 
-											id="" 
-											cols="30" 
-											rows="3" 
-											className="input !p-2 !h-auto !min-w-min">
-										</textarea>
-										<small className="text-red-500 pt-1">{errors?.reason && errors?.reason?.message}</small>
+										<div className="w-[50%]">
+											<button 
+													type="button"
+													disabled = {!hasTimeIn}
+													className={!hasTimeIn ? "btn btn w-[100%]" : "btn btn-primary w-[100%]" }
+													onClick={() => Time_Out()}> 
+												Logout
+											</button>
+										</div>
 									</div>
+									<div className={hasTimeIn ? "mt-3" : "hidden"}>
+										<div className="block mb-3 text-lg">Completion Report</div>
+										<div className="flex items-center gap-3 ">
+											<input
+												style={{width: '15px', height: '15px'}}
+												checked = {completionReport === 'completed'}
+												onChange = {()=>setCompletion('completed')}
+												type="checkbox"
+											/>
+											<label className="block text-gray-700 text-sm">
+												Job completed
+											</label>
+										</div>
+										<div className="flex items-center gap-3 mt-3">
+											<input
+												style={{width: '15px', height: '15px'}}
+												checked = {completionReport === 'backjob'}
+												onChange = {()=>setCompletion('backjob')}
+												type="checkbox"
+											/>
+											<label className="block text-gray-700 text-sm">
+												Backjob
+											</label>
+										</div>
+										<div className="flex items-center gap-3 mt-3">
+											<input
+												style={{width: '15px', height: '15px'}}
+												checked = {completionReport === 'followup'}
+												onChange = {()=>setCompletion('followup')}
+												type="checkbox"
+											/>
+											<label className="block text-gray-700 text-sm">
+												For follow up visit
+											</label>
+										</div>
+										<small className="text-red-500 pt-1">{errors?.completionReport && errors?.completionReport?.message}</small>
 
-									<div className="flex items-center gap-3 mt-3">
-										<input
-											style={{width: '15px', height: '15px'}}
-											{...register('completed')}
-											type="checkbox"
-										/>
-										<label className="block text-gray-700 text-sm">
-											Check if completed
-										</label>
+										<div className={completionReport === 'completed' ? "hidden" : "mt-3"}>
+											<label className="block text-gray-700">
+												Reason
+											</label>
+											<textarea
+												{...register('reason')} 
+												id="" 
+												cols="30" 
+												rows="3" 
+												className="input !p-2 !h-auto !min-w-min">
+											</textarea>
+											<small className="text-red-500 pt-1">{errors?.reason && errors?.reason?.message}</small>
+										</div>
 									</div>
 
 									<AlertMessages

@@ -21,6 +21,7 @@ class Attendance(models.Model):
     time_in = models.TimeField(null=True, blank=True)
     time_out = models.TimeField(null=True, blank=True)
     reason = models.TextField(null=True)
+    completionReport = models.CharField(max_length=100, null=True)
     contact_no = models.CharField(max_length=255, null=True)
     completed = models.BooleanField(default=False)
     minutes_late = models.IntegerField(default=0, null=True)
