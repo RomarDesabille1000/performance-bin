@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'users',
     'employee',
     'hr',
+    'schedule',
     'django_filters',
 ]
 
@@ -115,23 +116,23 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'railway',
-        'USER': 'root',
-        'PASSWORD': 'g94pIkX4ShyH0OxeQvro',
-        'HOST': 'containers-us-west-108.railway.app',
-        'PORT': '6043',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'railway',
+#         'USER': 'root',
+#         'PASSWORD': 'g94pIkX4ShyH0OxeQvro',
+#         'HOST': 'containers-us-west-108.railway.app',
+#         'PORT': '6043',
+#     }
+# }
 
 
 # Password validation
