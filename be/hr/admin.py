@@ -10,6 +10,13 @@ from .models import (
     EvaluationRubricTemplate,
     EvaluationRubricCriteria,
 )
+from schedule.models import (
+    Schedules
+)
+
+@admin.register(Schedules)
+class SchedulesAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'customer_name', 'contact_no', 'date',)
 
 
 @admin.register(BackJobs)

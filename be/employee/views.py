@@ -31,6 +31,7 @@ from utils.query import (
     paginated_data,
     search_,
 )
+from schedule.models import Schedules
 import datetime
 from users.permissions import EmployeeOnly,HROnly
 
@@ -64,6 +65,14 @@ class AttendanceView(GenericViewSet):
     def create(self, request, *args, **kwargs):
         # if Attendance.objects.filter(user=self.request.user.id).filter(date__date=date.today()).exists():
         #     return Response(status=status.HTTP_400_BAD_REQUEST)
+        sch = request.data.pop('schedule_id')
+        if(int(sch) > 1):
+            sch = Schedules.objects.get(id=sch)
+            sch.done = True
+            sch.save()
+
+
+        return Response(status=status.HTTP_201_CREATED)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=self.request.user)

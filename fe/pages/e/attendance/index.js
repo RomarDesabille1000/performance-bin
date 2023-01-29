@@ -61,6 +61,10 @@ export default function Employee() {
 	const { data: e } = useSWR(user?.id ? `users/details/${user?.id}/` : '', {
         revalidateOnFocus: false,       
     });
+	const { data: schedules, mutate } = useSWR(user?.id ? `schedule/schedules/${user?.id}/today/` : '', {
+        revalidateOnFocus: false,       
+    });
+	const [selectedSchedule, setSelectedSchedule] = useState(0);
 
 	const signatureStore = useSignatureStore();
 	const [isAddingSignature, setIsAddingSignature] = useState(false);
@@ -98,6 +102,7 @@ export default function Employee() {
 			axiosInstance.post('employee/attendance/', {
 				...data,
 				signature: signatureStore.image,
+				schedule_id: selectedSchedule,
 			}).then((_e) => {
 				setStatus({ 
 					error: false, 
@@ -106,6 +111,7 @@ export default function Employee() {
 					infoMessage: 'Attendance Saved. redirecting to survey page in 5 seconds.' 
 				})
 				reset();
+				mutate();
 				signatureStore.emtpyImage();
 				setHasTimeIn(false)
 				if(typeof window !== 'undefined' && localStorage.getItem(user?.name) != null){
@@ -197,6 +203,19 @@ export default function Employee() {
 		}
 	}
 
+
+	function scheduleChange(e){
+		setSelectedSchedule(e.target.value);
+		if(e.target.value >= 0){
+			const sch = schedules.filter((d) => d.id == e.target.value)[0]
+			setValue('customer_name', sch.customer_name)
+			setValue('contact_no', sch.contact_no)
+		}else{
+			setValue('customer_name', '')
+			setValue('contact_no', '')
+		}
+	}
+
 	return (
 		<div>
 			{!e ? (
@@ -205,7 +224,7 @@ export default function Employee() {
 				</div>
 			):(
 				<>
-					{!isSunday() && (
+					{isSunday() && (
 						<div className="max-w-lg w-[90%] py-5 mt-5 m-auto">
 							<div className="mb-3 text-lg font-bold">No attendance for this sunday</div>
 							<button 
@@ -214,7 +233,7 @@ export default function Employee() {
 								className="btn btn-secondary mt-3 mr-3">Back</button>
 						</div>
 					)}
-					{isSunday() && (
+					{!isSunday() && (
 						<div>
 							{isAddingSignature ? (
 								<Signature setIsAddingSignature={setIsAddingSignature}/>
@@ -230,6 +249,21 @@ export default function Employee() {
 										Back
 									</button>
 									<div className="mb-3 text-lg font-bold">Attendance</div>
+									{schedules?.length > 0 && (
+										<>
+											<label className="block text-md text-gray-700">Select Schedule</label>
+											<select onChange={scheduleChange} value={selectedSchedule} 
+											className="border border-gray-300 text-gray-900 rounded-md focus:ring-indigo-500 block w-full px-3 py-1 mb-3">
+												<option value={-1}>Select Schedule</option>
+												{schedules.map((schedule) => (
+													<option 
+														key={schedule.id}
+														value={schedule.id}
+														>{schedule.customer_name}</option>
+												))}
+											</select>
+										</>
+									)}
 
 									<label className="block text-md text-gray-700">Customer Name</label>
 									<input type="text" 
