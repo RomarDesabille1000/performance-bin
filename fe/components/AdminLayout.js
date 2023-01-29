@@ -56,6 +56,11 @@ export default function AdminLayout({children, title, hasBack=false}) {
             name: 'Attendance CSV'
         },
         {
+            href: '/schedule', 
+            activeLinks: ['/schedule'],
+            name: 'Schedules'
+        },
+        {
             href: '/hr/evaluate', 
             activeLinks: ['/hr/evaluate'],
             name: 'Evaluate'

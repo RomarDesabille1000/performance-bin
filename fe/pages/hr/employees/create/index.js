@@ -25,7 +25,17 @@ const EmployeeSchema = yup.object().shape({
       ),
     confirm_password: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match'),
 	//firstname: yup.number().typeError('This field is required and must be a number').min(0, "Must be greater than 0"),
-	date_hired: yup.date().typeError('Must be a date').required("This field is required."),
+	date_hired: yup.date().typeError('Must be a date').required("This field is required.")
+	.test(
+		"date_test",
+		"Cannot select future date.",
+		function(value) {
+            if(dayjs(value).format('YYYY-MM-DD') > dayjs().format('YYYY-MM-DD'))
+                return false
+			return value
+		}
+	)
+    ,
 });
 
 export default function AddEmployee(){
@@ -275,6 +285,8 @@ export default function AddEmployee(){
                                         Date Hired
                                     </label>
                                     <input 
+                                        min="2015-01-01" 
+                                        max={dayjs(new Date()).format('YYYY-MM-DD')}
                                         {...register('date_hired')} 
                                         defaultValue={dayjs(new Date()).format('YYYY-MM-DD')}
                                         type="date" 
