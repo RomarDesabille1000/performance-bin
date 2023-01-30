@@ -11,8 +11,13 @@ from .models import (
     EvaluationRubricCriteria,
 )
 from schedule.models import (
-    Schedules
+    Schedules,
+    Settings
 )
+
+@admin.register(Settings)
+class SettingsAdmin(admin.ModelAdmin):
+    pass
 
 @admin.register(Schedules)
 class SchedulesAdmin(admin.ModelAdmin):

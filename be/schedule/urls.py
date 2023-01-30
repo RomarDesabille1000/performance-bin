@@ -1,7 +1,8 @@
 from django.urls import path, include
 
 from .views import (
-    ScheduleView
+    ScheduleView,
+    SettingsView,
 )
 
 urlpatterns = [
@@ -19,6 +20,12 @@ urlpatterns = [
         })),
         path('<int:id>/today/', ScheduleView.as_view({
             'get': 'get_today_schedule',
+        })),
+    ])),
+    path('settings/', include([
+        path('<str:name>/', SettingsView.as_view({
+            'get': 'check',
+            'post': 'action',
         })),
     ])),
 ]

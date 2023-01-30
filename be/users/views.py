@@ -39,6 +39,7 @@ from utils.query import (
 )
 from .permissions import HROnly, EmployeeOnly
 from .models import USER_TYPES, Employee
+from schedule.models import Settings
 
 
 class LoginView(GenericViewSet):
@@ -163,6 +164,9 @@ class EmployeesView(GenericViewSet):
             return Response(status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, **kwargs):
+        if not Settings.objects.filter(name='evaluation'):
+            return Response({'err': 'Evaluation has been disabled.'})
+
         user = User.objects.get(id=kwargs['pk'])
         if user.id == request.user.id:
             return Response({'err': 'Cannot evaluate your self.'})

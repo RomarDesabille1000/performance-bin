@@ -71,8 +71,6 @@ class AttendanceView(GenericViewSet):
             sch.done = True
             sch.save()
 
-
-        return Response(status=status.HTTP_201_CREATED)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=self.request.user)

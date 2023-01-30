@@ -117,7 +117,7 @@ export default function CustomerSurvey() {
             main: 'How likely is it that you would recommend our company/product/services to a friend or colleagues?',
             sub: 'Rate us between 1 to 5, wherein 5 is the Highest and 1 is the Lowest:'
         },
-        q5: 'Do you have any other comments, question or concerns',
+        q5: 'Do you have any other comments, question or concerns?',
         q6: 'Do you know the name of the person who assisted you',
     }
 
@@ -308,7 +308,7 @@ export default function CustomerSurvey() {
                                 </div>
                                 <div className="text-red-500">{errors?.q4 && errors?.q4?.message}</div>
                                 <div className="mt-5">
-                                    <div>5. {q.q5} (Optional)</div>
+                                    <div>5. {q.q5}</div>
                                     <div className="px-5">
                                         {
                                             Q5Choices.map((choice, index) => (
@@ -334,7 +334,7 @@ export default function CustomerSurvey() {
                                     </div>
                                 </div>
                                 <div className="mt-5">
-                                    <div>6. {q.q6} (Optional)</div>
+                                    <div>6. {q.q6}?</div>
                                     <select
                                             id='q4'
                                             className='w-[100px] ml-5 border rounded-[5px] text-left pl-3 mt-2'

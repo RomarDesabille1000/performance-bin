@@ -13,3 +13,6 @@ class Schedules(models.Model):
             return self.customer_name
     class Meta: 
         verbose_name_plural = 'Schedules'
+    
+class Settings(models.Model):
+    name = models.CharField(max_length=255)

@@ -12,6 +12,7 @@ from utils.query import (
 )
 from users.models import User
 import datetime
+from .models import Settings
 
 class ScheduleView(GenericViewSet, generics.ListAPIView):
     serializer_class = ScheduleSerializer
@@ -54,4 +55,26 @@ class ScheduleView(GenericViewSet, generics.ListAPIView):
     def delete(self, request, *args, **kwargs):
         Schedules.objects.get(id=kwargs['id']).delete()
         return Response(status=status.HTTP_200_OK)
-    
+
+
+
+class SettingsView(GenericViewSet, generics.ListAPIView):
+    def check(self, request, *args, **kwargs):
+        name = Settings.objects.filter(name=kwargs['name'])
+        if not name:
+            name = False
+        else:
+            name = True
+        return Response(name, status=status.HTTP_200_OK)
+
+    def action(self, request, *args, **kwargs):
+        name = Settings.objects.filter(name=kwargs['name'])
+        check = False
+        if name:
+            name.delete()
+            check = False
+        else:
+            Settings.objects.create(name=kwargs['name'])
+            check = True
+            
+        return Response(check, status=status.HTTP_200_OK)
