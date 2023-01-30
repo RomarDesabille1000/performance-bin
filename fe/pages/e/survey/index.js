@@ -9,6 +9,7 @@ import Signature from "../../../components/Signature";
 import { useSignatureStore } from "../../../store/signature";
 import Link from "next/link";
 import { useEffect } from "react";
+import { useAuth } from "../../../context/AuthContext";
 
 const QuestionWithChoices = memo(function QuestionWithChoices(props) {
 
@@ -41,7 +42,7 @@ const CustomerSurveySchema = yup.object().shape({
 	q1:  yup.array().min(1, "This field is required."),
 	q2:  yup.array().min(1, "This field is required."),
 	q3:  yup.array().min(1, "This field is required."),
-	q4: yup.number().typeError('This field is required and must be a number')
+	q4: yup.number().typeError('This field is required')
                 .min(0, "Must be greater than 0")
                 .max(5, "Must be less than or equal to 5"),
 	customer_name: yup.string().required('This field is required')
@@ -51,8 +52,16 @@ const CustomerSurveySchema = yup.object().shape({
 export default function CustomerSurvey() {
 	const signatureStore = useSignatureStore();
 	const [isAddingSignature, setIsAddingSignature] = useState(false);
+    const [Q4Answer, setQ4Answer] = useState('');
+    const [Q5Answer, setQ5Answer] = useState('');
+    const [Q6Answer, setQ6Answer] = useState('No');
+    const [disableSubmit, setDisableSubmit] = useState(true);
+    
 	const [isImageEmpty, setIsImageEmpty] = useState(false);
 
+    const Q5Choices = ['Comment', 'Question', 'Concern']
+
+    const { user } = useAuth();
 	const router = useRouter();
 	const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm({
         defaultValues: {
@@ -133,11 +142,14 @@ export default function CustomerSurvey() {
             q1: data['q1'][0],
             q2: data['q2'][0],
             q3: data['q3'][0],
+            q5: Q5Answer+(data.q5 != '' ? `, ${data.q5}` : ''),
+            q6: Q6Answer+(data.q6 != '' ? `, ${data.q6}` : ''),
             q1_score: q1i,
             q2_score: q2i,
             q3_score: q3i,
             signature: signatureStore.image,
         }
+        console.log(data)
 		setStatus({ 
 			error: false, 
 			success: false, 
@@ -166,6 +178,13 @@ export default function CustomerSurvey() {
             setQ2(qq2);
             setQ3(qq3);
             signatureStore.emtpyImage()
+            if(typeof window !== 'undefined' && localStorage.getItem(`${user?.id}-rating`) != null){
+                localStorage.removeItem(`${user?.id}-rating`);
+            }
+            setDisableSubmit(true)
+            setQ4Answer('')
+            setQ5Answer('')
+            setQ6Answer('No')
         }).catch((_e) => {
             setStatus({ 
                 error: true, 
@@ -190,6 +209,20 @@ export default function CustomerSurvey() {
             )
         }))
     }, [])
+
+    useState(()=>{
+		function checkLocalStorage(){
+			if(typeof window !== 'undefined' && localStorage.getItem(`${user?.id}-rating`) != null){
+				var data = localStorage.getItem(`${user?.id}-rating`)
+                data = JSON.parse(data)
+				setValue('customer_name', data.customer_name)
+                setDisableSubmit(false)
+			}else{
+				console.log('no data')
+			}
+		}
+		checkLocalStorage()
+	},[user])
 
     return(
         <div className="bg-white min-h-screen">
@@ -248,32 +281,75 @@ export default function CustomerSurvey() {
                                     <div>4. {q.q4.main}</div>
                                     <div className="px-5">
                                         <div className="ml-4">{q.q4.sub}</div>
-                                        <input type="text" 
+                                        {
+                                           [...Array(5)].map((elementInArray, index) => ( 
+                                            <div>
+                                                <input
+                                                    style={{width: '15px', height: '15px'}}
+                                                    className="ml-5 mr-2"
+                                                    {...register('q4')}
+                                                    onChange={(event) => {
+                                                        setQ4Answer(index+1)
+                                                        setValue('q4',(index+1))
+                                                    }}
+                                                    value={index+1}
+                                                    checked={Q4Answer == (index+1)}
+                                                    type="checkbox"
+                                                /><label>{index+1}</label>
+                                            </div>
+                                        )) 
+                                        }
+
+                                        {/* <input type="text" 
                                             autoComplete="off"
                                             {...register('q4')} 
-                                            className="input max-w-[100px] ml-10" />
+                                            className="input max-w-[100px] ml-10" /> */}
                                     </div>
                                 </div>
                                 <div className="text-red-500">{errors?.q4 && errors?.q4?.message}</div>
                                 <div className="mt-5">
                                     <div>5. {q.q5} (Optional)</div>
                                     <div className="px-5">
+                                        {
+                                            Q5Choices.map((choice, index) => (
+                                            <div>
+                                                <input
+                                                    style={{width: '15px', height: '15px'}}
+                                                    className="ml-5 mr-2"
+                                                    onChange={(event) => setQ5Answer(choice)}
+                                                    value={choice}
+                                                    checked={Q5Answer == (choice)}
+                                                    type="checkbox"
+                                                /><label>{choice}</label>
+                                            </div> 
+                                            ))
+                                        }
                                         <textarea 
                                             name="" 
                                             id="" 
                                             {...register('q5')} 
-                                            className="text-area" 
+                                            className={Q5Answer != '' ? "text-area" : "hidden" }
                                             rows="2"
                                         ></textarea>
                                     </div>
                                 </div>
                                 <div className="mt-5">
                                     <div>6. {q.q6} (Optional)</div>
+                                    <select
+                                            id='q4'
+                                            className='w-[100px] ml-5 border rounded-[5px] text-left pl-3 mt-2'
+                                            defaultValue={'No'}
+                                            onChange = {(event)=> setQ6Answer(event.target.value)}
+                                            // {...register('q6')} 
+                                        >
+                                            <option key = {1} value={'Yes'}>Yes</option>
+                                            <option key = {2} value={'No'}>No</option>
+                                        </select>
                                     <div className="px-5">
                                         <input 
                                             type="text" 
                                             {...register('q6')}
-                                            className="input" />
+                                            className={Q6Answer === 'Yes' ? "input" : "hidden" } />
                                     </div>
                                 </div>
                                 <div className="mt-5">
@@ -319,7 +395,8 @@ export default function CustomerSurvey() {
                             <div className="bg-gray-50 md:px-10 px-4 py-5 text-right flex justify-end items-center gap-3">
                                 <button
                                     type="submit"
-                                    className="btn btn-primary"
+                                    className={disableSubmit ? 'btn' : "btn btn-primary"}
+                                    disabled={disableSubmit}
                                 >
                                     Submit
                                 </button>

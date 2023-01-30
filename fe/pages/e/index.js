@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from '../../context/AuthContext';
 import logoWhite from '../../images/logo-white.jpg'
 import { useSignatureStore } from "../../store/signature";
@@ -8,10 +8,23 @@ import { useSignatureStore } from "../../store/signature";
 export default function Employee() {
     const { user, logout } = useAuth();
 	const signatureStore = useSignatureStore();
+    const [showSurvey, setShowSurvey] = useState(false)
 
     useEffect(() => {
         signatureStore.emtpyImage();
     }, [])
+
+    useState(()=>{
+		function checkLocalStorage(){
+			if(typeof window !== 'undefined' && localStorage.getItem(`${user?.id}-rating`) != null){
+				//var data = localStorage.getItem(`${user?.id}-rating`)
+				setShowSurvey(true)
+			}else{
+				console.log('no data')
+			}
+		}
+		checkLocalStorage()
+	},[user])
 
 
     return(
@@ -47,7 +60,7 @@ export default function Employee() {
                 <div className="mt-10">Select Action:</div>
                 <div  className="flex flex-col gap-3 py-3 max-w-[300px]">
                     <Link className="btn btn-primary" href="/e/attendance">Attendance</Link>
-                    <Link className="btn btn-primary" href="/e/survey">Customer Survey</Link>
+                    <Link className={showSurvey ? "btn btn-primary" : "hidden"} href="/e/survey">Customer Survey</Link>
                     {user?.user_employee?.designation === 'SUPERVISOR' && (
                         <Link className="btn btn-primary" href="/e/evaluation">Evaluation</Link>
                     )}

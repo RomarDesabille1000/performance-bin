@@ -108,8 +108,12 @@ export default function Employee() {
 					error: false, 
 					success: true, 
 					loading: false, 
-					infoMessage: 'Attendance Saved. redirecting to survey page in 5 seconds.' 
+					infoMessage: 'Attendance Saved.' 
 				})
+				localStorage.setItem(`${user?.id}-rating`,  JSON.stringify({
+					customer_name: data.customer_name,
+					contact_no: data.contact_no,
+					location: data.location}));
 				reset();
 				mutate();
 				signatureStore.emtpyImage();
@@ -117,9 +121,9 @@ export default function Employee() {
 				if(typeof window !== 'undefined' && localStorage.getItem(user?.name) != null){
 					localStorage.removeItem(user?.name);
 				}
-				window.setTimeout(function() {
-					window.location.replace('/e/survey');
-				}, 5000);
+				// window.setTimeout(function() {
+				// 	window.location.replace('/e/survey');
+				// }, 3000);
 				
 			}).catch((_e) => {
 				if(400 == _e?.response?.status){
