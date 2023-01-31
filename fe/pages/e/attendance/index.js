@@ -13,6 +13,7 @@ import tz from 'dayjs/plugin/timezone'
 import { useAuth } from '../../../context/AuthContext'
 import useSWR from "swr";
 import { timeFormat } from "../../../helper/datetime";
+import Link from "next/link";
 
 dayjs.extend(utc)
 dayjs.extend(tz)
@@ -71,6 +72,7 @@ export default function Employee() {
 	const [isImageEmpty, setIsImageEmpty] = useState(false);
 	const [hasTimeIn, setHasTimeIn] = useState(false);
 	const [completionReport, setCompletionReport] = useState('');
+	const [disableAttendance, setDisableAttendance] = useState(false)
 	const [status, setStatus] = useState({
 		error: false,
 		loading: false,
@@ -121,6 +123,7 @@ export default function Employee() {
 				if(typeof window !== 'undefined' && localStorage.getItem(user?.name) != null){
 					localStorage.removeItem(user?.name);
 				}
+				setDisableAttendance(true)
 				// window.setTimeout(function() {
 				// 	window.location.replace('/e/survey');
 				// }, 3000);
@@ -162,6 +165,9 @@ export default function Employee() {
 				var data = localStorage.getItem(user?.name)
 				setHasTimeIn(true)
 				setValue('time_in', data)
+			}if(typeof window !== 'undefined' && localStorage.getItem(`${user?.id}-rating`) != null){
+				//var data = localStorage.getItem(`${user?.id}-rating`)
+				setDisableAttendance(true)
 			}else{
 				console.log('no data')
 			}
@@ -340,8 +346,8 @@ export default function Employee() {
 										<div className="w-[50%]">
 											<button 
 													type="button"
-													disabled = {hasTimeIn}
-													className={hasTimeIn ? "btn btn w-[100%]" : "btn btn-primary w-[100%]" }
+													disabled = {hasTimeIn || disableAttendance}
+													className={hasTimeIn || disableAttendance ? "btn btn w-[100%]" : "btn btn-primary w-[100%]" }
 													onClick={() => Time_In()}> 
 												Login
 											</button>
@@ -416,11 +422,16 @@ export default function Employee() {
 										message={status.infoMessage}
 										className="mt-4"
 									/>
-
+									<label className={disableAttendance ? "text mb-2" : "hidden"}>
+										Please Complete Customer Survey First in Order to use Attendance Services Again.
+									</label>
 									<button 
 										type="submit"
 										disabled={status.loading}
-										className="btn btn-primary mt-5 mb-10 float-right">Submit</button>
+										className={disableAttendance ? "hidden" : "btn btn-primary mt-5 mb-10 float-right"}>Submit</button>
+									<Link 
+										className={disableAttendance ? "btn btn-primary mt-5 mb-10 float-right" : "hidden"} 
+										href="/e/survey">Proceed to Customer Survey</Link>
 								</form>
 							)}
 						</div>

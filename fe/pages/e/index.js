@@ -77,7 +77,7 @@ export default function Employee() {
                 <div className="flex flex-col items-center">
                     <div className="mt-10">Select Action:</div>
                     <div  className="flex flex-col gap-3 py-3 max-w-[300px]">
-                        <Link className="btn btn-primary" href="/e/attendance">Attendance</Link>
+                        <Link className={showSurvey ? "hidden" : "btn btn-primary"} href="/e/attendance">Attendance</Link>
                         <Link className={showSurvey ? "btn btn-primary" : "hidden"} href="/e/survey">Customer Survey</Link>
                         {status && (
                             <>
