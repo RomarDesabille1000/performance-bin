@@ -14,6 +14,7 @@ import { useAuth } from '../../../context/AuthContext'
 import useSWR from "swr";
 import { timeFormat } from "../../../helper/datetime";
 import Link from "next/link";
+import axios from "axios";
 
 dayjs.extend(utc)
 dayjs.extend(tz)
@@ -83,7 +84,7 @@ export default function Employee() {
 	const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm({
 		mode: 'onBlur',
 		resolver: yupResolver(AttendanceSchema)
-	})
+})
 
 	useEffect(() => {
 		if(signatureStore.image){
@@ -159,7 +160,7 @@ export default function Employee() {
 	}
 
 
-	useState(()=>{
+	useEffect(()=>{
 		function checkLocalStorage(){
 			if(typeof window !== 'undefined' && localStorage.getItem(user?.name) != null){
 				var data = localStorage.getItem(user?.name)
@@ -169,7 +170,7 @@ export default function Employee() {
 				//var data = localStorage.getItem(`${user?.id}-rating`)
 				setDisableAttendance(true)
 			}else{
-				console.log('no data')
+				// console.log('no data')
 			}
 		}
 		checkLocalStorage()
@@ -220,9 +221,11 @@ export default function Employee() {
 			const sch = schedules.filter((d) => d.id == e.target.value)[0]
 			setValue('customer_name', sch.customer_name)
 			setValue('contact_no', sch.contact_no)
+			setValue('location', sch.location)
 		}else{
 			setValue('customer_name', '')
 			setValue('contact_no', '')
+			setValue('location', '')
 		}
 	}
 
@@ -269,7 +272,7 @@ export default function Employee() {
 													<option 
 														key={schedule.id}
 														value={schedule.id}
-														>{schedule.customer_name}</option>
+														>Schedule ID: {schedule.id} &nbsp;  {schedule.customer_name}</option>
 												))}
 											</select>
 										</>
@@ -430,7 +433,7 @@ export default function Employee() {
 										disabled={status.loading}
 										className={disableAttendance ? "hidden" : "btn btn-primary mt-5 mb-10 float-right"}>Submit</button>
 									<Link 
-										className={disableAttendance ? "btn btn-primary mt-5 mb-10 float-right" : "hidden"} 
+										className={disableAttendance ? "btn btn-primary mt-10 mb-10 float-right" : "hidden"} 
 										href="/e/survey">Proceed to Customer Survey</Link>
 								</form>
 							)}

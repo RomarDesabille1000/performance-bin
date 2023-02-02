@@ -16,6 +16,7 @@ const SchedulesSchema = yup.object().shape({
 		.max(100, "Only 100 characters is allowed."),
 	contact_no: yup.string().required('This field is required')
 		.max(100, "Only 100 characters is allowed."),
+	location: yup.string().required('This field is required'),
 	date: yup.date().typeError('Must be a date').required("This field is required.")
 	.test(
 		"date_test",
@@ -74,6 +75,7 @@ export default function CreateSchedule(){
         setValue('customer_name', d?.customer_name);
         setValue('contact_no', d?.contact_no);
         setValue('date', dayjs(d?.date).format('YYYY-MM-DD'));
+        setValue('location', d?.location);
     }, [d])
 
 	const [status, setStatus] = useState({
@@ -183,6 +185,18 @@ export default function CreateSchedule(){
                                             className="input !w-[300px]"
                                         />
                                         <div className="text-red-500 text-sm pt-1">{errors?.contact_no && errors?.contact_no?.message}</div>
+                                    </div>
+
+                                    <div className="col-span-6 sm:col-span-6">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Location
+                                        </label>
+                                        <input
+                                            {...register('location')} 
+                                            autoComplete="off"
+                                            className="input"
+                                        />
+                                        <div className="text-red-500 text-sm pt-1">{errors?.location && errors?.location?.message}</div>
                                     </div>
                                 </div>
                                 <div className="mt-5">

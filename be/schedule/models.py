@@ -7,6 +7,7 @@ class Schedules(models.Model):
     customer_name = models.CharField(max_length=255)
     contact_no = models.CharField(max_length=255)
     date = models.DateTimeField(default=now)
+    location = models.CharField(max_length=255, null=True)
     done = models.BooleanField(default=False)
 
     def __str__(self):

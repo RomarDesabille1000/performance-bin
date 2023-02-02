@@ -172,7 +172,7 @@ export default function Createschedules(){
                                     {!schedules ? (
                                         <tr>
                                             <td 
-                                                colSpan="7"
+                                                colSpan="8"
                                                 className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
                                                     <Loader/>
                                             </td>
@@ -181,7 +181,7 @@ export default function Createschedules(){
                                         !schedules?.results?.length && (
                                             <tr>
                                                 <td 
-                                                    colSpan="7"
+                                                    colSpan="8"
                                                     className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap text-center">
                                                         No record Found
                                                 </td>
@@ -205,6 +205,9 @@ export default function Createschedules(){
                                             </td>
                                             <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
                                                 {d.contact_no}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
+                                                {d.location}
                                             </td>
                                             <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
                                                 {d.done ? "Done" : "-"}
