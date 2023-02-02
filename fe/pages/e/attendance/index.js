@@ -107,6 +107,7 @@ export default function Employee() {
 				signature: signatureStore.image,
 				schedule_id: selectedSchedule,
 			}).then((_e) => {
+				// router.push('/e')
 				setStatus({ 
 					error: false, 
 					success: true, 
@@ -229,6 +230,25 @@ export default function Employee() {
 		}
 	}
 
+	if(!schedules){
+		return (
+			<div className="max-w-lg w-[90%] py-5 mt-5 m-auto">
+				<div className="mb-3 text-lg">Checking your schedule..</div>
+			</div>
+		)
+	}
+	if(schedules?.length === 0){
+		return (
+			<div className="max-w-lg w-[90%] py-5 mt-5 m-auto">
+				<div className="mb-3 text-lg font-bold">You have no schedules currently.</div>
+				<button 
+					type="button"
+					onClick={() => router.back()}
+					className="btn btn-secondary mt-3 mr-3">Back</button>
+			</div>
+		)
+	}
+
 	return (
 		<div>
 			{!e ? (
@@ -282,6 +302,7 @@ export default function Employee() {
 									<input type="text" 
 											autoComplete="off"
 											{...register('customer_name')}
+											disabled={true}
 											className="input"
 									/>
 									<small className="text-red-500">{errors?.customer_name && errors?.customer_name?.message}</small>
@@ -290,6 +311,7 @@ export default function Employee() {
 										<label className="block text-md text-gray-700">Contact No.</label>
 										<input type="text" 
 												autoComplete="off"
+												disabled={true}
 												{...register('contact_no')}
 												className="input"
 										/>
@@ -298,27 +320,11 @@ export default function Employee() {
 									<label className="block text-gray-700 mt-5">Location</label>
 									<input type="text" 
 											autoComplete="off"
+											disabled={true}
 											{...register('location')}
 											className="input"
 									/>
 									<small className="text-red-500">{errors?.location && errors?.location?.message}</small>
-
-									<div className={`border border-indigo-600 rounded-lg max-w-[600px] mt-5 ${!signatureStore.image? 'p-4': ''}`}>
-										{signatureStore.image ? (
-											<img src={signatureStore.image} 
-												height={signatureStore.h} 
-												width={signatureStore.w} />
-										): 'No signature yet'}
-									</div>
-									<small className="text-red-500">{isImageEmpty && 'Signature is required.'}</small>
-									<div className="mt-5">
-										<button 
-												type="button"
-												className="btn btn-primary" 
-												onClick={() => setIsAddingSignature(true)}> 
-											{signatureStore.image ? 'Update Signature' : 'Add Signature'}
-										</button>
-									</div>
 
 									<div className="mt-5 flex gap-5 items-start">
 										<div className="w-[50%]">
@@ -366,6 +372,25 @@ export default function Employee() {
 											</button>
 										</div>
 									</div>
+
+									<div className={`border border-indigo-600 rounded-lg max-w-[600px] mt-5 ${!signatureStore.image? 'p-4': ''}`}>
+										{signatureStore.image ? (
+											<img src={signatureStore.image} 
+												height={signatureStore.h} 
+												width={signatureStore.w} />
+										): 'No signature yet'}
+									</div>
+									<small className="text-red-500">{isImageEmpty && 'Signature is required.'}</small>
+									<div className="mt-5">
+										<button 
+												type="button"
+												className="btn btn-primary" 
+												onClick={() => setIsAddingSignature(true)}> 
+											{signatureStore.image ? 'Update Customer Signature' : 'Add Customer Signature'}
+										</button>
+									</div>
+
+									
 									<div className={hasTimeIn ? "mt-3" : "hidden"}>
 										<div className="block mb-3 text-lg">Completion Report</div>
 										<div className="flex items-center gap-3 ">
