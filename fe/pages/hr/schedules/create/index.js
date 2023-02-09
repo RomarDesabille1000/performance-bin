@@ -14,7 +14,8 @@ const SchedulesSchema = yup.object().shape({
 	customer_name: yup.string().required('This field is required')
 		.max(100, "Only 100 characters is allowed."),
 	contact_no: yup.string().required('This field is required')
-		.max(100, "Only 100 characters is allowed."),
+		.max(11, "Must be 11 numbers.")
+        .min(11, "Must be 11 numbers."),
 	location: yup.string().required('This field is required')
 		.max(100, "Only 100 characters is allowed."),
 	date: yup.date().typeError('Must be a date').required("This field is required.")

@@ -24,7 +24,8 @@ const AttendanceSchema = yup.object().shape({
 	customer_name: yup.string().required('This field is required')
 		.max(100, "Only 100 characters is allowed."),
 	contact_no: yup.string().required('This field is required')
-		.max(100, "Only 100 characters is allowed."),
+		.max(11, "Must be 11 numbers.")
+        .min(11, "Must be 11 numbers."),
     time_in: yup.string().required("This field is required."),
     time_out: yup.string().required("This field is required.")
 	.test(
